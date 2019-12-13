@@ -23,7 +23,7 @@ public abstract class BaseController {
    public static final String CLIENT_ID = "x-client-id";
    
    /** The Constant JWT_TOKEN. */
-   public static final String JWT_TOKEN = "bearer";
+   public static final String JWT_TOKEN = "Bearer";
 
 
    /**

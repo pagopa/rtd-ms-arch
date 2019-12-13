@@ -1,5 +1,7 @@
 package eu.sia.meda.config;
 
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +47,8 @@ public class ArchConfiguration {
    @Bean
    public ObjectMapper objectMapper() {
       ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JavaTimeModule());
+      mapper.registerModule(new Jdk8Module());
       mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
       mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
