@@ -51,7 +51,7 @@ public class ArchConfiguration {
       mapper.registerModule(new Jdk8Module());
       mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
       mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
       mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
       mapper.setSerializationInclusion(Include.NON_NULL);
