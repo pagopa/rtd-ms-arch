@@ -1,9 +1,10 @@
 package eu.sia.meda.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.lang.reflect.*;
+import java.math.BigInteger;
 
 /**
  * The Class ReflectionUtils.
@@ -112,5 +113,54 @@ public class ReflectionUtils {
       } catch (Exception var3) {
          throw new IllegalStateException("Class is not parametrized with generic type!!! Please use extends <> ");
       }
+   }
+
+   /** It will transform the input enum into a String, using the same logic of Jackson */
+   public static String enum2String(Enum o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      final Object result = enum2Object(o);
+
+      return result != null ? result.toString() : null;
+   }
+
+   /** It will transform the input enum into a BigInteger, using the same logic of Jackson */
+   public static BigInteger enum2BigInteger(Enum o) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      final Object result = enum2Object(o);
+
+      return result != null ? new BigInteger(result.toString()) : null;
+   }
+
+   /** It will transform the input enum into an Object, using the same logic of Jackson */
+   private static Object enum2Object(Enum o) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+      Method jsonValueMethod = null;
+      for (Method m : o.getClass().getMethods()) {
+         if (m.getAnnotation(JsonValue.class) != null) {
+            jsonValueMethod = m;
+            break;
+         }
+      }
+
+      if (jsonValueMethod == null) {
+         jsonValueMethod = o.getClass().getMethod("toString");
+      }
+
+      return jsonValueMethod.invoke(o);
+   }
+
+   /** It will transform the input string into an Enum, using the same logic of Jackson */
+   public static <T extends Enum> T string2Enum(String o, Class<T> enumClass) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      Method enumCreatorMethod = null;
+      for(Method m : enumClass.getMethods()) {
+         if(m.getAnnotation(JsonCreator.class) != null) {
+            enumCreatorMethod = m;
+            break;
+         }
+      }
+
+      if(enumCreatorMethod == null) {
+         enumCreatorMethod = enumClass.getMethod("valueOf", String.class);
+      }
+
+      //noinspection unchecked
+      return (T)enumCreatorMethod.invoke(null, o);
    }
 }
