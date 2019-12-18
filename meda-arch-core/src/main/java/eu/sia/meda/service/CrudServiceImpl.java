@@ -38,7 +38,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E deleteById(Long id) {
+    public E deleteById(K id) {
         return crudDAO.deleteById(id);
     }
 }

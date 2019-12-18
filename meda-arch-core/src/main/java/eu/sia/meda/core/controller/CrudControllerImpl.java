@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Slf4j
-public abstract class CrudControllerImpl <E extends Serializable, K extends Serializable> implements CrudController<E,K> {
+public abstract class CrudControllerImpl <E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<E,K> {
 
     private final CrudService<E,K> crudService;
 
@@ -38,7 +38,7 @@ public abstract class CrudControllerImpl <E extends Serializable, K extends Seri
     }
 
     @Override
-    public E deleteById(Long id) {
+    public E deleteById(K id) {
         return crudService.deleteById(id);
     }
 }

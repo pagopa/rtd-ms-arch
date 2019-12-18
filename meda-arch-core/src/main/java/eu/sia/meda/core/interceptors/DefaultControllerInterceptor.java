@@ -146,6 +146,7 @@ public class DefaultControllerInterceptor implements HandlerInterceptor {
 		} else {
 			Object controller = ((HandlerMethod) handler).getBean();
 			if (!this.isValidRequest(request, (HandlerMethod) handler)) {
+				BaseContextHolder.setErrorContext(new ErrorContext(this.projectId));
 				throw new MedaDomainRuntimeException("Request not valid", "ERR001", HttpStatus.BAD_REQUEST);
 			} else {
 				try {

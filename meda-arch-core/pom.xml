@@ -81,6 +81,14 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-ws-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>eu.sia.meda</groupId>
+            <artifactId>meda-arch-utils</artifactId>
+            <version>0.0.1</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
