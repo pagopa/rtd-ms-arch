@@ -24,6 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
 <!--        <maven-jacoco-plugin.version>0.8.2</maven-jacoco-plugin.version>-->
+        <sonar.exclusions>**/enums/**,**/model/**,**/Constants*.java</sonar.exclusions>
     </properties>
     <!-- We can't have two parent POMs, so use DependencyManagement to show
         Maven where the Spring Cloud dependencies are. -->
