@@ -2,6 +2,7 @@ package eu.sia.meda.layers.connector;
 
 import org.springframework.data.domain.Pageable;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,14 +12,14 @@ public interface CrudOperations<E extends Serializable, K extends Serializable> 
     List<E> findAll(Pageable pageable);
 
     /** To find the entity having the provided <i>id</i> */
-    E findById(K id);
+    E findById(@NotNull K id);
 
     /** To store a new entity */
-    E save(E entity);
+    E save(@NotNull E entity);
 
     /** To update an already existent entity */
-    E update(E entity);
+    E update(@NotNull E entity);
 
     /** To delete an entity */
-    E deleteById(K id);
+    E deleteById(@NotNull K id);
 }

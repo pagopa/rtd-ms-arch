@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -23,22 +24,22 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E findById(K id) {
+    public E findById(@NotNull K id) {
         return crudDAO.findById(id);
     }
 
     @Override
-    public E save(@Valid E entity) {
+    public E save(@NotNull  E entity) {
         return crudDAO.save(entity);
     }
 
     @Override
-    public E update(@Valid E entity) {
+    public E update(@NotNull  E entity) {
         return crudDAO.update(entity);
     }
 
     @Override
-    public E deleteById(K id) {
+    public E deleteById(@NotNull K id) {
         return crudDAO.deleteById(id);
     }
 }

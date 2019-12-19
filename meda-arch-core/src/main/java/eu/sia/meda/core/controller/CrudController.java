@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface CrudController<E extends Serializable, K extends Serializable> 
     /** To find the entity having the provided <i>id</i> */
     @Override
     @GetMapping("/{id}")
-    E findById(@PathVariable K id);
+    E findById(@Valid @NotNull @PathVariable K id);
 
     /** To store a new entity */
     @Override
@@ -34,5 +35,5 @@ public interface CrudController<E extends Serializable, K extends Serializable> 
     /** To delete an entity */
     @Override
     @DeleteMapping("/{id}")
-    E deleteById(@PathVariable K id);
+    E deleteById(@Valid @NotNull @PathVariable K id);
 }
