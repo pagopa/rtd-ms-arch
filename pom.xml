@@ -35,11 +35,11 @@
 		<maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
 		<maven-jaxb2-plugin.version>0.13.1</maven-jaxb2-plugin.version>
 		<spring-security.version>5.0.6.RELEASE</spring-security.version>
-		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-		<maven-jacoco-plugin.version>0.8.5</maven-jacoco-plugin.version>
-		<sonar.java.converagePlugin>jacoco</sonar.java.converagePlugin>
-		<sonar.jacoco.reportPath>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.language>java</sonar.language>
+<!--		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>-->
+<!--		<maven-jacoco-plugin.version>0.8.5</maven-jacoco-plugin.version>-->
+<!--		<sonar.java.converagePlugin>jacoco</sonar.java.converagePlugin>-->
+<!--		<sonar.jacoco.reportPath>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</sonar.jacoco.reportPath>-->
+<!--		<sonar.language>java</sonar.language>-->
 	</properties>
 
 	<modules>
@@ -77,72 +77,72 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/diraliases/OPENSHIFT</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${basedir}/meda-arch-core/target/</directory>
-									<includes>
-										<include>meda-arch-core-0.0.1.jar</include>
-									</includes>
-									<filtering>false</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<artifactId>maven-resources-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>copy-resources</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>copy-resources</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<outputDirectory>${project.build.directory}/diraliases/OPENSHIFT</outputDirectory>-->
+<!--							<resources>-->
+<!--								<resource>-->
+<!--									<directory>${basedir}/meda-arch-core/target/</directory>-->
+<!--									<includes>-->
+<!--										<include>meda-arch-core-0.0.1.jar</include>-->
+<!--									</includes>-->
+<!--									<filtering>false</filtering>-->
+<!--								</resource>-->
+<!--							</resources>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<executable>${JAVAC_8}</executable>
-					<fork>true</fork>
-					<verbose>true</verbose>
+<!--					<executable>${JAVAC_8}</executable>-->
+<!--					<fork>true</fork>-->
+<!--					<verbose>true</verbose>-->
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<reportsDirectory>${session.executionRootDirectory}/sonar-report/junit/</reportsDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${maven-jacoco-plugin.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration> <destFile>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</destFile> 
-							</configuration>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration> <dataFile>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</dataFile> 
-							<outputDirectory>${session.executionRootDirectory}/sonar-report/jacoco</outputDirectory> 
-							</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-surefire-plugin</artifactId>-->
+<!--				<configuration>-->
+<!--					<reportsDirectory>${session.executionRootDirectory}/sonar-report/junit/</reportsDirectory>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+<!--			<plugin>-->
+<!--				<groupId>org.jacoco</groupId>-->
+<!--				<artifactId>jacoco-maven-plugin</artifactId>-->
+<!--				<version>${maven-jacoco-plugin.version}</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<goals>-->
+<!--							<goal>prepare-agent</goal>-->
+<!--						</goals>-->
+<!--						<configuration> <destFile>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</destFile> -->
+<!--							</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>report</id>-->
+<!--						<phase>prepare-package</phase>-->
+<!--						<goals>-->
+<!--							<goal>report</goal>-->
+<!--						</goals>-->
+<!--						<configuration> <dataFile>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</dataFile> -->
+<!--							<outputDirectory>${session.executionRootDirectory}/sonar-report/jacoco</outputDirectory> -->
+<!--							</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
