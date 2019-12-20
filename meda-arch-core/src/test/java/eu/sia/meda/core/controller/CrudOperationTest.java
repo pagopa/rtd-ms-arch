@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +34,11 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
     public CrudOperationTest() {
         this.entityClazz = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 0);
         this.keyClazz = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
+    }
+
+    @PostConstruct
+    public void initMocks() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Autowired
@@ -60,10 +66,10 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
         crudOperationsMock = getCrudOperationsMock();
 
         BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(entities);
-        BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(0))))).thenReturn(entities.get(0));
+        BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
+        BDDMockito.when(crudOperationsMock.deleteById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
         BDDMockito.when(crudOperationsMock.save(Mockito.eq(entities.get(1)))).thenReturn(entities.get(2));
         BDDMockito.when(crudOperationsMock.update(Mockito.eq(entities.get(2)))).thenReturn(entities.get(3));
-        BDDMockito.when(crudOperationsMock.deleteById(Mockito.eq(getId(entities.get(1))))).thenReturn(entities.get(1));
     }
 
     protected E buildTestEntity(int i) {
@@ -93,14 +99,14 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
     @Test
     public void testFindById() throws Exception {
         MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .get(String.format("%s/%s", getBasePath(), getId(entities.get(0))))
+                .get(String.format("%s/%s", getBasePath(), getId(entities.get(4))))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
         E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(0), promotionsResult);
+        Assert.assertEquals(entities.get(4), promotionsResult);
     }
 
     @Test
@@ -134,14 +140,14 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
     @Test
     public void testDelete() throws Exception {
         MvcResult result = mvc.perform(MockMvcRequestBuilders
-                .delete(String.format("%s/%s", getBasePath(), getId(entities.get(1))))
+                .delete(String.format("%s/%s", getBasePath(), getId(entities.get(4))))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
         E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(1), promotionsResult);
+        Assert.assertEquals(entities.get(4), promotionsResult);
     }
 
 }

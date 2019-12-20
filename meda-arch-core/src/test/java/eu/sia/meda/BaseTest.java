@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public class BaseTest {
 
     @BeforeClass
-    public static void setLogLevels() {
+    public static void configTest() {
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
     }
