@@ -2,6 +2,7 @@ package eu.sia.meda.util;
 
 import lombok.Value;
 import org.junit.Assert;
+import org.springframework.hateoas.Link;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -185,6 +186,8 @@ public final class TestUtils {
                                 result = v1.toString().equals(v2.toString());
                             } else if (String.class.isAssignableFrom(v1.getClass()) || String.class.isAssignableFrom(v2.getClass())) {
                                 result = v1.toString().equals(v2.toString());
+                            } else if (Link.class.isAssignableFrom(v2.getClass())) {
+                                result = v1.toString().equals(((Link) v2).getHref().replaceFirst("^.*/",""));
                             } else {
                                 checked.addAll(reflectionEqualsByName(v1, v2));
                             }

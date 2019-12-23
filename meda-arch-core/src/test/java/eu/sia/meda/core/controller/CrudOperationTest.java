@@ -3,10 +3,11 @@ package eu.sia.meda.core.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseTest;
 import eu.sia.meda.config.ArchConfiguration;
+import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
+import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.CrudOperations;
 import eu.sia.meda.util.ReflectionUtils;
 import eu.sia.meda.util.TestUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -26,14 +27,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /** Base test class to test common behavior of {@link CrudController} mocking a {@link CrudOperations} ({@link eu.sia.meda.service.CrudService} or {@link eu.sia.meda.layers.connector.CrudDAO}) */
-public abstract class CrudOperationTest<E extends Serializable, K extends Serializable>  extends BaseTest {
+public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable>  extends BaseTest {
+    private final Class<R> resourceClazz;
     private final Class<E> entityClazz;
     private final Class<K> keyClazz;
 
     @SuppressWarnings({"unchecked"})
     public CrudOperationTest() {
-        this.entityClazz = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 0);
-        this.keyClazz = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
+        this.resourceClazz = (Class<R>)ReflectionUtils.getGenericTypeClass(getClass(), 0);
+        this.entityClazz = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
+        this.keyClazz = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 2);
     }
 
     @PostConstruct
@@ -45,6 +48,7 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
     private MockMvc mvc;
     @SuppressWarnings("FieldCanBeLocal")
     private CrudOperations<E,K> crudOperationsMock;
+    private BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
     private ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
 
@@ -57,6 +61,7 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
 
     protected abstract K getId(E entity);
     protected abstract CrudOperations<E,K> getCrudOperationsMock();
+    protected abstract BaseResourceAssemblerSupport<E,R> getResourceAssemblerSpy();
     protected abstract String getBasePath();
 
     @PostConstruct
@@ -64,6 +69,7 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
         entities = IntStream.range(0, getNTestData()).mapToObj(this::buildTestEntity).collect(Collectors.toList());
 
         crudOperationsMock = getCrudOperationsMock();
+        resourceAssembler = getResourceAssemblerSpy();
 
         BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(entities);
         BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
@@ -89,11 +95,18 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        @SuppressWarnings("unchecked") List<E> entitiesResult = Arrays.asList((E[])objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                Class.forName(String.format("[L%s;", entityClazz.getName())))
+        @SuppressWarnings("unchecked") List<R> entitiesResult = Arrays.asList((R[])objectMapper.readValue(
+                transformLinks(result.getResponse().getContentAsString().replaceFirst("\\{\"_embedded\":\\{\"[^\\\"]+\":", "").replaceFirst("\\}\\}$","")),
+                Class.forName(String.format("[L%s;", resourceClazz.getName())))
         );
-        Assert.assertEquals(entities, entitiesResult);
+        for(int i=0;i<entities.size();i++){
+            BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(i)));
+            TestUtils.reflectionEqualsByName(entities.get(i), entitiesResult.get(i));
+        }
+    }
+
+    private String transformLinks(String json) {
+        return json.replaceAll("\"_links\":\\{\"self\":\\{([^}]+\\})\\}", "\"links\":[{\"rel\":\"self\",$1]");
     }
 
     @Test
@@ -105,8 +118,10 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(4), promotionsResult);
+        R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
+        TestUtils.reflectionEqualsByName(entities.get(4), promotionsResult);
+
+        BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(4)));
     }
 
     @Test
@@ -119,8 +134,10 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(2), promotionsResult);
+        R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
+        TestUtils.reflectionEqualsByName(entities.get(2), promotionsResult);
+
+        BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(2)));
     }
 
     @Test
@@ -133,8 +150,10 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(3), promotionsResult);
+        R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
+        TestUtils.reflectionEqualsByName(entities.get(3), promotionsResult);
+
+        BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(3)));
     }
 
     @Test
@@ -146,8 +165,10 @@ public abstract class CrudOperationTest<E extends Serializable, K extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        E promotionsResult = objectMapper.readValue(result.getResponse().getContentAsString(), entityClazz);
-        Assert.assertEquals(entities.get(4), promotionsResult);
+        R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
+        TestUtils.reflectionEqualsByName(entities.get(4), promotionsResult);
+
+        BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(4)));
     }
 
 }

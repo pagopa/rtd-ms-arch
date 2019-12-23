@@ -1,5 +1,6 @@
 package eu.sia.meda.core.controller;
 
+import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.CrudDAO;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @TestPropertySource(properties = {
         "logging.level.root=INFO"
 })
-public abstract class CrudControllerIntegrationDAOMockTest<E extends Serializable, K extends Serializable> extends CrudOperationTest<E, K> {
+public abstract class CrudControllerIntegrationDAOMockTest<R extends BaseResource, E extends Serializable, K extends Serializable> extends CrudOperationTest<R, E, K> {
     @Override
     protected CrudDAO<E, K> getCrudOperationsMock() {
         return getCrudDAOMock();

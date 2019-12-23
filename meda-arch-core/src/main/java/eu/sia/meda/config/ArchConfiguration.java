@@ -3,12 +3,9 @@ package eu.sia.meda.config;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -45,7 +42,26 @@ public class ArchConfiguration {
     * @return the object mapper
     */
    @Bean
+   @Primary
    public ObjectMapper objectMapper() {
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JavaTimeModule());
+      mapper.registerModule(new Jdk8Module());
+      mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+      mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+      mapper.setSerializationInclusion(Include.NON_NULL);
+      SimpleFilterProvider simpleFilterProvider = new SimpleFilterProvider();
+      simpleFilterProvider.setFailOnUnknownId(false);
+      mapper.setFilterProvider(simpleFilterProvider);
+      return mapper;
+   }
+
+   @Bean
+   @Qualifier("StrictObjectMapper")
+   public ObjectMapper objectMapperStrict() {
       ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule(new JavaTimeModule());
       mapper.registerModule(new Jdk8Module());
