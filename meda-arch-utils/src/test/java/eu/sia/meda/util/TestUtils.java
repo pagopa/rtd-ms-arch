@@ -184,10 +184,10 @@ public final class TestUtils {
                                 result = v1.equals(v2);
                             } else if (Enum.class.isAssignableFrom(v2.getClass()) && Enum.class.isAssignableFrom(v1.getClass())) {
                                 result = v1.toString().equals(v2.toString());
-                            } else if (String.class.isAssignableFrom(v1.getClass()) || String.class.isAssignableFrom(v2.getClass())) {
-                                result = v1.toString().equals(v2.toString());
                             } else if (Link.class.isAssignableFrom(v2.getClass())) {
                                 result = v1.toString().equals(((Link) v2).getHref().replaceFirst("^.*/",""));
+                            } else if (String.class.isAssignableFrom(v1.getClass()) || String.class.isAssignableFrom(v2.getClass())) {
+                                result = v1.toString().equals(v2.toString());
                             } else {
                                 checked.addAll(reflectionEqualsByName(v1, v2));
                             }
