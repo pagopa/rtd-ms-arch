@@ -25,7 +25,7 @@ import org.springframework.scheduling.annotation.Async;
  *
  * @param <R> the generic type
  */
-public abstract class BaseCommand<R> {
+public abstract class BaseCommand<R> implements Command<R> {
    
    /** The logger. */
    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
