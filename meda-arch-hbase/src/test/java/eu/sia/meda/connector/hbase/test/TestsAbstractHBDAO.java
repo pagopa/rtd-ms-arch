@@ -115,7 +115,7 @@ public class TestsAbstractHBDAO {
         Map<String, Map<String, Object>> expectedFieldValues = new HashMap<>();
         for (int i = 0; i < records.size(); i++) { // for each test object,
             Citizen record = records.get(i);
-            final String rowKey = citizenDao.persist(record);
+            final String rowKey = citizenDao.saveAndGetRowKey(record);
             allRowKeys[i] = rowKey;
             Citizen serDeserRecord = citizenDao.get(rowKey, Integer.MAX_VALUE);
             assertEquals("Entry got corrupted upon persisting and fetching back", record, serDeserRecord);
@@ -222,7 +222,7 @@ public class TestsAbstractHBDAO {
             CitizenDAO citizenDao = new CitizenDAO(configuration);
             Citizen citizenBeforeAppend = new Citizen("IND", 120, "Abdul", null, null, null, null, null, null, null, null, null, null, new Dependents(null, Arrays.asList(141, 142)), null);
             assertNull(citizenBeforeAppend.getSal());
-            String rowKey = citizenDao.persist(citizenBeforeAppend);
+            String rowKey = citizenDao.saveAndGetRowKey(citizenBeforeAppend);
             Integer expectedSalary = 30000;
             citizenDao.append(rowKey, "sal", expectedSalary);
             try {
@@ -265,7 +265,7 @@ public class TestsAbstractHBDAO {
             counter.setValue((long) i, (long) i);
         }
         counter.setVar(0L);
-        final String rowKey = counterDAO.persist(counter);
+        final String rowKey = counterDAO.saveAndGetRowKey(counter);
         // Test custom timestamp values:
         assertEquals("Unexpected values on get (number of versions)", counterDAO.get(rowKey, 7), counterDAO.getOnGet(counterDAO.getGet(rowKey).readVersions(7)));
         assertEquals("Unexpected values on get (given timestamp)", nm(e(10L, 10L)), counterDAO.getOnGet(counterDAO.getGet(rowKey).setTimestamp(10)).getValue());
@@ -300,7 +300,7 @@ public class TestsAbstractHBDAO {
         for (Double n : testNumbers) {
             objs.add(new CrawlNoVersion("key").setF1(n));
         }
-        crawlNoVersionDAO.persist(objs);
+        crawlNoVersionDAO.saveAllAndGetRowKeys(objs);
         Crawl crawl = crawlDAO.get("key", NUM_VERSIONS);
         assertEquals("Issue with version history implementation when written as unversioned and read as versioned", 1.0, crawl.getF1().values().iterator().next(), 1e-9);
         crawlDAO.delete("key");
@@ -316,7 +316,7 @@ public class TestsAbstractHBDAO {
             crawl2.addF1(timestamp + i, n);
             i++;
         }
-        crawlDAO.persist(crawl2);
+        crawlDAO.saveAndGetRowKey(crawl2);
         CrawlNoVersion crawlNoVersion = crawlNoVersionDAO.get("key2");
         assertEquals("Entry with the highest version (i.e. timestamp) isn't the one that was returned by DAO get", crawlNoVersion.getF1(), testNumbers[testNumbers.length - 1]);
         assertArrayEquals("Issue with version history implementation when written as versioned and read as unversioned", testNumbersOfRange, crawlDAO.get("key2", NUM_VERSIONS).getF1().values().toArray());
@@ -325,7 +325,7 @@ public class TestsAbstractHBDAO {
         for (int v = 0; v <= 9; v++) {
             for (int k = 1; k <= 4; k++) {
                 String key = "oKey" + k;
-                crawlDAO.persist(new Crawl(key).addF1((double) v));
+                crawlDAO.saveAndGetRowKey(new Crawl(key).addF1((double) v));
                 rowKeysList.add(key);
             }
         }
@@ -356,25 +356,25 @@ public class TestsAbstractHBDAO {
 
         // Written as unversioned, deleted as unversioned:
         final String deleteKey1 = "write_unversioned__delete_unversioned";
-        crawlNoVersionDAO.persist(new Crawl(deleteKey1).addF1(10.01));
+        crawlNoVersionDAO.saveAndGetRowKey(new Crawl(deleteKey1).addF1(10.01));
         crawlNoVersionDAO.delete(deleteKey1);
         assertNull("Row with key '" + deleteKey1 + "' exists, when written through unversioned DAO and deleted through unversioned DAO!", crawlNoVersionDAO.get(deleteKey1));
 
         // Written as versioned, deleted as versioned:
         final String deleteKey2 = "write_versioned__delete_versioned";
-        crawlDAO.persist(new Crawl(deleteKey2).addF1(10.02));
+        crawlDAO.saveAndGetRowKey(new Crawl(deleteKey2).addF1(10.02));
         crawlDAO.delete(deleteKey2);
         assertNull("Row with key '" + deleteKey2 + "' exists, when written through versioned DAO and deleted through versioned DAO!", crawlNoVersionDAO.get(deleteKey2));
 
         // Written as unversioned, deleted as versioned:
         final String deleteKey3 = "write_unversioned__delete_versioned";
-        crawlNoVersionDAO.persist(new Crawl(deleteKey3).addF1(10.03));
+        crawlNoVersionDAO.saveAndGetRowKey(new Crawl(deleteKey3).addF1(10.03));
         crawlDAO.delete(deleteKey3);
         assertNull("Row with key '" + deleteKey3 + "' exists, when written through unversioned DAO and deleted through versioned DAO!", crawlNoVersionDAO.get(deleteKey3));
 
         // Written as versioned, deleted as unversioned:
         final String deleteKey4 = "write_versioned__delete_unversioned";
-        crawlDAO.persist(new Crawl(deleteKey4).addF1(10.04));
+        crawlDAO.saveAndGetRowKey(new Crawl(deleteKey4).addF1(10.04));
         crawlNoVersionDAO.delete(deleteKey4);
         assertNull("Row with key '" + deleteKey4 + "' exists, when written through versioned DAO and deleted through unversioned DAO!", crawlNoVersionDAO.get(deleteKey4));
 
@@ -385,7 +385,7 @@ public class TestsAbstractHBDAO {
         hBaseCluster.createTable("employees", m(e("a", 1)));
         EmployeeDAO employeeDAO = new EmployeeDAO(configuration);
         Employee ePre = new Employee(100L, "E1", (short) 3, System.currentTimeMillis());
-        Long rowKey = employeeDAO.persist(ePre);
+        Long rowKey = employeeDAO.saveAndGetRowKey(ePre);
         Employee ePost = employeeDAO.get(rowKey);
         assertEquals("Object got corrupted ", ePre, ePost);
     }

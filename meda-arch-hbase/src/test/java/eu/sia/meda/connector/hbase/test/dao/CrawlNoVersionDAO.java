@@ -8,7 +8,7 @@ import org.apache.hadoop.conf.Configuration;
 import eu.sia.meda.connector.hbase.HBaseConnector;
 import eu.sia.meda.connector.hbase.test.entity.CrawlNoVersion;
 
-public class CrawlNoVersionDAO extends HBaseConnector<String, CrawlNoVersion> {
+public class CrawlNoVersionDAO extends HBaseConnector<CrawlNoVersion, String> {
 
     public CrawlNoVersionDAO(Configuration conf) throws IOException {
         super(conf);

@@ -8,7 +8,6 @@ import eu.sia.meda.connector.hbase.annotation.HBRecord;
 import eu.sia.meda.connector.hbase.annotation.HBRowKey;
 import eu.sia.meda.connector.hbase.annotation.HBTable;
 
-@SuppressWarnings("unused")
 @HBTable(name = "employees", families = {@Family(name = "a")})
 public class Employee extends AbstractRecord implements HBRecord<Long> {
     @HBRowKey

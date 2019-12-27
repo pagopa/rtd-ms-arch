@@ -30,7 +30,7 @@ import java.util.*;
  * @see Table
  * @see HTable
  */
-public abstract class HBaseConnector<R extends Serializable & Comparable<R>, T extends HBRecord<R>> {
+public abstract class HBaseConnector<T extends HBRecord<R>, R extends Serializable & Comparable<R>> {
 
     protected final HBObjectMapper hbObjectMapper;
     protected final Connection connection;
@@ -461,12 +461,47 @@ public abstract class HBaseConnector<R extends Serializable & Comparable<R>, T e
      * @return Row key of the persisted object, represented as a {@link String}
      * @throws IOException When HBase call fails
      */
-    public R persist(HBRecord<R> record) throws IOException {
+    public <S extends T> S save(S record) throws IOException {
+        Put put = hbObjectMapper.writeValueAsPut(record);
+        try (Table table = getHBaseTable()) {
+            table.put(put);
+            return record;
+        }
+    }
+
+    /**
+     * Persist your bean-like object (of a class that implements {@link HBRecord}) to HBase table
+     *
+     * @param record Object that needs to be persisted
+     * @return Row key of the persisted object
+     * @throws IOException When HBase call fails
+     */
+    public R saveAndGetRowKey(HBRecord<R> record) throws IOException {
         Put put = hbObjectMapper.writeValueAsPut(record);
         try (Table table = getHBaseTable()) {
             table.put(put);
             return record.composeRowKey();
         }
+    }
+    
+    /**
+     * Persist a list of your bean-like objects (of a class that implements {@link HBRecord}) to HBase table (this is a bulk variant of {@link #persist(HBRecord)} method)
+     *
+     * @param records List of objects that needs to be persisted
+     * @return list of the persisted objects
+     * @throws IOException When HBase call fails
+     */
+    public <S extends T> List<S> saveAll(Iterable<S> records) throws IOException {
+        List<Put> puts = new ArrayList<>();
+        List<S> ret = new ArrayList<>();
+        for (S object : records) {
+            puts.add(hbObjectMapper.writeValueAsPut(object));
+            ret.add(object);
+        }
+        try (Table table = getHBaseTable()) {
+            table.put(puts);
+        }
+        return ret;
     }
 
     /**
@@ -476,9 +511,9 @@ public abstract class HBaseConnector<R extends Serializable & Comparable<R>, T e
      * @return Row keys of the persisted objects, represented as a {@link String}
      * @throws IOException When HBase call fails
      */
-    public List<R> persist(List<T> records) throws IOException {
-        List<Put> puts = new ArrayList<>(records.size());
-        List<R> rowKeys = new ArrayList<>(records.size());
+    public List<R> saveAllAndGetRowKeys(Iterable<T> records) throws IOException {
+        List<Put> puts = new ArrayList<>();
+        List<R> rowKeys = new ArrayList<>();
         for (HBRecord<R> object : records) {
             puts.add(hbObjectMapper.writeValueAsPut(object));
             rowKeys.add(object.composeRowKey());
@@ -488,7 +523,6 @@ public abstract class HBaseConnector<R extends Serializable & Comparable<R>, T e
         }
         return rowKeys;
     }
-
 
     /**
      * Delete a row from an HBase table for a given row key
