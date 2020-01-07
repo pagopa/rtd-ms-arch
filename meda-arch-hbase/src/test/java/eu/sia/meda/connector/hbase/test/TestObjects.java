@@ -89,7 +89,6 @@ public class TestObjects {
         }
     };
 
-    @SuppressWarnings("unchecked")
     public static final List<Triple<HBRecord, String, Class<? extends IllegalArgumentException>>> invalidObjects = Arrays.asList(
             Triple.create(new Citizen("IND", -1, null, null, null, null, null, null, null, null, null, null, null, null, null), "all fields empty", AllHBColumnFieldsNullException.class),
             Triple.create(new Citizen("IND", 1, "row key", null, null, null, null, null, null, null, null, new TreeMap<Long, Integer>(), null, null, null), "an empty field annotated with @" + HBColumnMultiVersion.class.getName(), FieldAnnotatedWithHBColumnMultiVersionCantBeEmpty.class)

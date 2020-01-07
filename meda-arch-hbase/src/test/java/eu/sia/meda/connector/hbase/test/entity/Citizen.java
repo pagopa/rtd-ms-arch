@@ -17,7 +17,6 @@ import eu.sia.meda.connector.hbase.codec.BestSuitCodec;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@SuppressWarnings("unused")
 @ToString
 @EqualsAndHashCode
 @HBTable(name = "citizens", families = {@Family(name = "main"), @Family(name = "optional", versions = 10)})

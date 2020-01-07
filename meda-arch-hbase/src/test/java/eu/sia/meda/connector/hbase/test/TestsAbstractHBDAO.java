@@ -11,9 +11,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,6 +66,14 @@ public class TestsAbstractHBDAO {
     public static void setup() {
         try {
             Logger.getRootLogger().setLevel(Level.WARN);
+            //Shell.class extraction for check path to winutils.exe
+            // first check the Dflag hadoop.home.dir with JVM scope
+            // String home = System.getProperty("hadoop.home.dir");
+            // fall back to the system/user-global env variable
+            //System.getenv("HADOOP_HOME");
+            URL res = TestsAbstractHBDAO.class.getClassLoader().getResource("hadoop-binary");
+            File file = Paths.get(res.toURI()).toFile();
+            System.setProperty("hadoop.home.dir", file.getAbsolutePath());
             hBaseCluster = new InMemoryHBaseCluster();
             configuration = hBaseCluster.init();
             hBaseCluster.createTable("citizens", m(e("main", 1), e("optional", 3)));
