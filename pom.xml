@@ -52,6 +52,7 @@
 		<module>meda-arch-event</module>
 		<module>meda-arch-event-listener</module>
 		<module>meda-arch-exception</module>
+		<module>meda-arch-hbase</module>
 		<module>meda-arch-jdbc</module>
 		<module>meda-arch-jpa</module>
 		<module>meda-arch-rest</module>

@@ -104,7 +104,7 @@
 
         <dependency>
             <groupId>eu.sia.meda</groupId>
-            <artifactId>meda-arch-jpa</artifactId>
+            <artifactId>meda-arch-hbase</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>

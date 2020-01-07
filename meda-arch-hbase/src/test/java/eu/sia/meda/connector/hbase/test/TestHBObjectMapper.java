@@ -64,8 +64,9 @@ import eu.sia.meda.connector.hbase.test.entity.UninstantiatableClass;
 
 @SuppressWarnings("unchecked")
 public class TestHBObjectMapper {
+	
     public static final int NUM_ITERATIONS = 100;
-    @SuppressWarnings("unchecked")
+    
     private final List<Triple<HBRecord, String, Class<? extends IllegalArgumentException>>> invalidRecordsAndErrorMessages = Arrays.asList(
             triple(Singleton.getInstance(), "A singleton class", EmptyConstructorInaccessibleException.class),
             triple(new ClassWithNoEmptyConstructor(1), "Class with no empty constructor", NoEmptyConstructorException.class),
