@@ -20,7 +20,7 @@
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/lz4/lz4-java/1.4.1/lz4-java-1.4.1.jar"/>
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar"/>
         <pathelement location="../../../../meda-arch-core"/>
-        <pathelement location="../../../../Users/dpellicc/.m2/repository/eu/sia/meda/meda-arch-domain/0.0.1/meda-arch-domain-0.0.1.jar"/>
+        <pathelement location="../../../../Users/dpellicc/.m2/repository/eu/sia/meda/meda-arch-domain/1.0-SNAPSHOT/meda-arch-domain-1.0-SNAPSHOT.jar"/>
         <pathelement location="../../../../meda-arch-exception"/>
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/springframework/security/spring-security-core/5.0.6.RELEASE/spring-security-core-5.0.6.RELEASE.jar"/>
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/springframework/security/spring-security-web/5.0.6.RELEASE/spring-security-web-5.0.6.RELEASE.jar"/>

@@ -94,7 +94,7 @@
 <!--								<resource>-->
 <!--									<directory>${basedir}/meda-arch-core/target/</directory>-->
 <!--									<includes>-->
-<!--										<include>meda-arch-core-0.0.1.jar</include>-->
+<!--										<include>meda-arch-core-1.0-SNAPSHOT.jar</include>-->
 <!--									</includes>-->
 <!--									<filtering>false</filtering>-->
 <!--								</resource>-->

@@ -11,7 +11,7 @@
     <property name="source" value="1.8"/>
     <path id="Maven Dependencies.libraryclasspath">
         <pathelement location="../../../../meda-arch-utils"/>
-        <pathelement location="../../../../Users/dpellicc/.m2/repository/eu/sia/meda/meda-arch-domain/0.0.1/meda-arch-domain-0.0.1.jar"/>
+        <pathelement location="../../../../Users/dpellicc/.m2/repository/eu/sia/meda/meda-arch-domain/1.0-SNAPSHOT/meda-arch-domain-1.0-SNAPSHOT.jar"/>
         <pathelement location="../../../../meda-arch-core"/>
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/springframework/security/spring-security-web/5.0.6.RELEASE/spring-security-web-5.0.6.RELEASE.jar"/>
         <pathelement location="../../../../Users/dpellicc/.m2/repository/org/springframework/spring-expression/5.1.5.RELEASE/spring-expression-5.1.5.RELEASE.jar"/>
