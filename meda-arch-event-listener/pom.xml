@@ -26,9 +26,23 @@
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
+            <artifactId>meda-arch-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <version>2.3.4.RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
