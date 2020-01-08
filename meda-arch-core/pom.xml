@@ -8,7 +8,7 @@
     <parent>
         <groupId>eu.sia.meda</groupId>
         <artifactId>meda-arch</artifactId>
-        <version>0.0.1</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <name>meda-arch-core</name>
@@ -29,17 +29,17 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-domain</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-exception</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.hateoas</groupId>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

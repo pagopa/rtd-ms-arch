@@ -12,7 +12,7 @@
 
     <groupId>eu.sia.meda</groupId>
     <artifactId>meda-ms</artifactId>
-    <version>0.0.1</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -74,50 +74,50 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-rest</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-event</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-event-listener</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-transaction</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-error</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-audit</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-hbase</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
