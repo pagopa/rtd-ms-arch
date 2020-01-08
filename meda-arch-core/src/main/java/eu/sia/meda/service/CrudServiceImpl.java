@@ -2,12 +2,11 @@ package eu.sia.meda.service;
 
 import eu.sia.meda.layers.connector.CrudDAO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.List;
 
 @Slf4j
 public abstract class CrudServiceImpl<E extends Serializable, K extends Serializable> implements CrudService<E,K> {
@@ -19,7 +18,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public List<E> findAll(Pageable pageable) {
+    public Page<E> findAll(Pageable pageable) {
         return crudDAO.findAll(pageable);
     }
 

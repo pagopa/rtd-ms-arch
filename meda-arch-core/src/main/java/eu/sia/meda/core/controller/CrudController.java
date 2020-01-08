@@ -1,8 +1,8 @@
 package eu.sia.meda.core.controller;
 
 import eu.sia.meda.core.resource.BaseResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,7 +14,7 @@ import java.io.Serializable;
 public interface CrudController<R extends BaseResource, E extends Serializable, K extends Serializable>{
     /** To find all entities */
     @GetMapping
-    Resources<R> findAll(Pageable pageable);
+    Page<R> findAll(Pageable pageable);
 
     /** To find the entity having the provided <i>id</i> */
     @GetMapping("/{id}")
