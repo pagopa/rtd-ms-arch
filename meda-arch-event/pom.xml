@@ -25,15 +25,29 @@
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
+            <artifactId>meda-arch-core</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.sia.meda</groupId>
+            <artifactId>meda-arch-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>test-jar</type>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka-test -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
-            <version>2.2.8.RELEASE</version>
+            <version>2.3.4.RELEASE</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
