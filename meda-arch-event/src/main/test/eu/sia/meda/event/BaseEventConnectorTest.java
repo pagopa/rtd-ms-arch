@@ -1,4 +1,4 @@
-package eu.sia.mece.event;
+package eu.sia.meda.event;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -74,14 +74,14 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(getGroupId(), "true", kafkaBroker);
         DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
-        Consumer<?,?> consumer = cf.createConsumer();
+        Consumer<String,String> consumer = cf.createConsumer();
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopic());
 
         OUTPUT result = eventConnector.call(request, requestTransformer, responseTransformer);
         checkResult(result);
         Assert.assertNotNull(result);
 
-        ConsumerRecords<?, ?> published = consumer.poll(Duration.ofMillis(2000));
+        ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(2000));
 
         Assert.assertEquals(1, published.count());
         Assert.assertEquals(new String(dto.getPayload(), StandardCharsets.UTF_8), published.iterator().next().value());
