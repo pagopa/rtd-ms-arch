@@ -9,34 +9,34 @@
     <parent>
         <groupId>eu.sia.meda</groupId>
         <artifactId>meda-arch</artifactId>
-        <version>0.0.1</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-utils</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-domain</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-exception</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-tracing</artifactId>
-            <version>0.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

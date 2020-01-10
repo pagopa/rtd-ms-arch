@@ -13,6 +13,10 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,7 +25,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -71,7 +74,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         crudOperationsMock = getCrudOperationsMock();
         resourceAssembler = getResourceAssemblerSpy();
 
-        BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(entities);
+        BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(new PageImpl<E>(entities, PageRequest.of(0,entities.size()), entities.size()));
         BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
         BDDMockito.when(crudOperationsMock.deleteById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
         BDDMockito.when(crudOperationsMock.save(Mockito.eq(entities.get(1)))).thenReturn(entities.get(2));
@@ -95,13 +98,13 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        @SuppressWarnings("unchecked") List<R> entitiesResult = Arrays.asList((R[])objectMapper.readValue(
-                transformLinks(result.getResponse().getContentAsString().replaceFirst("\\{\"_embedded\":\\{\"[^\\\"]+\":", "").replaceFirst("\\}\\}$","")),
-                Class.forName(String.format("[L%s;", resourceClazz.getName())))
+        @SuppressWarnings("unchecked") Page<R> pageResult = (Page<R>)objectMapper.readValue(
+                transformLinks(result.getResponse().getContentAsString()),
+                objectMapper.getTypeFactory().constructParametricType(Page.class, resourceClazz)
         );
         for(int i=0;i<entities.size();i++){
             BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(i)));
-            TestUtils.reflectionEqualsByName(entities.get(i), entitiesResult.get(i));
+            TestUtils.reflectionEqualsByName(entities.get(i), pageResult.getContent().get(i));
         }
     }
 

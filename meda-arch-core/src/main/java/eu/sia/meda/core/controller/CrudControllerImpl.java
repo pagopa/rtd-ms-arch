@@ -4,6 +4,8 @@ import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
 import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Resources;
 import org.springframework.util.CollectionUtils;
@@ -11,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<R,E,K> {
@@ -25,14 +26,13 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public Resources<R> findAll(Pageable pageable) {
-        List<E> result = crudService.findAll(pageable);
-        if(CollectionUtils.isEmpty(result)){
-            //noinspection unchecked
-            return new Resources(Collections.emptyList());
+    public Page<R> findAll(Pageable pageable) {
+        Page<E> result = crudService.findAll(pageable);
+        if(result == null){
+            return Page.empty();
         } else {
             //noinspection unchecked
-            return new Resources(resourceAssembler.toResources(result));
+            return new PageImpl<R>(resourceAssembler.toResources(result), pageable, result.getTotalElements());
         }
     }
 
