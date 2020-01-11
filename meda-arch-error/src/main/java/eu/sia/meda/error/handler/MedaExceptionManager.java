@@ -1,22 +1,13 @@
 package eu.sia.meda.error.handler;
 
-import eu.sia.meda.config.LoggerUtils;
-import eu.sia.meda.core.interceptors.BaseContextHolder;
-import eu.sia.meda.core.interceptors.RequestContextHolder;
-import eu.sia.meda.error.condition.ErrorManagerEnabledCondition;
-import eu.sia.meda.error.consts.Constants;
-import eu.sia.meda.error.helper.ErrorKeyExtractorHelper;
-import eu.sia.meda.error.service.ErrorManagerService;
-import eu.sia.meda.exceptions.MedaDomainException;
-import eu.sia.meda.exceptions.MedaDomainRuntimeException;
-import eu.sia.meda.exceptions.IMedaDomainException;
-import eu.sia.meda.exceptions.model.ErrorMessage;
-import eu.sia.meda.exceptions.resource.ErrorResource;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -35,7 +26,24 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import eu.sia.meda.config.LoggerUtils;
+import eu.sia.meda.core.interceptors.BaseContextHolder;
+import eu.sia.meda.error.condition.ErrorManagerEnabledCondition;
+import eu.sia.meda.error.consts.Constants;
+import eu.sia.meda.error.helper.ErrorKeyExtractorHelper;
+import eu.sia.meda.error.service.ErrorManagerService;
+import eu.sia.meda.exceptions.IMedaDomainException;
+import eu.sia.meda.exceptions.MedaDomainException;
+import eu.sia.meda.exceptions.MedaDomainRuntimeException;
+import eu.sia.meda.exceptions.MedaTransactionException;
+import eu.sia.meda.exceptions.model.ErrorMessage;
+import eu.sia.meda.exceptions.resource.ErrorResource;
 
 /**
  * The Class MedaExceptionManager.
@@ -89,6 +97,43 @@ public class MedaExceptionManager {
       return new ResponseEntity<>(this.getErrorResource(), httpHeaders, e.getResponseStatus() != null ? e.getResponseStatus() : HttpStatus.INTERNAL_SERVER_ERROR);
    }
 
+   /**
+    * Handle meda transaction exception. For resolve the eventual message provided by the step in error during the transaction
+    *
+    * @param e the exception
+    * @param request the request
+    * @param response the response
+    * @return the response error entity
+    */
+	@ExceptionHandler({ MedaTransactionException.class })
+	@ResponseBody
+	private ResponseEntity<ErrorResource> handleMedaTransactionException(MedaTransactionException e,
+			HttpServletRequest request, HttpServletResponse response) {
+		logger.error(UNHANDLED_EXCEPTION, e);
+
+		if (e.getCause() instanceof HttpStatusCodeException) {
+			try {
+				
+				HttpStatusCodeException ise = (HttpStatusCodeException) e
+						.getCause();
+				// recover the original exception if it is an ErrorSource, wrapped by transaction logic
+				ErrorResource errorResource = new ObjectMapper().readValue(ise.getResponseBodyAsByteArray(),
+						ErrorResource.class);
+				return new ResponseEntity<>(errorResource, ise.getStatusCode());
+
+			} catch (Exception e1) {
+				if (logger.isErrorEnabled()) {
+					logger.error(UNHANDLED_EXCEPTION,
+							"Error on recover original Exception in transaction logic, return generic exception");
+				}
+				return new ResponseEntity<>(handleThrowable(e, request, response), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else {
+			return new ResponseEntity<>(handleThrowable(e, request, response), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+   
    /**
     * Handle constraint violation exception.
     *
