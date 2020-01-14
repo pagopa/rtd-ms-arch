@@ -23,6 +23,11 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
+    public long count() {
+        return crudDAO.count();
+    }
+
+    @Override
     public E findById(@NotNull K id) {
         return crudDAO.findById(id);
     }

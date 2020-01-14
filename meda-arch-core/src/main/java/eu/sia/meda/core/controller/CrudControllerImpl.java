@@ -37,6 +37,11 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
+    public long count() {
+        return crudService.count();
+    }
+
+    @Override
     public R findById(K id) {
         return resourceAssembler.toResource(crudService.findById(id));
     }

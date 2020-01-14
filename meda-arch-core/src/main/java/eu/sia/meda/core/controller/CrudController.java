@@ -16,6 +16,10 @@ public interface CrudController<R extends BaseResource, E extends Serializable, 
     @GetMapping
     Page<R> findAll(Pageable pageable);
 
+    /** To count the entities */
+    @GetMapping("/count")
+    long count();
+
     /** To find the entity having the provided <i>id</i> */
     @GetMapping("/{id}")
     R findById(@Valid @NotNull @PathVariable K id);

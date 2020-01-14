@@ -11,6 +11,9 @@ public interface CrudOperations<E extends Serializable, K extends Serializable> 
     /** To find all entities */
     Page<E> findAll(Pageable pageable);
 
+    /** To count the entities */
+    long count();
+
     /** To find the entity having the provided <i>id</i> */
     E findById(@NotNull K id);
 
