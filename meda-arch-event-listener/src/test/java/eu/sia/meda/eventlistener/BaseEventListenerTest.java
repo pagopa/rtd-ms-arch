@@ -1,15 +1,16 @@
 package eu.sia.meda.eventlistener;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jmx.mbeanserver.JmxMBeanServer;
 import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.core.properties.PropertiesManager;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.service.SessionContextRetriever;
-import org.apache.kafka.common.utils.Sanitizer;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,10 +19,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import javax.management.*;
 import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 
@@ -47,11 +45,18 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
     private KafkaTemplate<String, String> template;
 
     @BeforeClass
-    public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException {
-        try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName("kafka.server:type=app-info,id=0"));
-        } catch (InstanceNotFoundException e) {
-            //Nothing to do
+    public static void configLevelLogs() {
+        ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
+    }
+
+    @BeforeClass
+    public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
+        ObjectName kafkaServerMbeanName = new ObjectName("kafka.server:type=app-info,id=0");
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        if(mBeanServer.isRegistered(kafkaServerMbeanName)){
+            mBeanServer.unregisterMBean(kafkaServerMbeanName);
         }
     }
 
