@@ -35,7 +35,7 @@ import java.time.Duration;
 import java.util.Map;
 
 @Import({ArchEventConfigurationService.class, PropertiesManager.class, KafkaAutoConfiguration.class, SimpleEventRequestTransformer.class, SimpleEventResponseTransformer.class})
-@EmbeddedKafka(partitions = 1)
+@EmbeddedKafka(partitions = 1, count = 1, controlledShutdown = true)
 @TestPropertySource(
         properties = {
                 "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
@@ -81,7 +81,7 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
         checkResult(result);
         Assert.assertNotNull(result);
 
-        ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(2000));
+        ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(10000));
 
         Assert.assertEquals(1, published.count());
         Assert.assertEquals(new String(dto.getPayload(), StandardCharsets.UTF_8), published.iterator().next().value());
@@ -107,7 +107,13 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
     @SneakyThrows
     protected void checkDto(INPUT request, EventRequest<DTO> dto) {
         if(getRequestTransformer() instanceof SimpleEventRequestTransformer){
-            Assert.assertEquals(objectMapper.writeValueAsString(request), new String(dto.getPayload(), StandardCharsets.UTF_8));
+            String expected;
+            if(request instanceof byte[]){
+                expected = new String((byte[])request, StandardCharsets.UTF_8);
+            } else {
+                expected = objectMapper.writeValueAsString(request);
+            }
+            Assert.assertEquals(expected, new String(dto.getPayload(), StandardCharsets.UTF_8));
         }
     }
     /** To check the result */

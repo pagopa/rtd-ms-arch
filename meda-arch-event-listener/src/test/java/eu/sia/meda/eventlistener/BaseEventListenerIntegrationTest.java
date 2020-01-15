@@ -1,7 +1,5 @@
 package eu.sia.meda.eventlistener;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringIntegrationTest;
@@ -10,9 +8,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,22 +21,17 @@ import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 
-@EmbeddedKafka
+@EmbeddedKafka(partitions = 1, count = 1, controlledShutdown = true)
 @TestPropertySource(
         properties = {
+                "logging.level.org.apache.zookeeper=WARN",
+                "logging.level.org.apache.kafka=WARN",
+                "logging.level.kafka=WARN",
                 "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
                 "spring.cloud.stream.kafka.binder.zkNodes=${spring.embedded.zookeeper.connect}",
                 "meda.core.sessioncontext.enabled:false"
         })
 public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegrationTest {
-
-    @BeforeClass
-    public static void configLevelLogs() {
-        ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
-        ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
-        ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
-    }
-
 
     @Autowired
     private EmbeddedKafkaBroker kafkaBroker;
@@ -59,8 +50,14 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopicPublished());
 
         ColoredPrinters.PRINT_GREEN.println("Publishing the request...");
-        String json = objectMapper.writeValueAsString(getRequestObject());
-        template.send(getTopicSubscription(), json);
+        Object request = getRequestObject();
+        String message;
+        if(request instanceof String){
+            message = (String)request;
+        } else {
+            message = objectMapper.writeValueAsString(getRequestObject());
+        }
+        template.send(getTopicSubscription(), message);
 
         ColoredPrinters.PRINT_GREEN.println("Waiting for a response...");
         ConsumerRecords<String,String> published = consumer.poll(getTimeout());
@@ -77,7 +74,7 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     protected abstract String getTopicSubscription();
     /** The group id */
     protected String getConsumerGroupId(){
-        return "groupId";
+        return "groupId-" + getTopicPublished();
     }
     /** The topic */
     protected abstract String getTopicPublished();

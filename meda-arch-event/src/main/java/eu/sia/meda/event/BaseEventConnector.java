@@ -112,8 +112,7 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE> extends B
 
 			}
 			this.setBootstrapServers(eventConfiguration.getBootstrapServers());
-			this.setTopic(eventConfiguration.getTopic());
-			this.setSecurityProtocol(eventConfiguration.getSecurityProtocol());
+			this.setTopic(eventConfiguration.getTopic());this.setSecurityProtocol(eventConfiguration.getSecurityProtocol());
 			this.setSaslServiceName(eventConfiguration.getSaslServiceName());
 			this.setSaslJaasConf(eventConfiguration.getSaslJaasConf());
 			this.setBatchSize(eventConfiguration.getBatchSize());
