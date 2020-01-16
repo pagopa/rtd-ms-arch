@@ -72,7 +72,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
     public void configureTest() throws JsonProcessingException {
         entities = IntStream.range(0, getNTestData()).mapToObj(this::buildTestEntity).collect(Collectors.toList());
         for (int i = 0; i < entities.size(); i++) {
-            Assert.assertEquals(getExpectedJson(i), objectMapper.writeValueAsString(entities.get(i)));
+            Assert.assertEquals(getExpectedJson(entities.get(i)), objectMapper.writeValueAsString(entities.get(i)));
         }
 
         crudOperationsMock = getCrudOperationsMock();
@@ -85,7 +85,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         BDDMockito.when(crudOperationsMock.update(Mockito.eq(entities.get(2)))).thenReturn(entities.get(3));
     }
 
-    /** To override in order to customize the input entity. Remember to override also {@link #getExpectedJson(int)} */
+    /** To override in order to customize the input entity. Remember to override also {@link #getExpectedJson(E)} */
     protected E buildTestEntity(int bias) {
         try {
             return TestUtils.mockInstance(entityClazz.newInstance(), bias);
@@ -95,7 +95,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
     }
 
     /** To override in order to match the input entity when overriding {@link #buildTestEntity(int)} */
-    protected String getExpectedJson(int bias){
+    protected String getExpectedJson(E entity){
         return "{}";
     }
 
