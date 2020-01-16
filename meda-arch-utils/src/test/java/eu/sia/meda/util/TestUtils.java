@@ -6,6 +6,7 @@ import org.springframework.hateoas.Link;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -110,6 +111,8 @@ public final class TestUtils {
                         m.invoke(o, (double) i++);
                     } else if (type.isAssignableFrom(BigInteger.class)) {
                         m.invoke(o, BigInteger.valueOf(i++));
+                    } else if (type.isAssignableFrom(BigDecimal.class)) {
+                        m.invoke(o, BigDecimal.valueOf(i++));
                     } else if (Enum.class.isAssignableFrom(type)) {
                         m.invoke(o, ((Object[]) type.getMethod("values").invoke(null))[0]);
                     } else if (LocalDateTime.class.isAssignableFrom(type)) {
