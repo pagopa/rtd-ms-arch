@@ -1,5 +1,6 @@
 package eu.sia.meda.core.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseTest;
 import eu.sia.meda.config.ArchConfiguration;
@@ -8,6 +9,7 @@ import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.CrudOperations;
 import eu.sia.meda.util.ReflectionUtils;
 import eu.sia.meda.util.TestUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -68,8 +69,11 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
     protected abstract String getBasePath();
 
     @PostConstruct
-    public void configureTest() {
+    public void configureTest() throws JsonProcessingException {
         entities = IntStream.range(0, getNTestData()).mapToObj(this::buildTestEntity).collect(Collectors.toList());
+        for (int i = 0; i < entities.size(); i++) {
+            Assert.assertEquals(getExpectedJson(i), objectMapper.writeValueAsString(entities.get(i)));
+        }
 
         crudOperationsMock = getCrudOperationsMock();
         resourceAssembler = getResourceAssemblerSpy();
@@ -81,12 +85,18 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         BDDMockito.when(crudOperationsMock.update(Mockito.eq(entities.get(2)))).thenReturn(entities.get(3));
     }
 
-    protected E buildTestEntity(int i) {
+    /** To override in order to customize the input entity. Remember to override also {@link #getExpectedJson(int)} */
+    protected E buildTestEntity(int bias) {
         try {
-            return TestUtils.mockInstance(entityClazz.newInstance(), i);
+            return TestUtils.mockInstance(entityClazz.newInstance(), bias);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Cannot instance entity " + entityClazz);
         }
+    }
+
+    /** To override in order to match the input entity when overriding {@link #buildTestEntity(int)} */
+    protected String getExpectedJson(int bias){
+        return "{}";
     }
 
     @Test
