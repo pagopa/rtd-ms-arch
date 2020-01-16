@@ -1,6 +1,7 @@
 package eu.sia.meda.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseTest;
 import eu.sia.meda.config.ArchConfiguration;
@@ -96,7 +97,13 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
 
     /** To override in order to match the input entity when overriding {@link #buildTestEntity(int)} */
     protected String getExpectedJson(E entity){
-        return "{}";
+        try {
+            return objectMapper.copy().configure(MapperFeature.USE_ANNOTATIONS, false).writeValueAsString(entity);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            Assert.fail("Cannot build expected json using default strategy");
+            return null;
+        }
     }
 
     @Test
