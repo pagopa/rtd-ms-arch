@@ -12,7 +12,8 @@ import javax.annotation.PostConstruct;
 @RunWith(SpringRunner.class)
 @SpringBootTest()
 @TestPropertySource(properties = {
-        "logging.level.root=INFO"
+        "logging.level.root=INFO",
+        "logging.level.eu.sia=DEBUG"
 })
 public class BaseSpringIntegrationTest extends BaseTest {
     @PostConstruct

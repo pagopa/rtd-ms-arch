@@ -12,6 +12,7 @@ import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,15 +224,15 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
       configProps.put("group.id", this.groupId);
       configProps.put("key.deserializer", StringDeserializer.class);
       configProps.put("value.deserializer", ByteArrayDeserializer.class);
-      if (this.securityProtocol != null) {
+      if (Strings.isNotEmpty(this.securityProtocol)) {
          configProps.put("security.protocol", this.securityProtocol);
       }
 
-      if (this.saslServiceName != null) {
+      if (Strings.isNotEmpty(this.saslServiceName)) {
          configProps.put("sasl.kerberos.service.name", this.saslServiceName);
       }
 
-      if (this.saslJaasConf != null) {
+      if (Strings.isNotEmpty(this.saslJaasConf)) {
          configProps.put("sasl.jaas.config", this.saslJaasConf);
       }
 

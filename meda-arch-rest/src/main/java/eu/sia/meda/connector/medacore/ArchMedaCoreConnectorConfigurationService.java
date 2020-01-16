@@ -45,6 +45,11 @@ public class ArchMedaCoreConnectorConfigurationService {
          config.setOauthUrl((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "oauthUrl", String.class));
          config.setScope((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "scope", String.class));
          config.setConnectionPoolConfiguration(HttpConnectionPoolConfiguration.loadFromProperties(this.propertiesManager, CONNECTOR_TYPE, className));
+
+         config.setMocked((Boolean)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "mocked", Boolean.class, false));
+         config.setRandomMock((Boolean)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "randomMock", Boolean.class));
+         config.setCodService((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "codService", String.class));
+
          return config;
       } else {
     	 if(log.isWarnEnabled()) {

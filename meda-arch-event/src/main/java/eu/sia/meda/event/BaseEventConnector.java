@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -181,15 +182,15 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE> extends B
       configProps.put("bootstrap.servers", this.bootstrapServers);
       configProps.put("key.serializer", StringSerializer.class);
       configProps.put("value.serializer", ByteArraySerializer.class);
-      if (this.securityProtocol != null) {
+      if (Strings.isNotEmpty(this.securityProtocol)) {
          configProps.put("security.protocol", this.securityProtocol);
       }
 
-      if (this.saslServiceName != null) {
+      if (Strings.isNotEmpty(this.saslServiceName)) {
          configProps.put("sasl.kerberos.service.name", this.saslServiceName);
       }
 
-      if (this.saslJaasConf != null) {
+      if (Strings.isNotEmpty(this.saslJaasConf)) {
          configProps.put("sasl.jaas.config", this.saslJaasConf);
       }
 

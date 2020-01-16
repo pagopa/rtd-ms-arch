@@ -12,5 +12,6 @@ public class BaseTest {
     public static void configTest() {
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
+        ((Logger)LoggerFactory.getLogger("eu.sia")).setLevel(Level.DEBUG);
     }
 }

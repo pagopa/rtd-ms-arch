@@ -14,7 +14,8 @@ import javax.annotation.PostConstruct;
 @ContextConfiguration(classes = DummyConfiguration.class)
 @DirtiesContext
 @TestPropertySource(properties = {
-        "logging.level.root=INFO"
+        "logging.level.root=INFO",
+        "logging.level.eu.sia=DEBUG"
 })
 public class BaseSpringTest extends BaseTest {
     @PostConstruct
