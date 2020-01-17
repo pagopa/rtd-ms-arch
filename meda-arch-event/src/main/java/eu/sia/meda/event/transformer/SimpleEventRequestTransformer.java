@@ -32,7 +32,7 @@ public class SimpleEventRequestTransformer <INPUT> implements IEventRequestTrans
 
             return request;
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Cannot serialize discount result!", e);
+            throw new IllegalStateException("Cannot serialize payload!", e);
         }
     }
 }

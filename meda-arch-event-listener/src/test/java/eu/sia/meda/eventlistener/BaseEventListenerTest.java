@@ -6,10 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.core.properties.PropertiesManager;
+import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.service.SessionContextRetriever;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
@@ -68,12 +71,21 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         Thread.sleep(5000);
 
         verifyInvocation(json);
+
+        ErrorPublisherService errorPublisherService = getErrorPublisherService();
+        if(errorPublisherService != null){
+            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any());
+        }
     }
 
     /** The object to be serialized and sent */
     protected abstract Object getRequestObject();
+
     /** The topic */
     protected abstract String getTopic();
     /** To check if the invocation occurred */
     protected abstract void verifyInvocation(String json);
+
+    /** If not null, it will check if the {@link ErrorPublisherService#publishErrorEvent(byte[], String)} has not been invoked */
+    protected abstract ErrorPublisherService getErrorPublisherService();
 }

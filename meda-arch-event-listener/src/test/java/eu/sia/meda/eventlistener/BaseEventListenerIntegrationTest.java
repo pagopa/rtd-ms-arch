@@ -3,12 +3,15 @@ package eu.sia.meda.eventlistener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringIntegrationTest;
+import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.util.ColoredPrinters;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -65,7 +68,14 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
         ColoredPrinters.PRINT_GREEN.println("Checking results...");
         Assert.assertEquals(1, getExpectedPublishedMessagesCount(published));
         verifyPublishedMessages(published.iterator());
+
+        ErrorPublisherService errorPublisherService = getErrorPublisherService();
+        if(errorPublisherService != null){
+            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any());
+        }
     }
+
+    protected abstract ErrorPublisherService getErrorPublisherService();
 
     /** The object to be serialized and sent */
     protected abstract Object getRequestObject();
