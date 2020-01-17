@@ -2,11 +2,9 @@ package eu.sia.meda.event;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.core.properties.PropertiesManager;
-import eu.sia.meda.event.BaseEventConnector;
 import eu.sia.meda.event.configuration.ArchEventConfigurationService;
 import eu.sia.meda.event.request.EventRequest;
 import eu.sia.meda.event.transformer.IEventRequestTransformer;
@@ -29,7 +27,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
@@ -60,7 +57,7 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
     private SimpleEventResponseTransformer simpleEventResponseTransformer;
 
     @Test
-    public void test() throws JsonProcessingException, InterruptedException, UnsupportedEncodingException {
+    public void test() {
         CONNECTOR eventConnector = getEventConnector();
         INPUT request = getRequestObject();
         IEventRequestTransformer<INPUT,DTO> requestTransformer = getRequestTransformer();
@@ -78,13 +75,15 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopic());
 
         OUTPUT result = eventConnector.call(request, requestTransformer, responseTransformer);
+        ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(10000));
+
         checkResult(result);
         Assert.assertNotNull(result);
 
-        ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(10000));
-
         Assert.assertEquals(1, published.count());
         Assert.assertEquals(new String(dto.getPayload(), StandardCharsets.UTF_8), published.iterator().next().value());
+
+        consumer.close();
     }
 
     /** The connector used to publish the event */
