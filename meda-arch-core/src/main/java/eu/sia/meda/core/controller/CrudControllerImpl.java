@@ -4,6 +4,7 @@ import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
 import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -18,6 +19,9 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     private final CrudService<E,K> crudService;
     private final BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
+    @Autowired
+    private PagedResourcesAssembler<E> pagedResourcesAssembler;
+
     protected CrudControllerImpl(CrudService<E, K> crudService, BaseResourceAssemblerSupport<E, R> resourceAssembler) {
         this.crudService = crudService;
         this.resourceAssembler = resourceAssembler;
@@ -30,7 +34,7 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
             result = Page.empty();
         }
 
-        return new PagedResourcesAssembler<E>(null, null).toResource(result, resourceAssembler);
+        return pagedResourcesAssembler.toResource(result, resourceAssembler);
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -115,18 +117,23 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        @SuppressWarnings("unchecked") Page<R> pageResult = (Page<R>)objectMapper.readValue(
-                transformLinks(result.getResponse().getContentAsString()),
-                objectMapper.getTypeFactory().constructParametricType(Page.class, resourceClazz)
+        @SuppressWarnings("unchecked") PagedResources<R> pageResult = (PagedResources<R>)objectMapper.readValue(
+                transformEmbeddedAfterLinks(transformLinks(result.getResponse().getContentAsString())),
+                objectMapper.getTypeFactory().constructParametricType(PagedResources.class, resourceClazz)
         );
+        Iterator<R> resultIterator = pageResult.iterator();
         for(int i=0;i<entities.size();i++){
             BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(i)));
-            TestUtils.reflectionEqualsByName(entities.get(i), pageResult.getContent().get(i));
+            TestUtils.reflectionEqualsByName(entities.get(i), resultIterator.next());
         }
     }
 
     private String transformLinks(String json) {
         return json.replaceAll("\"_links\":\\{\"self\":\\{([^}]+\\})\\}", "\"links\":[{\"rel\":\"self\",$1]");
+    }
+
+    private String transformEmbeddedAfterLinks(String json) {
+        return json.replaceAll("\"_embedded\":\\{\"[^\"]+\":(.*)\\},\"links", "\"content\":$1,\"links");
     }
 
     @Test
