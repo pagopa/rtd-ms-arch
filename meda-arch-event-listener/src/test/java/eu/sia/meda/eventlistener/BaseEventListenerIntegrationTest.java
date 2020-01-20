@@ -5,9 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringIntegrationTest;
 import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.util.ColoredPrinters;
+import io.jsonwebtoken.lang.Collections;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -23,6 +27,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @EmbeddedKafka(partitions = 1, count = 1, controlledShutdown = true)
 @TestPropertySource(
@@ -54,13 +59,19 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
 
         ColoredPrinters.PRINT_GREEN.println("Publishing the request...");
         Object request = getRequestObject();
-        String message;
+        String payload;
         if(request instanceof String){
-            message = (String)request;
+            payload = (String)request;
         } else {
-            message = objectMapper.writeValueAsString(getRequestObject());
+            payload = objectMapper.writeValueAsString(getRequestObject());
         }
-        template.send(getTopicSubscription(), message);
+        Iterable<Header> headers = null;
+        Map<String, byte[]> headersMap = getHeaders();
+        if(!Collections.isEmpty(headersMap)){
+            headers = headersMap.entrySet().stream().map(e->new RecordHeader(e.getKey(), e.getValue())).collect(Collectors.toList());
+        }
+        ProducerRecord<String, String> record = new ProducerRecord<String,String>(getTopicSubscription(), null, null, payload, headers);
+        template.send(record);
 
         ColoredPrinters.PRINT_GREEN.println("Waiting for a response...");
         ConsumerRecords<String,String> published = consumer.poll(getTimeout());
@@ -73,6 +84,10 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
         if(errorPublisherService != null){
             BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any());
         }
+    }
+
+    protected Map<String, byte[]> getHeaders() {
+        return null;
     }
 
     protected abstract ErrorPublisherService getErrorPublisherService();
