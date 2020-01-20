@@ -5,14 +5,12 @@ import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.Resources;
-import org.springframework.util.CollectionUtils;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
 
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.Collections;
 
 @Slf4j
 public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<R,E,K> {
@@ -26,14 +24,13 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public Page<R> findAll(Pageable pageable) {
+    public PagedResources<R> findAll(Pageable pageable) {
         Page<E> result = crudService.findAll(pageable);
         if(result == null){
-            return Page.empty();
-        } else {
-            //noinspection unchecked
-            return new PageImpl<R>(resourceAssembler.toResources(result), pageable, result.getTotalElements());
+            result = Page.empty();
         }
+
+        return new PagedResourcesAssembler<E>(null, null).toResource(result, resourceAssembler);
     }
 
     @Override

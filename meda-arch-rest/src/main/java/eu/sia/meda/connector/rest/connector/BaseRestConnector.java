@@ -1,5 +1,6 @@
 package eu.sia.meda.connector.rest.connector;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.connector.rest.model.RestConnectorRequest;
@@ -381,6 +382,7 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends Ba
     */
    private HttpMessageConverter getHalMessageConverter() {
       ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       objectMapper.registerModule(new Jackson2HalModule());
       MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(ResourceSupport.class);
       halConverter.setSupportedMediaTypes(Arrays.asList(MediaTypes.HAL_JSON));
