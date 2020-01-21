@@ -16,8 +16,8 @@ public abstract class BaseErrorPublisherService implements ErrorPublisherService
     }
 
     @Override
-    public void publishErrorEvent(byte[] message, String errorDesc) {
-        getErrorPublisherConnector().call(message, errorEventRequestTransformer, simpleEventResponseTransformer, errorDesc);
+    public Boolean publishErrorEvent(byte[] message, String errorDesc) {
+        return getErrorPublisherConnector().call(message, errorEventRequestTransformer, simpleEventResponseTransformer, errorDesc);
     }
 
     protected abstract BaseEventConnector<byte[], Boolean, byte[], Void> getErrorPublisherConnector();
