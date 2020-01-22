@@ -3,10 +3,15 @@ package eu.sia.meda;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.junit.BeforeClass;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
 
 /** Base class to use in order to configurate unit test */
 public class BaseTest {
+
+    public BaseTest(){
+        MockitoAnnotations.initMocks(this);
+    }
 
     @BeforeClass
     public static void configTest() {
