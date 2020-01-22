@@ -12,14 +12,12 @@ import java.time.LocalDateTime;
 @Data
 public abstract class BaseEntity implements Serializable {
 
-    @NotNull
     @Column(name = "INSERT_DATE")
     private LocalDateTime insertDate;
 
     @Column(name = "INSERT_USER")
     private String insertUser;
 
-    @NotNull
     @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
 
