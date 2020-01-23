@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.*;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -168,6 +169,12 @@ public final class TestUtils {
                         if (v1 != null) {
                             if (v1.equals(v2)) {
                                 //Do Nothing
+                            } else if (v1 instanceof Comparable && v2 instanceof Comparable && ((Comparable)v1).compareTo(v2)==0) {
+                                //Do Nothing
+                            } else if (OffsetDateTime.class.isAssignableFrom(v1.getClass()) && OffsetDateTime.class.isAssignableFrom(v2.getClass())) {
+                                result = ((OffsetDateTime)v1).isEqual((OffsetDateTime)v2);
+                            } else if (ChronoZonedDateTime.class.isAssignableFrom(v1.getClass()) && ChronoZonedDateTime.class.isAssignableFrom(v2.getClass())) {
+                                result = ((ChronoZonedDateTime)v1).isEqual((ChronoZonedDateTime)v2);
                             } else if (v1.getClass().isAssignableFrom(v2.getClass()) && ((isPrimitive(v1.getClass()) && isPrimitive(v2.getClass())) || (!hasStandardEquals(v1.getClass()) && !hasStandardEquals(v2.getClass())))) {
                                 result = false;
                             } else if (BigInteger.class.isAssignableFrom(v1.getClass()) && Integer.class.isAssignableFrom(v2.getClass())) {

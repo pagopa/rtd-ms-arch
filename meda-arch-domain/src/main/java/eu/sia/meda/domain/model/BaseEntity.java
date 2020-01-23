@@ -4,22 +4,21 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @MappedSuperclass
 @Data
 public abstract class BaseEntity implements Serializable {
 
     @Column(name = "INSERT_DATE")
-    private LocalDateTime insertDate;
+    private OffsetDateTime insertDate;
 
     @Column(name = "INSERT_USER")
     private String insertUser;
 
     @Column(name = "UPDATE_DATE")
-    private LocalDateTime updateDate;
+    private OffsetDateTime updateDate;
 
     @Column(name = "UPDATE_USER")
     private String updateUser;

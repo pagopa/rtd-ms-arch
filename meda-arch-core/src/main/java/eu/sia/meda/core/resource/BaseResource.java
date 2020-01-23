@@ -5,7 +5,7 @@ import eu.sia.meda.exceptions.resource.ErrorResource;
 import lombok.Data;
 
 import javax.persistence.Column;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * The Class BaseResource.
@@ -36,13 +36,13 @@ public class BaseResource extends ErrorResource {
    }
 
    @Column(name = "INSERT_DATE")
-   private LocalDateTime insertDate;
+   private OffsetDateTime insertDate;
 
    @Column(name = "INSERT_USER")
    private String insertUser;
 
    @Column(name = "UPDATE_DATE")
-   private LocalDateTime updateDate;
+   private OffsetDateTime updateDate;
 
    @Column(name = "UPDATE_USER")
    private String updateUser;
