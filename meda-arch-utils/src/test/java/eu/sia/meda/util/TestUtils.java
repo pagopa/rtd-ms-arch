@@ -8,10 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -123,6 +120,8 @@ public final class TestUtils {
                         m.invoke(o, LocalTime.now());
                     } else if (ZonedDateTime.class.isAssignableFrom(type)) {
                         m.invoke(o, ZonedDateTime.now());
+                    } else if (OffsetDateTime.class.isAssignableFrom(type)) {
+                        m.invoke(o, OffsetDateTime.now());
                     } else {
                         try {
                             System.out.printf("Mocking object %s%n", type);
