@@ -92,7 +92,7 @@ public class MedaCoreRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends BaseRes
          String jwtToken = this.jwtTokenProvisioner.manipulateToken((ArchMedaCoreConnectorConfigurationService.MedaCoreConfiguration)this.myConfiguration);
          logger.debug(LoggerUtils.formatArchRow("TokenProvisioner returned: {}"), jwtToken);
          if (jwtToken != null && !jwtToken.isEmpty()) {
-            request.addHeader("Authorization", "Medaer " + jwtToken);
+            request.addHeader("Authorization", "Bearer " + jwtToken);
             logger.debug(LoggerUtils.formatArchRow("Adding JWT token to request header"));
          }
       } catch (Exception var3) {
