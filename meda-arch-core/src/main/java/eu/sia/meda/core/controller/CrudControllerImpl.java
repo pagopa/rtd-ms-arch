@@ -16,8 +16,8 @@ import java.io.Serializable;
 @Slf4j
 public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<R,E,K> {
 
-    private final CrudService<E,K> crudService;
-    private final BaseResourceAssemblerSupport<E,R> resourceAssembler;
+    protected final CrudService<E,K> crudService;
+    protected final BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
     @Autowired
     private PagedResourcesAssembler<E> pagedResourcesAssembler;
