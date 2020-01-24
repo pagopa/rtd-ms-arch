@@ -10,6 +10,9 @@ import java.util.UUID;
 
 public class MedaRecordHeaders {
 
+    /** The origing application setted as default */
+    public static final String DEFAULT_ORIGING_APP = "UNKNOWN";
+
     /**
      * Avoid instantiation
      */
@@ -55,7 +58,7 @@ public class MedaRecordHeaders {
     public static String getOriginApp(ConsumerRecord<String, byte[]> record) {
         String originApp = readHeader(record, ORIGIN_APP);
         if (Strings.isNullOrEmpty(originApp)) {
-            originApp = "UNKNOWN";
+            originApp = DEFAULT_ORIGING_APP;
         }
         return originApp;
     }
