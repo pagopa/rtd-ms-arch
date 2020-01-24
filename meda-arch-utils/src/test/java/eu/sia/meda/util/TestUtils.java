@@ -15,8 +15,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static jdk.nashorn.internal.runtime.JSType.isPrimitive;
-
 public final class TestUtils {
     private TestUtils(){}
 
@@ -175,7 +173,7 @@ public final class TestUtils {
                                 result = ((OffsetDateTime)v1).isEqual((OffsetDateTime)v2);
                             } else if (ChronoZonedDateTime.class.isAssignableFrom(v1.getClass()) && ChronoZonedDateTime.class.isAssignableFrom(v2.getClass())) {
                                 result = ((ChronoZonedDateTime)v1).isEqual((ChronoZonedDateTime)v2);
-                            } else if (v1.getClass().isAssignableFrom(v2.getClass()) && ((isPrimitive(v1.getClass()) && isPrimitive(v2.getClass())) || (!hasStandardEquals(v1.getClass()) && !hasStandardEquals(v2.getClass())))) {
+                            } else if (v1.getClass().isAssignableFrom(v2.getClass()) && ((v1.getClass().isPrimitive() && v2.getClass().isPrimitive()) || (!hasStandardEquals(v1.getClass()) && !hasStandardEquals(v2.getClass())))) {
                                 result = false;
                             } else if (BigInteger.class.isAssignableFrom(v1.getClass()) && Integer.class.isAssignableFrom(v2.getClass())) {
                                 result = ((BigInteger) v1).intValue() == ((int) v2);
