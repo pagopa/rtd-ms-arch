@@ -44,21 +44,27 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
 
     @Override
     public R findById(K id) {
+        E entity = crudService.findById(id);
+        if(entity == null) return null;
         return resourceAssembler.toResource(crudService.findById(id));
     }
 
     @Override
     public R save(@Valid E entity) {
+        if(entity == null) return null;
         return resourceAssembler.toResource(crudService.save(entity));
     }
 
     @Override
     public R update(@Valid E entity) {
+        if(entity == null) return null;
         return resourceAssembler.toResource(crudService.update(entity));
     }
 
     @Override
     public R deleteById(K id) {
+        E entity = crudService.deleteById(id);
+        if(entity == null) return null;
         return resourceAssembler.toResource(crudService.deleteById(id));
     }
 }

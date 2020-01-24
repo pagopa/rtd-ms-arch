@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Slf4j
 public abstract class CrudServiceImpl<E extends Serializable, K extends Serializable> implements CrudService<E,K> {
 
-    private final CrudDAO<E,K> crudDAO;
+    protected final CrudDAO<E,K> crudDAO;
 
     protected CrudServiceImpl(CrudDAO<E, K> crudDAO) {
         this.crudDAO = crudDAO;

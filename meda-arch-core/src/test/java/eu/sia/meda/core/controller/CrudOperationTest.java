@@ -35,7 +35,7 @@ import java.util.stream.IntStream;
 
 /** Base test class to test common behavior of {@link CrudController} mocking a {@link CrudOperations} ({@link eu.sia.meda.service.CrudService} or {@link eu.sia.meda.layers.connector.CrudDAO}) */
 public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable>  extends BaseTest {
-    private final Class<R> resourceClazz;
+    protected final Class<R> resourceClazz;
     private final Class<E> entityClazz;
     private final Class<K> keyClazz;
 
@@ -52,14 +52,14 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
     }
 
     @Autowired
-    private MockMvc mvc;
+    protected MockMvc mvc;
     @SuppressWarnings("FieldCanBeLocal")
-    private CrudOperations<E,K> crudOperationsMock;
+    protected CrudOperations<E,K> crudOperationsMock;
     private BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
-    private ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
+    protected ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
 
-    private List<E> entities;
+    protected List<E> entities;
 
     /** To retrieve the number of entities to use as ground set */
     protected int getNTestData(){
@@ -128,7 +128,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         }
     }
 
-    private String transformLinks(String json) {
+    protected String transformLinks(String json) {
         return json.replaceAll("\"_links\":\\{\"self\":\\{([^}]+\\})\\}", "\"links\":[{\"rel\":\"self\",$1]");
     }
 
