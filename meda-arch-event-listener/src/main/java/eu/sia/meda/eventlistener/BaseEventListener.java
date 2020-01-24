@@ -1,8 +1,10 @@
 package eu.sia.meda.eventlistener;
 
 import eu.sia.meda.config.LoggerUtils;
+import eu.sia.meda.core.interceptors.utils.MedaRequestAttributes;
 import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
+import eu.sia.meda.eventlistener.utils.MedaRecordHeaders;
 import eu.sia.meda.service.SessionContextRetriever;
 import java.util.HashMap;
 import java.util.Map;
@@ -407,7 +409,7 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
 		  this.logger.debug(LoggerUtils.formatArchRow("Executing preEventReceived"));  
 	  }
       EventContextHolder.setRecord(record);
-      EventContextHolder.setApplicationContext(this.loadApplciationContext(record));
+      EventContextHolder.setApplicationContext(this.loadApplicationContext(record));
       String sessionId = "";
       if (this.loadSessionContext) {
          EventContextHolder.setSessionContext(this.sessionContextRetriever.loadSessionContext(sessionId));
@@ -453,7 +455,10 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
     * @param record the record
     * @return the application context
     */
-   private ApplicationContext loadApplciationContext(ConsumerRecord<String, byte[]> record) {
-      return new ApplicationContext();
+   private ApplicationContext loadApplicationContext(ConsumerRecord<String, byte[]> record) {
+      ApplicationContext applicationContext = new ApplicationContext();
+      applicationContext.setRequestId(MedaRecordHeaders.getRequestId(record));
+      applicationContext.setOriginApp(MedaRecordHeaders.getOriginApp(record));
+      return applicationContext;
    }
 }

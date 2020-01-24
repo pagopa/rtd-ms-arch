@@ -263,6 +263,7 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends Ba
    protected RestConnectorResponse<RESOURCE> doExecute(RestConnectorRequest<DTO> request) {
       request.addHeader("x-request-id", RequestContextHolder.getApplicationContext().getRequestId());
       request.addHeader("x-transaction-id", RequestContextHolder.getApplicationContext().getTransactionId());
+      request.addHeader("x-originapp", RequestContextHolder.getApplicationContext().getOriginApp());
       RestConnectorResponse<RESOURCE> response = new RestConnectorResponse();
       if (this.mocked) {
          this.mockServer = WireMockRestServiceServer.with(this.rt).baseUrl(this.buildUriString((MultiValueMap)null, request.getParams())).stubs(this.locations).build();

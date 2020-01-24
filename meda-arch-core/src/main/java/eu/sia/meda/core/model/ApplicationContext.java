@@ -16,6 +16,8 @@ public class ApplicationContext {
    /** The request id. */
    private String requestId;
 
+   private String originApp;
+
    /**
     * Inits the with default.
     *
@@ -25,6 +27,7 @@ public class ApplicationContext {
       ApplicationContext applicationContext = new ApplicationContext();
       applicationContext.setRequestId(UUID.randomUUID().toString());
       applicationContext.setTransactionId(UUID.randomUUID().toString());
+      applicationContext.setOriginApp("UNKNOWN");
       return applicationContext;
    }
 
@@ -80,5 +83,14 @@ public class ApplicationContext {
     */
    public void setRequestId(String requestId) {
       this.requestId = requestId;
+   }
+
+
+   public String getOriginApp() {
+      return originApp;
+   }
+
+   public void setOriginApp(String originApp) {
+      this.originApp = originApp;
    }
 }
