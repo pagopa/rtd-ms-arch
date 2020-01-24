@@ -1,6 +1,7 @@
 package eu.sia.meda.event;
 
 import eu.sia.meda.config.LoggerUtils;
+import eu.sia.meda.core.interceptors.RequestContextHolder;
 import eu.sia.meda.event.configuration.ArchEventConfigurationService;
 import eu.sia.meda.event.producer.EventProducer;
 import eu.sia.meda.event.producer.EventProducerImpl;
@@ -9,9 +10,14 @@ import eu.sia.meda.event.response.EventResponse;
 import eu.sia.meda.event.transformer.IEventRequestTransformer;
 import eu.sia.meda.event.transformer.IEventResponseTransformer;
 import eu.sia.meda.layers.connector.BaseConnector;
+
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.logging.log4j.util.Strings;
@@ -145,6 +151,14 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE> extends B
       if (request.getPayload() == null) {
          return new EventResponse(false, "Payload cannot be null");
       } else {
+         Headers headers = request.getHeaders();
+         if(headers==null){
+            headers = new RecordHeaders();
+            request.setHeaders(headers);
+         }
+         headers.add("x-request-id", RequestContextHolder.getApplicationContext().getRequestId().getBytes(StandardCharsets.UTF_8));
+         headers.add("x-originapp", RequestContextHolder.getApplicationContext().getOriginApp().getBytes(StandardCharsets.UTF_8));
+
          String topicTmp;
          if (request.getTopic() != null) {
         	 topicTmp = request.getTopic();

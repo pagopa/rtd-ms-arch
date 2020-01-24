@@ -21,6 +21,7 @@ public class MedaRequestAttributes {
 
 	/** The Constant TRANSACTION_ID. */
 	public static final String TRANSACTION_ID = "x-transaction-id";
+	public static final String ORIGIN_APP = "x-originapp";
 
 	/**
 	 * Gets the request id.
@@ -90,5 +91,40 @@ public class MedaRequestAttributes {
 			request.setAttribute(TRANSACTION_ID, requestId);
 		}
 
+	}
+
+	/**
+	 * Gets the originApp.
+	 *
+	 * @param request the request
+	 * @return the application that orginated the request
+	 */
+	public static String getOriginApp(HttpServletRequest request) {
+		ensureOriginApp(request);
+		return String.valueOf(request.getAttribute(ORIGIN_APP));
+	}
+
+	/**
+	 * Ensure transaction id.
+	 *
+	 * @param request the request
+	 */
+	private static void ensureOriginApp(HttpServletRequest request) {
+		if (request.getAttribute(ORIGIN_APP) == null) {
+			String originApp = shouldGenerateOriginApp(request) ? "UNKNOWN"
+					: request.getHeader(ORIGIN_APP);
+			request.setAttribute(ORIGIN_APP, originApp);
+		}
+
+	}
+
+	/**
+	 * Should generate transaction id.
+	 *
+	 * @param request the request
+	 * @return true, if successful
+	 */
+	public static boolean shouldGenerateOriginApp(HttpServletRequest request) {
+		return Strings.isNullOrEmpty(request.getHeader(ORIGIN_APP));
 	}
 }
