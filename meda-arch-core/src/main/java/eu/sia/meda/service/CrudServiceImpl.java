@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @Slf4j
 public abstract class CrudServiceImpl<E extends Serializable, K extends Serializable> implements CrudService<E,K> {
@@ -30,7 +31,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E findById(@NotNull K id) {
+    public Optional<E> findById(@NotNull K id) {
         return crudDAO.findById(id);
     }
 
@@ -63,7 +64,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E deleteById(@NotNull K id) {
-        return crudDAO.deleteById(id);
+    public void deleteById(@NotNull K id) {
+        crudDAO.deleteById(id);
     }
 }

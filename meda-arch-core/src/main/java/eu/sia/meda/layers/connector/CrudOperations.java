@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Optional;
 
 /** Crud operations on {@link E} entity, having a key of type {@link K} */
 public interface CrudOperations<E extends Serializable, K extends Serializable> {
@@ -15,7 +16,7 @@ public interface CrudOperations<E extends Serializable, K extends Serializable> 
     long count();
 
     /** To find the entity having the provided <i>id</i> */
-    E findById(@NotNull K id);
+    Optional<E> findById(@NotNull K id);
 
     /** To store a new entity */
     E save(@NotNull E entity);
@@ -24,5 +25,5 @@ public interface CrudOperations<E extends Serializable, K extends Serializable> 
     E update(@NotNull E entity);
 
     /** To delete an entity */
-    E deleteById(@NotNull K id);
+    void deleteById(@NotNull K id);
 }

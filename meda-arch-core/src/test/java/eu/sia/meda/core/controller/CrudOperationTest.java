@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -81,9 +82,10 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         crudOperationsMock = getCrudOperationsMock();
         resourceAssembler = getResourceAssemblerSpy();
 
+
+
         BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(new PageImpl<E>(entities, PageRequest.of(0,entities.size()), entities.size()));
-        BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
-        BDDMockito.when(crudOperationsMock.deleteById(Mockito.eq(getId(entities.get(4))))).thenReturn(entities.get(4));
+        BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(Optional.of(entities.get(4)));
         BDDMockito.when(crudOperationsMock.save(Mockito.eq(entities.get(1)))).thenReturn(entities.get(2));
         BDDMockito.when(crudOperationsMock.update(Mockito.eq(entities.get(2)))).thenReturn(entities.get(3));
     }
@@ -192,10 +194,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
-        TestUtils.reflectionEqualsByName(entities.get(4), promotionsResult);
-
-        BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(4)));
+        BDDMockito.verify(getCrudOperationsMock()).deleteById(Mockito.eq(getId(entities.get(4))));
     }
 
 }

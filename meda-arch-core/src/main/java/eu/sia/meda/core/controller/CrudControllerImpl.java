@@ -12,6 +12,7 @@ import org.springframework.hateoas.PagedResources;
 
 import javax.validation.Valid;
 import java.io.Serializable;
+import java.util.Optional;
 
 @Slf4j
 public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<R,E,K> {
@@ -43,10 +44,10 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public R findById(K id) {
-        E entity = crudService.findById(id);
-        if(entity == null) return null;
-        return resourceAssembler.toResource(crudService.findById(id));
+    public Optional<R> findById(K id) {
+        Optional<E> entity = crudService.findById(id);
+        if(!entity.isPresent()) return Optional.empty();
+        return Optional.of(resourceAssembler.toResource(crudService.findById(id).get()));
     }
 
     @Override
@@ -62,9 +63,7 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public R deleteById(K id) {
-        E entity = crudService.deleteById(id);
-        if(entity == null) return null;
-        return resourceAssembler.toResource(crudService.deleteById(id));
+    public void deleteById(K id) {
+        crudService.deleteById(id);
     }
 }
