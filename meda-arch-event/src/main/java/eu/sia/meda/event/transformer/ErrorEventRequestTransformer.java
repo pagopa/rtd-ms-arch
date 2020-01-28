@@ -14,12 +14,15 @@ public class ErrorEventRequestTransformer implements IEventRequestTransformer<by
 
     @Override
     public EventRequest<byte[]> transform(byte[] payload, Object... args) {
-        String errorDesc = args.length>0?(String)args[0]:"null";
+        String errorDesc = args.length>1?(String)args[1]:"null";
         Header errorHeader = new RecordHeader("ERROR_DESC", errorDesc.getBytes(StandardCharsets.UTF_8));
+
+        Headers headers = args.length>0?(Headers)args[0]:new RecordHeaders();
+        headers.add(errorHeader);
 
         EventRequest<byte[]> request = new EventRequest<>();
         request.setPayload(payload);
-        request.setHeaders(new RecordHeaders(new Header[]{errorHeader}));
+        request.setHeaders(headers);
 
         return request;
     }

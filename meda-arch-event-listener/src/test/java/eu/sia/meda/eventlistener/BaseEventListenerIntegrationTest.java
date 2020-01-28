@@ -82,7 +82,7 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
 
         ErrorPublisherService errorPublisherService = getErrorPublisherService();
         if(errorPublisherService != null){
-            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any());
+            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any(), Mockito.any());
         }
     }
 

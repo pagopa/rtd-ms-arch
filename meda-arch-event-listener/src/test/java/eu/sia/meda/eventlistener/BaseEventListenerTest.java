@@ -68,13 +68,13 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         String json = objectMapper.writeValueAsString(getRequestObject());
         template.send(getTopic(), json);
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
         verifyInvocation(json);
 
         ErrorPublisherService errorPublisherService = getErrorPublisherService();
         if(errorPublisherService != null){
-            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any());
+            BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any(), Mockito.any());
         }
     }
 
@@ -86,6 +86,6 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
     /** To check if the invocation occurred */
     protected abstract void verifyInvocation(String json);
 
-    /** If not null, it will check if the {@link ErrorPublisherService#publishErrorEvent(byte[], String)} has not been invoked */
+    /** If not null, it will check if the {@link ErrorPublisherService#publishErrorEvent(byte[], org.apache.kafka.common.header.Headers, String)} has not been invoked */
     protected abstract ErrorPublisherService getErrorPublisherService();
 }
