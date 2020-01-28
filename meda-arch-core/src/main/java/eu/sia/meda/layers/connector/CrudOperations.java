@@ -19,10 +19,10 @@ public interface CrudOperations<E extends Serializable, K extends Serializable> 
     Optional<E> findById(@NotNull K id);
 
     /** To store a new entity */
-    E save(@NotNull E entity);
+    <S extends E> S save(@NotNull S entity);
 
     /** To update an already existent entity */
-    E update(@NotNull E entity);
+    <S extends E> S update(@NotNull S entity);
 
     /** To delete an entity */
     void deleteById(@NotNull K id);

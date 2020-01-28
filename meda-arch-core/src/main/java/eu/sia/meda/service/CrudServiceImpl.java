@@ -36,7 +36,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E save(@NotNull  E entity) {
+    public <S extends E> S save(S entity) {
 
         if(entity instanceof BaseEntity){
 
@@ -55,7 +55,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public E update(@NotNull  E entity) {
+    public <S extends E> S update(@NotNull S entity) {
         if(entity instanceof BaseEntity){
             //TODO: set UPDATE_USER User from context
             ((BaseEntity) entity).setUpdateDate(OffsetDateTime.now());
