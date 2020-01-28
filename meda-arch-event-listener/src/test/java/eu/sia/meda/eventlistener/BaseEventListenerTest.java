@@ -68,7 +68,7 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         String json = objectMapper.writeValueAsString(getRequestObject());
         template.send(getTopic(), json);
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
         verifyInvocation(json);
 
