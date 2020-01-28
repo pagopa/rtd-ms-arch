@@ -3,6 +3,7 @@ package eu.sia.meda.event.service;
 import eu.sia.meda.event.BaseEventConnector;
 import eu.sia.meda.event.transformer.ErrorEventRequestTransformer;
 import eu.sia.meda.event.transformer.SimpleEventResponseTransformer;
+import org.apache.kafka.common.header.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class BaseErrorPublisherService implements ErrorPublisherService {
@@ -16,8 +17,8 @@ public abstract class BaseErrorPublisherService implements ErrorPublisherService
     }
 
     @Override
-    public boolean publishErrorEvent(byte[] message, String errorDesc) {
-        return Boolean.TRUE.equals(getErrorPublisherConnector().call(message, errorEventRequestTransformer, simpleEventResponseTransformer, errorDesc));
+    public boolean publishErrorEvent(byte[] message, Headers headers, String errorDesc) {
+        return Boolean.TRUE.equals(getErrorPublisherConnector().call(message, errorEventRequestTransformer, simpleEventResponseTransformer, headers, errorDesc));
     }
 
     protected abstract BaseEventConnector<byte[], Boolean, byte[], Void> getErrorPublisherConnector();
