@@ -9,16 +9,19 @@ import eu.sia.meda.core.properties.PropertiesManager;
 import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.service.SessionContextRetriever;
+import eu.sia.meda.util.ColoredPrinters;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
 
@@ -63,8 +66,20 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         }
     }
 
+    @Autowired
+    private EmbeddedKafkaBroker kafkaBroker;
+    @Value( "${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+    @Value("${spring.cloud.stream.kafka.binder.zkNodes}")
+    private String zkNodes;
+
     @Test
     public void test() throws JsonProcessingException, InterruptedException, UnsupportedEncodingException {
+        ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
+        ColoredPrinters.PRINT_PURPLE.println(String.format("%s - %s", bootstrapServers, zkNodes));
+        ColoredPrinters.PRINT_GREEN.println("Waiting to allow kafka starting");
+        Thread.sleep(2000);
+
         String json = objectMapper.writeValueAsString(getRequestObject());
         template.send(getTopic(), json);
 

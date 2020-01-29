@@ -11,6 +11,7 @@ import eu.sia.meda.event.transformer.IEventRequestTransformer;
 import eu.sia.meda.event.transformer.IEventResponseTransformer;
 import eu.sia.meda.event.transformer.SimpleEventRequestTransformer;
 import eu.sia.meda.event.transformer.SimpleEventResponseTransformer;
+import eu.sia.meda.util.ColoredPrinters;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -19,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -56,8 +58,18 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
     @Autowired
     private SimpleEventResponseTransformer simpleEventResponseTransformer;
 
+    @Value( "${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+    @Value("${spring.cloud.stream.kafka.binder.zkNodes}")
+    private String zkNodes;
+
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
+        ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
+        ColoredPrinters.PRINT_PURPLE.println(String.format("%s - %s", bootstrapServers, zkNodes));
+        ColoredPrinters.PRINT_GREEN.println("Waiting to allow kafka starting");
+        Thread.sleep(2000);
+
         CONNECTOR eventConnector = getEventConnector();
         INPUT request = getRequestObject();
         IEventRequestTransformer<INPUT,DTO> requestTransformer = getRequestTransformer();
