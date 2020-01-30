@@ -75,7 +75,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    protected void findAll(){
+    public void findAll(){
         List<E> list = getDao().findAll();
         Assert.assertNotNull(list);
     }
@@ -83,7 +83,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    protected void findAllPageable() throws IllegalAccessException, InstantiationException {
+    public void findAllPageable() throws IllegalAccessException, InstantiationException {
 
         PageRequest pageable = PageRequest.of(0,1, Sort.by(this.getIdName()));
         getDao().save(getEntityToSave());
