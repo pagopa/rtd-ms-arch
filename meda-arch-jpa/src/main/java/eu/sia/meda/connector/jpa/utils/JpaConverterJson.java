@@ -2,7 +2,7 @@ package eu.sia.meda.connector.jpa.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import eu.sia.meda.config.ArchConfiguration;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -14,8 +14,7 @@ import java.io.IOException;
 @Converter(autoApply = false)
 public class JpaConverterJson implements AttributeConverter<Object, String> {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
 
     @Override
     public String convertToDatabaseColumn(Object object) {

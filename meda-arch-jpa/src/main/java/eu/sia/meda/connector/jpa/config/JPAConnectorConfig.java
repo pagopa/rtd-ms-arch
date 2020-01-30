@@ -118,12 +118,12 @@ public class JPAConnectorConfig {
       jpaProperties.put("hibernate.order_updates", jpaConnection.isOrderUpdates());
       jpaProperties.put("hibernate.jdbc.batch_versioned_data", jpaConnection.isBatchVersionedData());
       jpaProperties.put("hibernate.id.new_generator_mappings", jpaConnection.isNewGeneratorMappings());
-      if (jpaConnection.isMocked()) {
-         log.warn(LoggerUtils.formatArchRow("No JPA configuration found. H2 in-memory DataBase pulled up"));
-         jpaProperties.put("hibernate.hbm2ddl.auto", "none");
-      } else {
-         jpaProperties.put("hibernate.hbm2ddl.auto", jpaConnection.getHbm2ddl());
-      }
+//      if (jpaConnection.isMocked()) {
+//         log.warn(LoggerUtils.formatArchRow("No JPA configuration found. H2 in-memory DataBase pulled up"));
+//         jpaProperties.put("hibernate.hbm2ddl.auto", "none");
+//      } else {
+         jpaProperties.put("hibernate.hbm2ddl.auto", "create-only");//jpaConnection.getHbm2ddl());
+//      }
 
       LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
       entityManagerFactoryBean.setDataSource(this.jpaDataSource());
