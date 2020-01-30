@@ -42,6 +42,13 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         return "id";
     }
 
+    /**
+     * This function has to return a valid E object with all right parameters
+     * according to entity type
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     protected E getEntity() throws IllegalAccessException, InstantiationException {
         E e = entityClass.newInstance();
         this.setId(e, this.getStoredId());
