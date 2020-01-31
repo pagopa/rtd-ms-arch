@@ -5,6 +5,7 @@ import eu.sia.meda.connector.jpa.config.ArchJPAConfigurationService;
 import eu.sia.meda.connector.jpa.config.JPAConnectorConfig;
 import eu.sia.meda.connector.jpa.model.JsonConverterEntity;
 import eu.sia.meda.core.properties.PropertiesManager;
+import eu.sia.meda.domain.model.be4fe.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -48,10 +49,9 @@ public class JpaConverterJsonTest extends BaseSpringTest {
         JsonConverterEntity entity = new JsonConverterEntity();
         entity.setId(1);
 
-        List<String> list = new ArrayList<>();
-        list.add("String1");
-        list.add("String2");
-        entity.setObj(list);
+        User u = new User();
+        u.setName("user");
+        entity.setObj(u);
 
         entityManager.persist(entity);
 
@@ -61,14 +61,16 @@ public class JpaConverterJsonTest extends BaseSpringTest {
         JsonConverterEntity entityfound = entityManager.find(JsonConverterEntity.class, entity.getId());
 
         Assert.assertNotNull(entityfound);
-        Assert.assertEquals(entity, entityfound);
+        Assert.assertEquals(entity.getId(), entityfound.getId());
 
         List<String> list2 = entityManager.createNativeQuery("SELECT OBJ FROM TESTJSONCONV").getResultList();
 
         Assert.assertNotNull(list2);
         Assert.assertEquals(1, list2.size());
         Assert.assertNotNull(list2.get(0));
-        Assert.assertEquals("[\"String1\",\"String2\"]", list2.get(0));
+        Assert.assertEquals("["+User.class.getName()+"]{\"name\":\"user\"}", list2.get(0));
+
+        //TODO: Testare il campo a null, cosa succede?
 
     }
 }
