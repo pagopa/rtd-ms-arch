@@ -126,7 +126,7 @@ public final class TestUtils {
                             System.out.printf("Mocking object %s%n", type);
                             m.invoke(o, mockInstance(type.newInstance(), bias));
                         } catch (Exception e) {
-                            System.out.println(String.format("[WARNING] Cannot mock %s: %s", type.getName(), e.getMessage()));
+                            System.out.println(String.format("[WARNING] Cannot mock using setter %s accepting type %s: %s - %s", m.getName(), type.getName(), e.getClass().getName(), e.getMessage()));
                         }
                     }
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
