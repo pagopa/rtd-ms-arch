@@ -12,6 +12,7 @@ import eu.sia.meda.core.properties.PropertiesManager;
 import eu.sia.meda.layers.connector.http.HttpConnectionPoolSweeperScheduler;
 import eu.sia.meda.rest.configuration.ArchRestConfigurationService;
 import eu.sia.meda.tracing.config.TracingConfiguration;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -25,5 +26,10 @@ public class BaseRestConnectorTest extends BaseSpringTest {
         appContext.setRequestId("REQUEST_ID");
 
         BaseContextHolder.setApplicationContext(appContext);
+    }
+
+    @AfterClass
+    public static void cleanContext(){
+        BaseContextHolder.clear();
     }
 }
