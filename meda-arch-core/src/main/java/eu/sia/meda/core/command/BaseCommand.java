@@ -293,17 +293,4 @@ public abstract class BaseCommand<R> implements Command<R> {
       this.callInTransaction(step, DUMMY_ROLLBACK_STEP, transactionId);
    }
 
-   /**
-    * Switch call.
-    *
-    * @param <F> the generic type
-    * @param copyCall the copy call
-    * @param coreCall the core call
-    * @param semaphoreKey the semaphore key
-    * @param acceptableThreshold the acceptable threshold
-    * @return the f
-    */
-   protected <F> F switchCall(Supplier<F> copyCall, Supplier<F> coreCall, String semaphoreKey, long acceptableThreshold) {
-      return this.copySwitcher.performSwitch(copyCall, coreCall, semaphoreKey, acceptableThreshold);
-   }
 }
