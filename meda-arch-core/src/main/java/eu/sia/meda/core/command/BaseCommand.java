@@ -8,7 +8,6 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.exceptions.MedaForbiddenException;
 import eu.sia.meda.exceptions.MedaRollbackException;
 import eu.sia.meda.exceptions.MedaTransactionException;
-import eu.sia.meda.switcher.CopySwitcherSemaphoreRegistry;
 import eu.sia.meda.transactions.MedaTransactionManager;
 import eu.sia.meda.transactions.TransactionStep;
 import java.util.UUID;
@@ -48,10 +47,7 @@ public abstract class BaseCommand<R> implements Command<R> {
    /** The async utils. */
    @Autowired
    protected AsyncUtils asyncUtils;
-   
-   /** The copy switcher. */
-   @Autowired
-   private CopySwitcherSemaphoreRegistry copySwitcher;
+ 
 
    /**
     * Can execute.
@@ -126,7 +122,7 @@ public abstract class BaseCommand<R> implements Command<R> {
     */
    @Async
    public <F> CompletableFuture<F> callAsyncService(Supplier<F> t) {
-      return this.asyncUtils.callAsyncService(t, BaseContextHolder.getSIAContext(), BaseContextHolder.getApplicationContext(), BaseContextHolder.getAuthorizationContext(), BaseContextHolder.getErrorContext(), BaseContextHolder.getSessionContext(), RequestContextHolder.getRequest());
+      return this.asyncUtils.callAsyncService(t, BaseContextHolder.getApplicationContext(), BaseContextHolder.getAuthorizationContext(), BaseContextHolder.getErrorContext(), BaseContextHolder.getSessionContext(), RequestContextHolder.getRequest());
    }
 
    /**

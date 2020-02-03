@@ -38,17 +38,13 @@ public class AsyncUtils {
     * @return the completable future
     */
    @Async
-   public <F> CompletableFuture<F> callAsyncService(Supplier<F> supplier, SIAContext siaContext, ApplicationContext applicationContext, AuthorizationContext authorizationContext, ErrorContext errorContext, BaseContext sessionContext, HttpServletRequest request) {
+   public <F> CompletableFuture<F> callAsyncService(Supplier<F> supplier, ApplicationContext applicationContext, AuthorizationContext authorizationContext, ErrorContext errorContext, BaseContext sessionContext, HttpServletRequest request) {
       if (applicationContext != null) {
          BaseContextHolder.forceSetApplicationContext(applicationContext);
       }
 
       if (authorizationContext != null) {
          BaseContextHolder.forceSetAuthorizationContext(authorizationContext);
-      }
-
-      if (siaContext != null) {
-         BaseContextHolder.forceSetSiaContext(siaContext);
       }
 
       if (errorContext != null) {

@@ -12,7 +12,6 @@ import org.mockito.Mock;
 
 import eu.sia.meda.async.util.AsyncUtils;
 import eu.sia.meda.core.model.ApplicationContext;
-import eu.sia.meda.switcher.CopySwitcherSemaphoreRegistry;
 
 class BaseCommandTest {
 
@@ -20,8 +19,6 @@ class BaseCommandTest {
 	private ApplicationContext mockApplicationContext;
 	@Mock
 	private AsyncUtils mockAsyncUtils;
-	@Mock
-	private CopySwitcherSemaphoreRegistry mockCopySwitcher;
 
 	@Mock
 	private BaseCommand<String> baseCommandUnderTest;
