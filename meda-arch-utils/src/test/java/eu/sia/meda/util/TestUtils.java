@@ -152,7 +152,7 @@ public final class TestUtils {
                 if (m1.getName().startsWith("get") && m1.getParameterCount() == 0 && !"getClass".equals(m1.getName())) {
                     Method m2 = null;
                     try {
-                        m2 = Arrays.stream(o2.getClass().getMethods()).filter(m -> m.getName().equalsIgnoreCase(m1.getName())).findFirst().orElse(null);
+                        m2 = Arrays.stream(o2.getClass().getMethods()).filter(m -> m.getName().equalsIgnoreCase(m1.getName()) && m.getParameterCount() == m1.getParameterCount()).findFirst().orElse(null);
 
                         if (m2 == null) {
                             throw new NoSuchMethodException();

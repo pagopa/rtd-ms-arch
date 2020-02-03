@@ -26,9 +26,9 @@ public abstract class BaseContextHolder {
    /** The Constant authorizationContext. */
    private static final InheritableThreadLocal<AuthorizationContext> authorizationContext = new InheritableThreadLocal<>();
    
-   /** The Constant siaContext. */
-   private static final InheritableThreadLocal<SIAContext> siaContext = new InheritableThreadLocal<>();
-   
+//   /** The Constant siaContext. */
+//   private static final InheritableThreadLocal<SIAContext> siaContext = new InheritableThreadLocal<>();
+//   
    /** The Constant errorContext. */
    private static final InheritableThreadLocal<ErrorContext> errorContext = new InheritableThreadLocal<>();
 
@@ -151,40 +151,40 @@ public abstract class BaseContextHolder {
       authorizationContext.set(authorization);
    }
 
-   /**
-    * Sets the sia context.
-    *
-    * @param siaCont the new sia context
-    */
-   public static void setSiaContext(SIAContext siaCont) {
-      Objects.requireNonNull(siaCont, "SIAContext cannot be null");
-      if (siaContext.get() != null) {
-         throw new IllegalStateException("SIAContext already initialized");
-      } else {
-         log.debug("Thread {}-{}, init SIAContext variable", Thread.currentThread().getName(), Thread.currentThread().getId());
-         siaContext.set(siaCont);
-      }
-   }
+//   /**
+//    * Sets the sia context.
+//    *
+//    * @param siaCont the new sia context
+//    */
+//   public static void setSiaContext(SIAContext siaCont) {
+//      Objects.requireNonNull(siaCont, "SIAContext cannot be null");
+//      if (siaContext.get() != null) {
+//         throw new IllegalStateException("SIAContext already initialized");
+//      } else {
+//         log.debug("Thread {}-{}, init SIAContext variable", Thread.currentThread().getName(), Thread.currentThread().getId());
+//         siaContext.set(siaCont);
+//      }
+//   }
 
-   /**
-    * Force set sia context.
-    *
-    * @param siaCont the sia cont
-    */
-   public static void forceSetSiaContext(SIAContext siaCont) {
-      Objects.requireNonNull(siaCont, "SIAContext cannot be null");
-      log.debug("Forcing setting of siaContext in Thread {}-{} ", Thread.currentThread().getName(), Thread.currentThread().getId());
-      siaContext.set(siaCont);
-   }
+//   /**
+//    * Force set sia context.
+//    *
+//    * @param siaCont the sia cont
+//    */
+//   public static void forceSetSiaContext(SIAContext siaCont) {
+//      Objects.requireNonNull(siaCont, "SIAContext cannot be null");
+//      log.debug("Forcing setting of siaContext in Thread {}-{} ", Thread.currentThread().getName(), Thread.currentThread().getId());
+//      siaContext.set(siaCont);
+//   }
 
-   /**
-    * Gets the SIA context.
-    *
-    * @return the SIA context
-    */
-   public static SIAContext getSIAContext() {
-      return siaContext.get();
-   }
+//   /**
+//    * Gets the SIA context.
+//    *
+//    * @return the SIA context
+//    */
+//   public static SIAContext getSIAContext() {
+//      return siaContext.get();
+//   }
 
    /**
     * Sets the error context.
@@ -245,11 +245,11 @@ public abstract class BaseContextHolder {
          log.warn("Swallowed error while clearing AuthorizationContext", var3);
       }
 
-      try {
-         siaContext.remove();
-      } catch (Exception var2) {
-         log.warn("Swallowed error while clearing SIA Context", var2);
-      }
+//      try {
+//         siaContext.remove();
+//      } catch (Exception var2) {
+//         log.warn("Swallowed error while clearing SIA Context", var2);
+//      }
 
       try {
          errorContext.remove();

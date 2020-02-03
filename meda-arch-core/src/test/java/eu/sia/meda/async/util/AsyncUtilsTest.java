@@ -18,8 +18,6 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.core.model.AuthorizationContext;
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.core.model.ErrorContext;
-import eu.sia.meda.core.model.SIAContext;
-import eu.sia.meda.core.model.siaHeaders.SIAWebservicesHeaderType;
 
 class AsyncUtilsTest {
 
@@ -34,8 +32,6 @@ class AsyncUtilsTest {
     void testCallAsyncService() {
         // Setup
         final Supplier<String> supplier = () -> {return "test";};
-        final SIAContext siaContext = new SIAContext();
-        siaContext.setHeader(new SIAWebservicesHeaderType());
 
         final ApplicationContext applicationContext = new ApplicationContext();
         final AuthorizationContext authorizationContext = new AuthorizationContext();
@@ -54,7 +50,7 @@ class AsyncUtilsTest {
         final CompletableFuture<String> expectedResult = new CompletableFuture<>();
 
         // Run the test
-        final CompletableFuture<String> result = asyncUtilsUnderTest.callAsyncService(supplier, siaContext, applicationContext, authorizationContext, errorContext, sessionContext, request);
+        final CompletableFuture<String> result = asyncUtilsUnderTest.callAsyncService(supplier, applicationContext, authorizationContext, errorContext, sessionContext, request);
 
         // Verify the results
         assertNotNull(result);
