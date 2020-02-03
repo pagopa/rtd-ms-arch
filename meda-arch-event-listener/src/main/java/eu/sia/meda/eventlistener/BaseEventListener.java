@@ -221,7 +221,7 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
     * @return the listener container
     */
    private ConcurrentMessageListenerContainer getListenerContainer() {
-      Map<String, Object> configProps = new HashMap();
+      Map<String, Object> configProps = new HashMap<>();
       configProps.put("bootstrap.servers", this.bootstrapServers);
       configProps.put("group.id", this.groupId);
       configProps.put("key.deserializer", StringDeserializer.class);
@@ -318,7 +318,7 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
          configProps.put("session.timeout.ms", this.sessionTimeoutMs);
       }
 
-      DefaultKafkaConsumerFactory consumerFactory = new DefaultKafkaConsumerFactory(configProps);
+      DefaultKafkaConsumerFactory consumerFactory = new DefaultKafkaConsumerFactory<>(configProps);
       ContainerProperties containerProperties = new ContainerProperties(this.topic);
       containerProperties.setMessageListener(this);
       if (Boolean.FALSE.equals(this.enableAutoCommit)) {
@@ -328,7 +328,7 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
          containerProperties.setAckMode(AckMode.RECORD);
       }
 
-      ConcurrentMessageListenerContainer container = new ConcurrentMessageListenerContainer(consumerFactory, containerProperties);
+      ConcurrentMessageListenerContainer container = new ConcurrentMessageListenerContainer<>(consumerFactory, containerProperties);
       if (this.concurrency != null) {
          container.setConcurrency(this.concurrency);
       }
