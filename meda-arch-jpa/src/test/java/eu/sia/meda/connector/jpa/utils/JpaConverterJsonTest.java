@@ -70,7 +70,18 @@ public class JpaConverterJsonTest extends BaseSpringTest {
         Assert.assertNotNull(list2.get(0));
         Assert.assertEquals("["+User.class.getName()+"]{\"name\":\"user\"}", list2.get(0));
 
-        //TODO: Testare il campo a null, cosa succede?
+        JsonConverterEntity entity2 = new JsonConverterEntity();
+        entity2.setId(2);
+
+        entityManager.persist(entity2);
+        entityManager.flush();
+        entityManager.clear();
+
+        List<String> list3 = entityManager.createNativeQuery("SELECT OBJ FROM TESTJSONCONV WHERE ID=2").getResultList();
+
+        Assert.assertNotNull(list3);
+        Assert.assertEquals(1, list3.size());
+        Assert.assertEquals(null, list3.get(0));
 
     }
 }
