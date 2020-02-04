@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -48,8 +49,16 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     @Autowired
     private KafkaTemplate<String, String> template;
 
+    @Value( "${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+    @Value("${spring.cloud.stream.kafka.binder.zkNodes}")
+    private String zkNodes;
+
     @Test
-    public void test() throws JsonProcessingException, InterruptedException {
+    public void test() throws JsonProcessingException {
+        ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
+        ColoredPrinters.PRINT_PURPLE.println(String.format("Bootstrap %s - ZooKeeper %s", bootstrapServers, zkNodes));
+
         ColoredPrinters.PRINT_GREEN.println("Configuring embedded Kafka...");
         kafkaBroker.addTopics(getTopicPublished());
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(getConsumerGroupId(), "true", kafkaBroker);

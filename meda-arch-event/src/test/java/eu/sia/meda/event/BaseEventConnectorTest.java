@@ -44,9 +44,9 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
 
     @BeforeClass
     public static void configLevelLogs() {
-        ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
-        ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
-        ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
+        //((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
+        //((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
+        //((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
     }
 
     @Autowired
@@ -66,9 +66,7 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
     @Test
     public void test() throws InterruptedException {
         ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
-        ColoredPrinters.PRINT_PURPLE.println(String.format("%s - %s", bootstrapServers, zkNodes));
-        ColoredPrinters.PRINT_GREEN.println("Waiting to allow kafka starting");
-        Thread.sleep(2000);
+        ColoredPrinters.PRINT_PURPLE.println(String.format("Bootstrap %s - ZooKeeper %s", bootstrapServers, zkNodes));
 
         CONNECTOR eventConnector = getEventConnector();
         INPUT request = getRequestObject();
@@ -87,6 +85,8 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopic());
 
         OUTPUT result = eventConnector.call(request, requestTransformer, responseTransformer);
+        consumer.seekToBeginning(consumer.assignment());
+        ColoredPrinters.PRINT_GREEN.println("Start polling");
         ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(10000));
 
         checkResult(result);

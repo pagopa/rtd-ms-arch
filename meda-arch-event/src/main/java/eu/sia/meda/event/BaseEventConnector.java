@@ -166,6 +166,10 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE> extends B
         	 topicTmp = this.topic;
          }
 
+         if(logger.isDebugEnabled()){
+            logger.debug(String.format("Sending message on topic '%s' towards bootstrap servers '%s'", topicTmp, this.bootstrapServers));
+         }
+
          return new EventResponse(true, "Success", this.producer.send(topicTmp, request.getKey(), request.getPayload(), request.getHeaders()));
       }
    }

@@ -76,7 +76,7 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
     @Test
     public void test() throws JsonProcessingException, InterruptedException, UnsupportedEncodingException {
         ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
-        ColoredPrinters.PRINT_PURPLE.println(String.format("%s - %s", bootstrapServers, zkNodes));
+        ColoredPrinters.PRINT_PURPLE.println(String.format("Bootstrap %s - ZooKeeper %s", bootstrapServers, zkNodes));
         ColoredPrinters.PRINT_GREEN.println("Waiting to allow kafka starting");
         Thread.sleep(2000);
 
