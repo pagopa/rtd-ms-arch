@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * This class helps to convert some object to Json string
  */
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class JpaConverterJson implements AttributeConverter<Object, String> {
 
     private ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
