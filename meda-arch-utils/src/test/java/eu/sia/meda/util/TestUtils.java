@@ -105,6 +105,8 @@ public final class TestUtils {
                         m.invoke(o, (float) i++);
                     } else if (type.isAssignableFrom(Double.class) || type.isAssignableFrom(double.class)) {
                         m.invoke(o, (double) i++);
+                    } else if (type.isAssignableFrom(Boolean.class) || type.isAssignableFrom(boolean.class)) {
+                        m.invoke(o, i%2==0);
                     } else if (type.isAssignableFrom(BigInteger.class)) {
                         m.invoke(o, BigInteger.valueOf(i++));
                     } else if (type.isAssignableFrom(BigDecimal.class)) {
