@@ -159,6 +159,9 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
     	         this.logger.debug(LoggerUtils.formatArchRow("Configuration loaded for connector: {}"), this.getClass().getSimpleName());    		  
     	  }
          this.configure(eventConfiguration);
+         if(this.logger.isDebugEnabled()) {
+            this.logger.debug(LoggerUtils.formatArchRow("Configured to listen on topic '{}' of the bootstrap server '{}'"), this.topic, this.bootstrapServers);
+         }
       }
    }
 
