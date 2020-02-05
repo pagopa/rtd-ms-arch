@@ -83,6 +83,7 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
         template.send(record);
 
         ColoredPrinters.PRINT_GREEN.println("Waiting for a response...");
+        consumer.seekToBeginning(consumer.assignment());
         ConsumerRecords<String,String> published = consumer.poll(getTimeout());
 
         ColoredPrinters.PRINT_GREEN.println("Checking results...");
