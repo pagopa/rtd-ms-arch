@@ -18,19 +18,19 @@ public class JpaConverterJson implements AttributeConverter<Object, String> {
 
     private ObjectMapper objectMapper = new ArchConfiguration().objectMapper();
 
-    private static Pattern pattern = Pattern.compile("^\\[([^]]*)]");
+    private static Pattern pattern = Pattern.compile("^\\(([^)]*)\\)");
 
     @Override
     public String convertToDatabaseColumn(Object object) {
         try {
-            return object == null ? null : String.format("[%s]%s", object.getClass().getName(), objectMapper.writeValueAsString(object));
+            return object == null ? null : String.format("(%s)%s", object.getClass().getName(), objectMapper.writeValueAsString(object));
         } catch (JsonProcessingException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
 
     @Override
-    public Object convertToEntityAttribute(String jsonString) {
+        public Object convertToEntityAttribute(String jsonString) {
         try {
             if(jsonString != null && !jsonString.equals("")){
                 Matcher matcher = pattern.matcher(jsonString);
