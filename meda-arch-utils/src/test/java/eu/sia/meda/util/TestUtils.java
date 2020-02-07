@@ -1,6 +1,8 @@
 package eu.sia.meda.util;
 
+import com.google.common.base.Strings;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.springframework.hateoas.Link;
 
@@ -144,14 +146,19 @@ public final class TestUtils {
     /**
      * It will compare object having same getters name and will return the not compared fields
      */
-    public static List<Method> reflectionEqualsByName(Object o1, Object o2) {
+    public static List<Method> reflectionEqualsByName(Object o1, Object o2, String... ignoredFields) {
+        Set<String> ignoredFieldSet = new HashSet<>(Arrays.asList(ignoredFields));
         Assert.assertFalse(String.format("Both objects have to be null or not null:%n%s%n%s", o1 == null ? "null" : o1.getClass().getName(), o2 == null ? "null" : o2.getClass().getName()), o1 == null ^ o2 == null);
 
         List<Method> checked = new ArrayList<>();
 
         if (o1 != null) {
             for (Method m1 : o1.getClass().getMethods()) {
-                if (m1.getName().startsWith("get") && m1.getParameterCount() == 0 && !"getClass".equals(m1.getName())) {
+                if ((m1.getName().startsWith("get")||m1.getName().startsWith("is")) && m1.getParameterCount() == 0 && !"getClass".equals(m1.getName())) {
+                    String fieldName = StringUtils.uncapitalize(m1.getName().replaceFirst("^(?:get|is)",""));
+                    if(ignoredFieldSet.contains(fieldName)){
+                        continue;
+                    }
                     Method m2 = null;
                     try {
                         m2 = Arrays.stream(o2.getClass().getMethods()).filter(m -> m.getName().equalsIgnoreCase(m1.getName()) && m.getParameterCount() == m1.getParameterCount()).findFirst().orElse(null);
