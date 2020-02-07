@@ -9,35 +9,58 @@ import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.domain.model.BaseEntity;
 import eu.sia.meda.util.ReflectionUtils;
 import eu.sia.meda.util.TestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.*;
 
-public abstract class BaseResourceAssemblerTest<E extends BaseResourceAssemblerSupport<K, F>, F extends BaseResource, K extends BaseEntity> extends BaseTest {
+public abstract class BaseResourceAssemblerTest<A extends BaseResourceAssemblerSupport<E, R>, R extends BaseResource, E extends BaseEntity> extends BaseTest {
 
     protected ObjectMapper objectMapperStrict;
     protected ObjectMapper objectMapperBase;
-    private Class<E> resourceAssemblerClass;
-    private Class<F> resourceClass;
-    private Class<K> entityClass;
+    private Class<A> resourceAssemblerClass;
+    private Class<R> resourceClass;
+    private Class<E> entityClass;
+
+    private static List<String> excludedTechFields = Arrays.asList(
+            "insertDate",
+            "insertUser",
+            "updateDate",
+            "updateUser",
+            "enabled"
+    );
+
+    private final Set<String> excludedFields;
 
     public BaseResourceAssemblerTest() {
 
         ArchConfiguration archConfiguration = new ArchConfiguration();
         this.objectMapperStrict = archConfiguration.objectMapperStrict();
         this.objectMapperBase = archConfiguration.objectMapper();
-        this.entityClass = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 2);
-        this.resourceClass = (Class<F>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
-        this.resourceAssemblerClass = (Class<E>) ReflectionUtils.getGenericTypeClass(getClass(), 0);
+        //noinspection unchecked
+        this.entityClass = (Class<E>) ReflectionUtils.getGenericTypeClass(getClass(), 2);
+        //noinspection unchecked
+        this.resourceClass = (Class<R>) ReflectionUtils.getGenericTypeClass(getClass(), 1);
+        //noinspection unchecked
+        this.resourceAssemblerClass = (Class<A>) ReflectionUtils.getGenericTypeClass(getClass(), 0);
+
+        excludedFields = new HashSet<>(excludedTechFields);
+        excludedFields.addAll(getExcludedFields());
     }
 
 
     @Test
     public void toResourceTest() throws IOException, IllegalAccessException, InstantiationException {
-
-        K event = TestUtils.mockInstance(this.entityClass.newInstance());
-        F resource = this.resourceAssemblerClass.newInstance().toResource(event);
+        E entity = buildEntity();
+        org.springframework.util.ReflectionUtils.doWithFields(entityClass,
+                f -> {
+                    f.setAccessible(true);
+                    Assert.assertNotNull("The field "+f.getName()+" of the input entity is null! Populate it in order to check the correct copy into resource, or add it to ignored fields", f.get(entity));
+                },
+                f -> !excludedFields.contains(f.getName()));
+        R resource = getResourceAssembler().toResource(entity);
 
         String resourceStr = this.objectMapperStrict.writeValueAsString(resource);
 
@@ -46,19 +69,36 @@ public abstract class BaseResourceAssemblerTest<E extends BaseResourceAssemblerS
         Assert.assertNotNull(resource.getLinks());
 
         String outputStr = this.getJsonEntity(resource);
-        Assert.assertEquals(resourceStr, outputStr);
 
-        F eventResourceDeserialized = this.objectMapperStrict.readValue(outputStr, this.resourceClass);
-        TestUtils.reflectionEqualsByName(resource, eventResourceDeserialized);
+        if (StringUtils.isNotEmpty(outputStr)) {
+            R eventResourceDeserialized = this.objectMapperStrict.readValue(outputStr, this.resourceClass);
+            TestUtils.reflectionEqualsByName(resource, eventResourceDeserialized);
+        }
 
-        K eventEntity = this.objectMapperBase.readValue(resourceStr, this.entityClass);
-        TestUtils.reflectionEqualsByName(event, eventEntity);
+        E deserializedAsEntity = this.objectMapperBase.readValue(resourceStr, this.entityClass);
+        checkEntity(entity, deserializedAsEntity);
     }
 
-    /**
-     * Override to build the String json of the Resouce
-     * @param resource
-     * @return
-     */
-    public abstract String getJsonEntity(F resource) throws JsonProcessingException;
+    /** To check the provided entity with the result of the deserialization of the resource obtained from it */
+    protected void checkEntity(E entity, E deserializedAsEntity) {
+        TestUtils.reflectionEqualsByName(entity, deserializedAsEntity, excludedFields.toArray(new String[0]));
+    }
+
+    protected A getResourceAssembler() throws InstantiationException, IllegalAccessException {
+        return this.resourceAssemblerClass.newInstance();
+    }
+
+    protected E buildEntity() throws InstantiationException, IllegalAccessException {
+        return TestUtils.mockInstance(this.entityClass.newInstance());
+    }
+
+    /** Not mandatory check to verify that the resource could be successfully deserialized */
+    protected String getJsonEntity(R resource) throws JsonProcessingException {
+        return null;
+    }
+
+    /** Field to ignore during check */
+    protected Set<String> getExcludedFields(){
+        return Collections.emptySet();
+    }
 }
