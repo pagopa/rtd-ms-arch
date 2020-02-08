@@ -126,8 +126,12 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         Iterator<R> resultIterator = pageResult.iterator();
         for(int i=0;i<entities.size();i++){
             BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(i)));
-            TestUtils.reflectionEqualsByName(entities.get(i), resultIterator.next());
+            compare(entities.get(i), resultIterator.next());
         }
+    }
+
+    protected void compare(E entity, R resource){
+        TestUtils.reflectionEqualsByName(entity, resource);
     }
 
     protected String transformLinks(String json) {
@@ -148,7 +152,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andReturn();
 
         R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
-        TestUtils.reflectionEqualsByName(entities.get(4), promotionsResult);
+        compare(entities.get(4), promotionsResult);
 
         BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(4)));
     }
@@ -164,7 +168,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andReturn();
 
         R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
-        TestUtils.reflectionEqualsByName(entities.get(2), promotionsResult);
+        compare(entities.get(2), promotionsResult);
 
         BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(2)));
     }
@@ -180,7 +184,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
                 .andReturn();
 
         R promotionsResult = objectMapper.readValue(transformLinks(result.getResponse().getContentAsString()), resourceClazz);
-        TestUtils.reflectionEqualsByName(entities.get(3), promotionsResult);
+        compare(entities.get(3), promotionsResult);
 
         BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(3)));
     }
