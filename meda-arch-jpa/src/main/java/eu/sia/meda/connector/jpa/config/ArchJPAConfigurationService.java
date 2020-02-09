@@ -127,6 +127,9 @@ public class ArchJPAConfigurationService {
       
       /** The entity packages. */
       private List<String> entityPackages;
+      
+      /** The non contextual creation property - for lob creation*/
+      private String lobNonCotextualCreation;
 
       /**
        * Checks if is mocked.
@@ -451,5 +454,15 @@ public class ArchJPAConfigurationService {
       public void setEntityPackages(List<String> entityPackages) {
          this.entityPackages = entityPackages;
       }
+
+	public String getLobNonCotextualCreation() {
+		return lobNonCotextualCreation;
+	}
+
+	public void setLobNonCotextualCreation(String lobNonCotextualCreation) {
+		this.lobNonCotextualCreation = lobNonCotextualCreation;
+	}
+
+
    }
 }
