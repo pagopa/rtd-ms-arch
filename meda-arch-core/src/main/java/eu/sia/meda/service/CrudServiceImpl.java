@@ -2,6 +2,7 @@ package eu.sia.meda.service;
 
 import eu.sia.meda.domain.model.BaseEntity;
 import eu.sia.meda.layers.connector.CrudDAO;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,8 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public Page<E> findAll(Pageable pageable) {
-        return crudDAO.findAll(pageable);
+    public Page<E> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable) {
+        return crudDAO.findAll(criteriaQuery, pageable);
     }
 
     @Override

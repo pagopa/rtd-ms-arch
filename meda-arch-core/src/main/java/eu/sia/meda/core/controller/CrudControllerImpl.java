@@ -2,6 +2,7 @@ package eu.sia.meda.core.controller;
 
 import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
 import eu.sia.meda.core.resource.BaseResource;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import eu.sia.meda.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public PagedResources<R> findAll(Pageable pageable) {
-        Page<E> result = crudService.findAll(pageable);
+    public PagedResources<R> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable) {
+        Page<E> result = crudService.findAll(criteriaQuery, pageable);
         if(result == null){
             result = Page.empty();
         }
@@ -46,8 +47,12 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     @Override
     public Optional<R> findById(K id) {
         Optional<E> entity = crudService.findById(id);
-        if(!entity.isPresent()) return Optional.empty();
-        return Optional.of(resourceAssembler.toResource(crudService.findById(id).get()));
+        if(!entity.isPresent()){
+            return Optional.empty();
+        }
+        else{
+            return Optional.of(resourceAssembler.toResource(crudService.findById(id).get()));
+        }
     }
 
     @Override

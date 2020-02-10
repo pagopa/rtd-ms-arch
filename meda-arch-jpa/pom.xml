@@ -62,5 +62,13 @@
             <artifactId>h2</artifactId>
             <version>1.4.196</version>
         </dependency>
+
+        <dependency>
+            <groupId>eu.sia.meda</groupId>
+            <artifactId>meda-arch-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,9 @@
 package eu.sia.meda.connector.jpa;
 
 import eu.sia.meda.BaseSpringIntegrationTest;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import eu.sia.meda.util.ReflectionUtils;
+import eu.sia.meda.util.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
@@ -20,11 +24,23 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     private final Class<E> entityClass;
     private final Class<K> keyClass;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @SuppressWarnings({"unchecked"})
     public BaseCrudJpaDAOTest(){
         this.daoClass = (Class<D>) ReflectionUtils.getGenericTypeClass(getClass(), 0);
         this.entityClass = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
         this.keyClass = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 2);
+
+        CriteriaQuery<E> queryCriteria = getMatchAlreadySavedCriteria();
+        org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f->{
+            try {
+                entityClass.getField(f.getName());
+            } catch (NoSuchFieldException e) {
+                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field: %s", f.getName()));
+            }
+        });
     }
     
     protected abstract D getDao();
@@ -39,15 +55,17 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     protected abstract K buildId(int bias);
 
     protected String getIdName(){
+        try {
+            entityClass.getField("id");
+        } catch (NoSuchFieldException e) {
+            throw new IllegalStateException("The entity has not a field named 'id'. Please override getIdName method inside the test!");
+        }
         return "id";
     }
 
     /**
      * This function has to return a valid E object with all right parameters
      * according to entity type
-     * @return
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
     protected E getEntity() throws IllegalAccessException, InstantiationException {
         E e = entityClass.newInstance();
@@ -67,6 +85,11 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         E e = this.getEntity();
         this.setId(e, this.getNextId());
         return e;
+    }
+
+    /** This method has to return the entity already present in db */
+    protected E getStoredEntity() throws InstantiationException, IllegalAccessException {
+        return getEntity();
     }
 
     /**
@@ -93,26 +116,50 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     public void findAllPageable() throws IllegalAccessException, InstantiationException {
 
         PageRequest pageable = PageRequest.of(0,1, Sort.by(this.getIdName()));
-        getDao().save(getEntityToSave());
+        E saved = getDao().save(getEntityToSave());
 
-        Page<E> list1 =  getDao().findAll(pageable);
+        clearContext(saved);
+
+        Page<E> list1 =  getDao().findAll((CriteriaQuery<E>)null, pageable);
 
         Assert.assertEquals(getDao().count(), list1.getTotalElements());
         Assert.assertEquals(1, list1.getPageable().getPageSize());
         Assert.assertEquals(0, list1.getPageable().getPageNumber());
         Assert.assertNotNull(list1.getContent());
         Assert.assertEquals(1, list1.getContent().size());
-        Assert.assertEquals(this.getEntity(), list1.getContent().get(0));
+        compare(this.getStoredEntity(), list1.getContent().get(0));
 
         pageable = PageRequest.of(1,1, Sort.by(this.getIdName()));
 
-        Page<E> list2 = getDao().findAll(pageable);
+        Page<E> list2 = getDao().findAll((CriteriaQuery<E>)null, pageable);
         Assert.assertNotNull(list2.getContent());
         Assert.assertEquals(1, list2.getContent().size());
-        Assert.assertEquals(this.getEntityToSave(), list2.getContent().get(0));
+        compare(saved, list2.getContent().get(0));
     }
 
+    protected void clearContext(E saved) {
+        lazyLoadCollectionToCheck(saved);
 
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    @Rollback
+    @Test
+    @Transactional
+    public void findAllCriteria() throws IllegalAccessException, InstantiationException {
+        E saved = getDao().save(getEntityToSave());
+
+        clearContext(saved);
+
+        Page<E> list1 =  getDao().findAll(getMatchAlreadySavedCriteria(), null);
+
+        Assert.assertNotNull(list1.getContent());
+        Assert.assertEquals(1, list1.getContent().size());
+        compare(this.getEntity(), list1.getContent().get(0));
+    }
+
+    protected abstract CriteriaQuery<E> getMatchAlreadySavedCriteria();
 
 
     @Rollback
@@ -144,10 +191,24 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Transactional
     public void save() throws IllegalAccessException, InstantiationException {
 
-        Assert.assertNotNull(getDao().save(this.getEntityToSave()));
-        Optional<E> optional = getDao().findById(this.getId(this.getEntityToSave()));
+        E saved = getDao().save(this.getEntityToSave());
+        Assert.assertNotNull(saved);
+        Assert.assertNotNull(getId(saved));
+
+        clearContext(saved);
+
+        Optional<E> optional = getDao().findById(this.getId(saved));
         Assert.assertTrue(optional.isPresent());
-        Assert.assertEquals(this.getEntityToSave(), optional.get());
+        compare(saved, optional.get());
+    }
+
+    /** To override in order to lazy load collection before {@link EntityManager#clear()}*/
+    protected void lazyLoadCollectionToCheck(E saved){
+        //Do Nothing
+    }
+
+    protected void compare(E entityToSave, E saved) {
+        TestUtils.reflectionEqualsByName(entityToSave, saved);
     }
 
 
@@ -162,11 +223,15 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         this.alterEntityToUpdate(entity);
         E entityUpdated = getDao().update(entity);
 
+        compare(entity, entityUpdated);
+
+        entityManager.flush();
+        entityManager.clear();
+
         Optional<E> optional2 = getDao().findById(this.getId(entity));
         Assert.assertTrue(optional2.isPresent());
 
-        Assert.assertEquals(entity, entityUpdated);
-        Assert.assertEquals(entity, optional2.get());
+        compare(entity, optional2.get());
     }
 
     @Rollback

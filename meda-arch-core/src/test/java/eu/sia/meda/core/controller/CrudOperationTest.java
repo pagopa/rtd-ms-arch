@@ -16,7 +16,6 @@ import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.PagedResources;
@@ -82,12 +81,12 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         crudOperationsMock = getCrudOperationsMock();
         resourceAssembler = getResourceAssemblerSpy();
 
+        BDDMockito.doReturn(new PageImpl<>(entities, PageRequest.of(0,entities.size()), entities.size())).when(crudOperationsMock).findAll(Mockito.any(), Mockito.any());
+        BDDMockito.doReturn(Optional.of(entities.get(4))).when(crudOperationsMock).findById(Mockito.eq(getId(entities.get(4))));
+        BDDMockito.doReturn(entities.get(2)).when(crudOperationsMock).save(Mockito.eq(entities.get(1)));
+        BDDMockito.doReturn(entities.get(2)).when(crudOperationsMock).update(Mockito.eq(entities.get(1)));
 
-
-        BDDMockito.when(crudOperationsMock.findAll(Mockito.any())).thenReturn(new PageImpl<E>(entities, PageRequest.of(0,entities.size()), entities.size()));
-        BDDMockito.when(crudOperationsMock.findById(Mockito.eq(getId(entities.get(4))))).thenReturn(Optional.of(entities.get(4)));
-        BDDMockito.when(crudOperationsMock.save(Mockito.eq(entities.get(1)))).thenReturn(entities.get(2));
-        BDDMockito.when(crudOperationsMock.update(Mockito.eq(entities.get(2)))).thenReturn(entities.get(3));
+        BDDMockito.doReturn(entities.get(3)).when(crudOperationsMock).update(Mockito.eq(entities.get(2)));
     }
 
     /** To override in order to customize the input entity. Remember to override also {@link #getExpectedJson(E)} */
