@@ -1,6 +1,7 @@
 package eu.sia.meda.core.controller;
 
 import eu.sia.meda.core.resource.BaseResource;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.Optional;
 public interface CrudController<R extends BaseResource, E extends Serializable, K extends Serializable>{
     /** To find all entities */
     @GetMapping
-    PagedResources<R> findAll(Pageable pageable);
+    PagedResources<R> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable);
 
     /** To count the entities */
     @GetMapping("/count")

@@ -1,5 +1,6 @@
 package eu.sia.meda.layers.connector;
 
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,8 +10,8 @@ import java.util.Optional;
 
 /** Crud operations on {@link E} entity, having a key of type {@link K} */
 public interface CrudOperations<E extends Serializable, K extends Serializable> {
-    /** To find all entities */
-    Page<E> findAll(Pageable pageable);
+    /** To find all entities matching the {@link CriteriaQuery} built on {@link E} */
+    Page<E> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable);
 
     /** To count the entities */
     long count();

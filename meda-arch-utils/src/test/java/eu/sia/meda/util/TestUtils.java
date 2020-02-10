@@ -86,15 +86,16 @@ public final class TestUtils {
 
 
     /** To create an instance of {@link T} with fake data */
-    public static <T> T mockInstance(T o) {
-        return mockInstance(o, null);
+    public static <T> T mockInstance(T o, String... ignoredSetters) {
+        return mockInstance(o, null, ignoredSetters);
     }
 
     /** To create an instance of {@link T} with fake data, which values changes depending on <i>bias</i> */
-    public static <T> T mockInstance(T o, Integer bias) {
+    public static <T> T mockInstance(T o, Integer bias, String... ignoredSetters) {
         int i = bias == null ? 0 : bias * 1000;
+        Set<String> toIgnore = new HashSet<>(Arrays.asList(ignoredSetters));
         for (Method m : o.getClass().getMethods()) {
-            if (m.getName().startsWith("set") && m.getParameterCount() == 1) {
+            if (m.getName().startsWith("set") && m.getParameterCount() == 1 && !toIgnore.contains(m.getName())) {
                 Class<?> type = m.getParameterTypes()[0];
                 try {
                     if (type.isAssignableFrom(String.class)) {
