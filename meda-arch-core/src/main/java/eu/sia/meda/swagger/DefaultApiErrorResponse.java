@@ -17,7 +17,7 @@ import springfox.documentation.spi.service.contexts.OperationContext;
  * The Class DefaultApiErrorResponse.
  */
 @Component
-@Order(-2147481647)
+@Order(Integer.MIN_VALUE)
 public class DefaultApiErrorResponse implements OperationBuilderPlugin {
    
    /** The resolver. */

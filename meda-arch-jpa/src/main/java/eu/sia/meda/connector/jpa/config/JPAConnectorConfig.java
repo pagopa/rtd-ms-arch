@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -102,36 +103,40 @@ public class JPAConnectorConfig {
    @Bean(
       name = {"entityManagerFactory"}
    )
-   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-      ArchJPAConfigurationService.JPAConnection jpaConnection = this.configurations.retrieveJPAConnection((String)null);
-      List<String> propertyPackages = jpaConnection.getEntityPackages();
-      if (propertyPackages.isEmpty()) {
-         propertyPackages.add("eu.sia.meda");
-      }
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		ArchJPAConfigurationService.JPAConnection jpaConnection = this.configurations
+				.retrieveJPAConnection((String) null);
+		List<String> propertyPackages = jpaConnection.getEntityPackages();
+		if (propertyPackages.isEmpty()) {
+			propertyPackages.add("eu.sia.meda");
+		}
 
-      String[] packagesToScan = (String[])propertyPackages.toArray(new String[propertyPackages.size()]);
-      Properties jpaProperties = new Properties();
-      jpaProperties.put("hibernate.dialect", jpaConnection.getHibernateDialect());
-      jpaProperties.put("hibernate.show_sql", jpaConnection.isShowSql());
-      jpaProperties.put("hibernate.jdbc.batch_size", jpaConnection.getBatchSize());
-      jpaProperties.put("hibernate.order_inserts", jpaConnection.isOrderInserts());
-      jpaProperties.put("hibernate.order_updates", jpaConnection.isOrderUpdates());
-      jpaProperties.put("hibernate.jdbc.batch_versioned_data", jpaConnection.isBatchVersionedData());
-      jpaProperties.put("hibernate.id.new_generator_mappings", jpaConnection.isNewGeneratorMappings());
-      if (jpaConnection.isMocked()) {
-         log.warn(LoggerUtils.formatArchRow("No JPA configuration found. H2 in-memory DataBase pulled up"));
-         jpaProperties.put("hibernate.hbm2ddl.auto", "none");
-      } else {
-         jpaProperties.put("hibernate.hbm2ddl.auto", jpaConnection.getHbm2ddl());
-      }
+		String[] packagesToScan = (String[]) propertyPackages.toArray(new String[propertyPackages.size()]);
+		Properties jpaProperties = new Properties();
+		jpaProperties.put("hibernate.dialect", jpaConnection.getHibernateDialect());
+		jpaProperties.put("hibernate.show_sql", jpaConnection.isShowSql());
+		jpaProperties.put("hibernate.jdbc.batch_size", jpaConnection.getBatchSize());
+		jpaProperties.put("hibernate.order_inserts", jpaConnection.isOrderInserts());
+		jpaProperties.put("hibernate.order_updates", jpaConnection.isOrderUpdates());
+		jpaProperties.put("hibernate.jdbc.batch_versioned_data", jpaConnection.isBatchVersionedData());
+		jpaProperties.put("hibernate.id.new_generator_mappings", jpaConnection.isNewGeneratorMappings());
+		jpaProperties.put("hibernate.jdbc.lob.non_contextual_creation",
+				Objects.isNull(jpaConnection.getLobNonCotextualCreation()) ? Boolean.TRUE
+						: jpaConnection.getLobNonCotextualCreation());
+		if (jpaConnection.isMocked()) {
+			log.warn(LoggerUtils.formatArchRow("No JPA configuration found. H2 in-memory DataBase pulled up"));
+			jpaProperties.put("hibernate.hbm2ddl.auto", "none");
+		} else {
+			jpaProperties.put("hibernate.hbm2ddl.auto", jpaConnection.getHbm2ddl());
+		}
 
-      LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-      entityManagerFactoryBean.setDataSource(this.jpaDataSource());
-      entityManagerFactoryBean.setJpaVendorAdapter(this.jpaVendorAdapter());
-      entityManagerFactoryBean.setPackagesToScan(packagesToScan);
-      entityManagerFactoryBean.setJpaProperties(jpaProperties);
-      return entityManagerFactoryBean;
-   }
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+		entityManagerFactoryBean.setDataSource(this.jpaDataSource());
+		entityManagerFactoryBean.setJpaVendorAdapter(this.jpaVendorAdapter());
+		entityManagerFactoryBean.setPackagesToScan(packagesToScan);
+		entityManagerFactoryBean.setJpaProperties(jpaProperties);
+		return entityManagerFactoryBean;
+	}
 
    /**
     * Jpa vendor adapter.
