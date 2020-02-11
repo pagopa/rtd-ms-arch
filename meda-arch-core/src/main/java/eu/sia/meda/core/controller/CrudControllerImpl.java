@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
-public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable> extends StatelessController implements CrudController<R,E,K> {
+public abstract class CrudControllerImpl <R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>> extends StatelessController implements CrudController<R,E,K,C> {
 
     protected final CrudService<E,K> crudService;
     protected final BaseResourceAssemblerSupport<E,R> resourceAssembler;
@@ -30,7 +30,7 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     }
 
     @Override
-    public PagedResources<R> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable) {
+    public PagedResources<R> findAll(C criteriaQuery, Pageable pageable) {
         Page<E> result = crudService.findAll(criteriaQuery, pageable);
         if(result == null){
             result = Page.empty();

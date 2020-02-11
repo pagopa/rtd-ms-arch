@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.lang.reflect.*;
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Class ReflectionUtils.
@@ -162,5 +165,27 @@ public class ReflectionUtils {
 
       //noinspection unchecked
       return (T)enumCreatorMethod.invoke(null, o);
+   }
+
+   private static final Map<Class<?>, Class<?>> primitiveWrapperMap;
+   static {
+      Map<Class<?>, Class<?>> tmp = new HashMap<>();
+      tmp.put(boolean.class, Boolean.class);
+      tmp.put(byte.class, Byte.class);
+      tmp.put(char.class, Character.class);
+      tmp.put(double.class, Double.class);
+      tmp.put(float.class, Float.class);
+      tmp.put(int.class, Integer.class);
+      tmp.put(long.class, Long.class);
+      tmp.put(short.class, Short.class);
+      primitiveWrapperMap = Collections.unmodifiableMap(tmp);
+   }
+
+   /** if the provided targetClass is the wrapper of the primitive provided */
+   public static boolean isPrimitiveWrapperOf(Class<?> targetClass, Class<?> primitive) {
+      if (!primitive.isPrimitive()) {
+         throw new IllegalArgumentException("The second argument has to be primitive type");
+      }
+      return primitiveWrapperMap.get(primitive) == targetClass;
    }
 }

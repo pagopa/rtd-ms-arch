@@ -8,6 +8,7 @@ import eu.sia.meda.config.ArchConfiguration;
 import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
 import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.CrudOperations;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import eu.sia.meda.util.ReflectionUtils;
 import eu.sia.meda.util.TestUtils;
 import org.junit.Assert;
@@ -24,9 +25,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -34,16 +39,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /** Base test class to test common behavior of {@link CrudController} mocking a {@link CrudOperations} ({@link eu.sia.meda.service.CrudService} or {@link eu.sia.meda.layers.connector.CrudDAO}) */
-public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable>  extends BaseTest {
+public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>>  extends BaseTest {
     protected final Class<R> resourceClazz;
     private final Class<E> entityClazz;
     private final Class<K> keyClazz;
+    private final Class<C> criteriaQueryClazz;
 
     @SuppressWarnings({"unchecked"})
     public CrudOperationTest() {
         this.resourceClazz = (Class<R>)ReflectionUtils.getGenericTypeClass(getClass(), 0);
         this.entityClazz = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
         this.keyClazz = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 2);
+        this.criteriaQueryClazz = (Class<C>)ReflectionUtils.getGenericTypeClass(getClass(), 3);
     }
 
     @PostConstruct
@@ -111,21 +118,46 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
 
     @Test
     public void testFindAll() throws Exception {
+        C criteriaQuery = getCriteriaQuery();
+        MultiValueMap<String, String> criteriaMap = new LinkedMultiValueMap<>();
+        org.springframework.util.ReflectionUtils.doWithFields(criteriaQueryClazz, f->{
+            f.setAccessible(true);
+            Object value = f.get(criteriaQuery);
+            if(value!=null){
+                criteriaMap.put(f.getName(), Collections.singletonList(value.toString()));
+            }
+        });
+
+        if(criteriaMap.size()==0){
+            throw new IllegalStateException("Provided at least 1 criteria filter");
+        }
+
         MvcResult result = mvc.perform(MockMvcRequestBuilders
                 .get(getBasePath())
+                .param("page", "0")
+                .param("size", getNTestData()+"")
+                .params(criteriaMap)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
 
-        @SuppressWarnings("unchecked") PagedResources<R> pageResult = (PagedResources<R>)objectMapper.readValue(
+        PagedResources<R> pageResult = objectMapper.readValue(
                 transformEmbeddedAfterLinks(transformLinks(result.getResponse().getContentAsString())),
                 objectMapper.getTypeFactory().constructParametricType(PagedResources.class, resourceClazz)
         );
         Iterator<R> resultIterator = pageResult.iterator();
-        for(int i=0;i<entities.size();i++){
-            BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entities.get(i)));
-            compare(entities.get(i), resultIterator.next());
+        for (E entity : entities) {
+            BDDMockito.verify(resourceAssembler).toResource(Mockito.eq(entity));
+            compare(entity, resultIterator.next());
+        }
+    }
+
+    private C getCriteriaQuery() {
+        try {
+            return TestUtils.mockInstance(criteriaQueryClazz.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException((e));
         }
     }
 

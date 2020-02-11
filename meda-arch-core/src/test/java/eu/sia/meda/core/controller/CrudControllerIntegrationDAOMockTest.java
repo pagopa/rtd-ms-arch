@@ -2,6 +2,7 @@ package eu.sia.meda.core.controller;
 
 import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.CrudDAO;
+import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -17,7 +18,7 @@ import java.io.Serializable;
 @TestPropertySource(properties = {
         "logging.level.root=INFO"
 })
-public abstract class CrudControllerIntegrationDAOMockTest<R extends BaseResource, E extends Serializable, K extends Serializable> extends CrudOperationTest<R, E, K> {
+public abstract class CrudControllerIntegrationDAOMockTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>> extends CrudOperationTest<R, E, K, C> {
     @Override
     protected CrudDAO<E, K> getCrudOperationsMock() {
         return getCrudDAOMock();

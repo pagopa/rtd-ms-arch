@@ -2,10 +2,12 @@ package eu.sia.meda.connector.jpa;
 
 import eu.sia.meda.BaseSpringIntegrationTest;
 import eu.sia.meda.layers.connector.query.CriteriaQuery;
+import eu.sia.meda.util.ColoredPrinters;
 import eu.sia.meda.util.ReflectionUtils;
 import eu.sia.meda.util.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +38,15 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
 
         CriteriaQuery<E> queryCriteria = getMatchAlreadySavedCriteria();
         org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f -> {
-            if (org.springframework.util.ReflectionUtils.findField(entityClass, f.getName()) == null) {
-                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field '%s' not allowed for the %s", f.getName(), entityClass));
+            Field entityField = org.springframework.util.ReflectionUtils.findField(entityClass, f.getName());
+            if (entityField == null) {
+                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field '%s': not allowed for the %s", f.getName(), entityClass));
+            }
+            if (f.getType().isPrimitive()) {
+                throw new IllegalStateException(String.format("The QueryCriteria cannot contains primitive types! field '%s' of %s", f.getName(), queryCriteria.getClass()));
+            }
+            if (!entityField.getType().equals(f.getType()) && (!entityField.getType().isPrimitive() || !ReflectionUtils.isPrimitiveWrapperOf(f.getType(), entityField.getType()))) {
+                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field '%s' for the %s: the type %s mismatch the entity type %s", f.getName(), entityClass, f.getType(), entityField.getType()));
             }
         });
     }
@@ -53,9 +63,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
     protected abstract K buildId(int bias);
 
     protected String getIdName() {
-        try {
-            entityClass.getField("id");
-        } catch (NoSuchFieldException e) {
+        if (org.springframework.util.ReflectionUtils.findField(entityClass, "id") ==null) {
             throw new IllegalStateException("The entity has not a field named 'id'. Please override getIdName method inside the test!");
         }
         return "id";
@@ -66,7 +74,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
      * according to entity type
      */
     protected E getEntity() throws IllegalAccessException, InstantiationException {
-        E e = entityClass.newInstance();
+        E e = TestUtils.mockInstance(entityClass.newInstance());
         this.setId(e, this.getStoredId());
         return e;
     }
@@ -115,7 +123,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
     @Transactional
     public void findAllPageable() throws IllegalAccessException, InstantiationException {
 
-        PageRequest pageable = PageRequest.of(0, 1, Sort.by(this.getIdName()));
+        PageRequest pageable = PageRequest.of(0, 1, getSortBy());
         E saved = getDao().save(getEntityToSave());
 
         clearContext(saved);
@@ -129,12 +137,17 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
         Assert.assertEquals(1, list1.getContent().size());
         compare(this.getStoredEntity(), list1.getContent().get(0));
 
-        pageable = PageRequest.of(1, 1, Sort.by(this.getIdName()));
+        pageable = PageRequest.of(1, 1, getSortBy());
 
         Page<E> list2 = getDao().findAll((CriteriaQuery<E>) null, pageable);
         Assert.assertNotNull(list2.getContent());
         Assert.assertEquals(1, list2.getContent().size());
         compare(saved, list2.getContent().get(0));
+    }
+
+    /** To override in order to sort the result in such a way to have the already stored entity as first entity */
+    protected Sort getSortBy() {
+        return Sort.by(this.getIdName());
     }
 
     protected void clearContext(E saved) {
@@ -152,15 +165,25 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
 
         clearContext(saved);
 
-        Page<E> list1 = getDao().findAll(getMatchAlreadySavedCriteria(), null);
+        ColoredPrinters.PRINT_GREEN.println("Fetching alreadyStored");
+        CriteriaQuery<E> criteriaQuery = getMatchAlreadySavedCriteria();
+        Page<E> list1 = getDao().findAll(criteriaQuery, null);
 
         Assert.assertNotNull(list1.getContent());
         Assert.assertEquals(1, list1.getContent().size());
         compare(this.getStoredEntity(), list1.getContent().get(0));
+
+        ColoredPrinters.PRINT_GREEN.println("Fetching new saved entities");
+        BeanUtils.copyProperties(saved, criteriaQuery);
+        list1 = getDao().findAll(criteriaQuery, null);
+
+        Assert.assertNotNull(list1.getContent());
+        Assert.assertEquals(1, list1.getContent().size());
+        compare(saved, list1.getContent().get(0));
+
     }
 
     protected abstract CriteriaQuery<E> getMatchAlreadySavedCriteria();
-
 
     @Rollback
     @Test
