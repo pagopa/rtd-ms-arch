@@ -6,6 +6,7 @@ import org.hibernate.metamodel.internal.SingularAttributeImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,15 +26,15 @@ public interface CrudJpaDAO<E extends Serializable, K extends Serializable> exte
             pageable =Pageable.unpaged();
         }
         if(criteriaQuery!=null){
-            Specification<E> where = Specification.where(null);
+            Specification<E>[] where = new Specification[]{Specification.where(null)};
             ReflectionUtils.doWithFields(criteriaQuery.getClass(), f->{
                 f.setAccessible(true);
                 Object c = f.get(criteriaQuery);
                 if(c!=null){
-                    where.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(f.getName()), c));
+                    where[0]=where[0].and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(f.getName()), c));
                 }
             });
-            return findAll(where, pageable);
+            return findAll(where[0], pageable);
         }else {
             return findAll(pageable);
         }

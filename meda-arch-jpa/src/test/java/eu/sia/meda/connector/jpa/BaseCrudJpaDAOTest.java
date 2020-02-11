@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Serializable, K extends Serializable> extends BaseSpringIntegrationTest {
+public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends Serializable, K extends Serializable> extends BaseSpringIntegrationTest {
 
     protected final Class<D> daoClass;
     private final Class<E> entityClass;
@@ -28,21 +28,19 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     private EntityManager entityManager;
 
     @SuppressWarnings({"unchecked"})
-    public BaseCrudJpaDAOTest(){
+    public BaseCrudJpaDAOTest() {
         this.daoClass = (Class<D>) ReflectionUtils.getGenericTypeClass(getClass(), 0);
-        this.entityClass = (Class<E>)ReflectionUtils.getGenericTypeClass(getClass(), 1);
-        this.keyClass = (Class<K>)ReflectionUtils.getGenericTypeClass(getClass(), 2);
+        this.entityClass = (Class<E>) ReflectionUtils.getGenericTypeClass(getClass(), 1);
+        this.keyClass = (Class<K>) ReflectionUtils.getGenericTypeClass(getClass(), 2);
 
         CriteriaQuery<E> queryCriteria = getMatchAlreadySavedCriteria();
-        org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f->{
-            try {
-                entityClass.getField(f.getName());
-            } catch (NoSuchFieldException e) {
-                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field: %s", f.getName()));
+        org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f -> {
+            if (org.springframework.util.ReflectionUtils.findField(entityClass, f.getName()) == null) {
+                throw new IllegalStateException(String.format("The provided QueryCriteria has a not valid field '%s' not allowed for the %s", f.getName(), entityClass));
             }
         });
     }
-    
+
     protected abstract D getDao();
 
     protected abstract void setId(E entity, K id);
@@ -54,7 +52,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
      */
     protected abstract K buildId(int bias);
 
-    protected String getIdName(){
+    protected String getIdName() {
         try {
             entityClass.getField("id");
         } catch (NoSuchFieldException e) {
@@ -77,7 +75,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
      * The Id has to be just stored before test
      * and has to be smaller than each next id {@link #getNextId()}
      */
-    protected K getStoredId(){
+    protected K getStoredId() {
         return this.buildId(1);
     }
 
@@ -87,7 +85,9 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         return e;
     }
 
-    /** This method has to return the entity already present in db */
+    /**
+     * This method has to return the entity already present in db
+     */
     protected E getStoredEntity() throws InstantiationException, IllegalAccessException {
         return getEntity();
     }
@@ -95,7 +95,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     /**
      * This function return an id greater than {@link #getStoredId()}
      */
-    protected K getNextId(){
+    protected K getNextId() {
         return this.buildId(2);
     }
 
@@ -105,7 +105,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    public void findAll(){
+    public void findAll() {
         List<E> list = getDao().findAll();
         Assert.assertNotNull(list);
     }
@@ -115,12 +115,12 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Transactional
     public void findAllPageable() throws IllegalAccessException, InstantiationException {
 
-        PageRequest pageable = PageRequest.of(0,1, Sort.by(this.getIdName()));
+        PageRequest pageable = PageRequest.of(0, 1, Sort.by(this.getIdName()));
         E saved = getDao().save(getEntityToSave());
 
         clearContext(saved);
 
-        Page<E> list1 =  getDao().findAll((CriteriaQuery<E>)null, pageable);
+        Page<E> list1 = getDao().findAll((CriteriaQuery<E>) null, pageable);
 
         Assert.assertEquals(getDao().count(), list1.getTotalElements());
         Assert.assertEquals(1, list1.getPageable().getPageSize());
@@ -129,9 +129,9 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         Assert.assertEquals(1, list1.getContent().size());
         compare(this.getStoredEntity(), list1.getContent().get(0));
 
-        pageable = PageRequest.of(1,1, Sort.by(this.getIdName()));
+        pageable = PageRequest.of(1, 1, Sort.by(this.getIdName()));
 
-        Page<E> list2 = getDao().findAll((CriteriaQuery<E>)null, pageable);
+        Page<E> list2 = getDao().findAll((CriteriaQuery<E>) null, pageable);
         Assert.assertNotNull(list2.getContent());
         Assert.assertEquals(1, list2.getContent().size());
         compare(saved, list2.getContent().get(0));
@@ -152,11 +152,11 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
 
         clearContext(saved);
 
-        Page<E> list1 =  getDao().findAll(getMatchAlreadySavedCriteria(), null);
+        Page<E> list1 = getDao().findAll(getMatchAlreadySavedCriteria(), null);
 
         Assert.assertNotNull(list1.getContent());
         Assert.assertEquals(1, list1.getContent().size());
-        compare(this.getEntity(), list1.getContent().get(0));
+        compare(this.getStoredEntity(), list1.getContent().get(0));
     }
 
     protected abstract CriteriaQuery<E> getMatchAlreadySavedCriteria();
@@ -178,7 +178,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    public void findById()  {
+    public void findById() {
 
         Optional<E> optionalE = getDao().findById(this.getStoredId());
         Assert.assertTrue(optionalE.isPresent());
@@ -202,8 +202,10 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         compare(saved, optional.get());
     }
 
-    /** To override in order to lazy load collection before {@link EntityManager#clear()}*/
-    protected void lazyLoadCollectionToCheck(E saved){
+    /**
+     * To override in order to lazy load collection before {@link EntityManager#clear()}
+     */
+    protected void lazyLoadCollectionToCheck(E saved) {
         //Do Nothing
     }
 
@@ -220,13 +222,15 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
         Optional<E> optional1 = getDao().findById(this.getStoredId());
         Assert.assertTrue(optional1.isPresent());
         E entity = optional1.get();
+
+        clearContext(entity);
+
         this.alterEntityToUpdate(entity);
         E entityUpdated = getDao().update(entity);
 
         compare(entity, entityUpdated);
 
-        entityManager.flush();
-        entityManager.clear();
+        clearContext(entityUpdated);
 
         Optional<E> optional2 = getDao().findById(this.getId(entity));
         Assert.assertTrue(optional2.isPresent());
@@ -237,7 +241,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    public void count(){
+    public void count() {
         List<E> list = getDao().findAll();
         Assert.assertEquals(list.size(), getDao().count());
     }
@@ -245,7 +249,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E,K> ,E extends Se
     @Rollback
     @Test
     @Transactional
-    public void deleteAll(){
+    public void deleteAll() {
         getDao().deleteAll();
         Assert.assertEquals(0, getDao().count());
     }
