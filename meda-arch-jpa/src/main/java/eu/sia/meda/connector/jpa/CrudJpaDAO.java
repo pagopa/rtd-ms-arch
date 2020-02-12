@@ -21,7 +21,7 @@ import java.util.Optional;
 public interface CrudJpaDAO<E extends Serializable, K extends Serializable> extends CrudDAO<E, K>, JPAConnector<E, K>, JpaSpecificationExecutor<E> {
 
     @Override
-    default Page<E> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable){
+    default Page<E> findAll(CriteriaQuery<? super E> criteriaQuery, Pageable pageable){
         if(pageable==null){
             pageable =Pageable.unpaged();
         }

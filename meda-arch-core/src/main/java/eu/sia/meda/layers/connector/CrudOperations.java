@@ -11,7 +11,7 @@ import java.util.Optional;
 /** Crud operations on {@link E} entity, having a key of type {@link K} */
 public interface CrudOperations<E extends Serializable, K extends Serializable> {
     /** To find all entities matching the {@link CriteriaQuery} built on {@link E} */
-    Page<E> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable);
+    Page<E> findAll(CriteriaQuery<? super E> criteriaQuery, Pageable pageable);
 
     /** To count the entities */
     long count();

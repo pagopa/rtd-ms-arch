@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /** Base test class to test common behavior of {@link CrudController} mocking a {@link CrudOperations} ({@link eu.sia.meda.service.CrudService} or {@link eu.sia.meda.layers.connector.CrudDAO}) */
-public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>>  extends BaseTest {
+public abstract class CrudOperationTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<? super E>>  extends BaseTest {
     protected final Class<R> resourceClazz;
     private final Class<E> entityClazz;
     private final Class<K> keyClazz;

@@ -36,7 +36,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
         this.entityClass = (Class<E>) ReflectionUtils.getGenericTypeClass(getClass(), 1);
         this.keyClass = (Class<K>) ReflectionUtils.getGenericTypeClass(getClass(), 2);
 
-        CriteriaQuery<E> queryCriteria = getMatchAlreadySavedCriteria();
+        CriteriaQuery<? super E> queryCriteria = getMatchAlreadySavedCriteria();
         org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f -> {
             Field entityField = org.springframework.util.ReflectionUtils.findField(entityClass, f.getName());
             if (entityField == null) {
@@ -166,7 +166,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
         clearContext(saved);
 
         ColoredPrinters.PRINT_GREEN.println("Fetching alreadyStored");
-        CriteriaQuery<E> criteriaQuery = getMatchAlreadySavedCriteria();
+        CriteriaQuery<? super E> criteriaQuery = getMatchAlreadySavedCriteria();
         Page<E> list1 = getDao().findAll(criteriaQuery, null);
 
         Assert.assertNotNull(list1.getContent());
@@ -183,7 +183,7 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
 
     }
 
-    protected abstract CriteriaQuery<E> getMatchAlreadySavedCriteria();
+    protected abstract CriteriaQuery<? super E> getMatchAlreadySavedCriteria();
 
     @Rollback
     @Test

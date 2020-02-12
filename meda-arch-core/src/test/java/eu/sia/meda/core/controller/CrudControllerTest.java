@@ -17,7 +17,7 @@ import java.io.Serializable;
 @TestPropertySource(properties = {
         "logging.level.root=INFO"
 })
-public abstract class CrudControllerTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>>  extends CrudOperationTest<R,E,K,C> {
+public abstract class CrudControllerTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<? super E>>  extends CrudOperationTest<R,E,K,C> {
     @Override
     protected CrudService<E, K> getCrudOperationsMock() {
         return getCrudServiceMock();

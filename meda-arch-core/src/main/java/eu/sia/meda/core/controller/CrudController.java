@@ -13,7 +13,7 @@ import java.util.Optional;
 
 /** Controller to expose Crud operations on {@link E} entity, having a key of type {@link K} */
 @RequestMapping
-public interface CrudController<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>>{
+public interface CrudController<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<? super E>>{
     /** To find all entities */
     @GetMapping
     PagedResources<R> findAll(C criteriaQuery, Pageable pageable);

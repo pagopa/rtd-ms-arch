@@ -22,7 +22,7 @@ public abstract class CrudServiceImpl<E extends Serializable, K extends Serializ
     }
 
     @Override
-    public Page<E> findAll(CriteriaQuery<E> criteriaQuery, Pageable pageable) {
+    public Page<E> findAll(CriteriaQuery<? super E> criteriaQuery, Pageable pageable) {
         return crudDAO.findAll(criteriaQuery, pageable);
     }
 
