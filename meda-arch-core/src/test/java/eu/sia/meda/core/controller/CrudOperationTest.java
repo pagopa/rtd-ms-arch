@@ -30,7 +30,6 @@ import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +89,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
 
         BDDMockito.doReturn(new PageImpl<>(entities, PageRequest.of(0,entities.size()), entities.size())).when(crudOperationsMock).findAll(Mockito.any(), Mockito.any());
         BDDMockito.doReturn(Optional.of(entities.get(4))).when(crudOperationsMock).findById(Mockito.eq(getId(entities.get(4))));
+        BDDMockito.willAnswer(invocation -> entities.stream().filter(e-> invocation.getArgument(0).equals(getId(e))).findFirst()).given(crudOperationsMock).findById(Mockito.any());
         BDDMockito.doReturn(entities.get(2)).when(crudOperationsMock).save(Mockito.eq(entities.get(1)));
         BDDMockito.doReturn(entities.get(2)).when(crudOperationsMock).update(Mockito.eq(entities.get(1)));
 
