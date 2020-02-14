@@ -22,7 +22,7 @@ public abstract class BaseSimpleRestRequestTransformer {
             //noinspection unchecked
             request.setParams((Map<String, String>) args[0]);
         }
-        if (args.length > 1 && args[1] == null) {
+        if (args.length > 1 && args[1] != null) {
             //noinspection unchecked
             request.setQueryParams((Map<String, String>) args[1]);
         }
