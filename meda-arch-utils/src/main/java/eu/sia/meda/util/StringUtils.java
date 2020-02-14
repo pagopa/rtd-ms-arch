@@ -2,6 +2,8 @@ package eu.sia.meda.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -87,6 +89,19 @@ public class StringUtils {
          return sb.toString();
       } else {
          return original;
+      }
+   }
+
+   /**
+    * Calculate md5 algorithm of an input string
+    *
+    */
+
+   public static String md5(String input) {
+      try {
+         return MessageDigest.getInstance("MD5").digest(input.getBytes()).toString();
+      } catch (NoSuchAlgorithmException e) {
+         throw new IllegalArgumentException("Method MD5 not found");
       }
    }
 }
