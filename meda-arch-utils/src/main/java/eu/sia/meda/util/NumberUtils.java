@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,5 +81,10 @@ public interface NumberUtils {
       } else {
          return null;
       }
+   }
+
+   /** An equals implementation using {@link BigDecimal#compareTo(BigDecimal)} method */
+   static boolean equals(BigDecimal v1, BigDecimal v2){
+      return Objects.equals(v1, v2) || (v1!=null && v2!=null && v1.compareTo(v2) == 0);
    }
 }
