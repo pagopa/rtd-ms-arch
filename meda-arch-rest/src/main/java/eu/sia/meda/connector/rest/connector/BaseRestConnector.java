@@ -2,6 +2,10 @@ package eu.sia.meda.connector.rest.connector;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.connector.rest.model.RestConnectorRequest;
 import eu.sia.meda.connector.rest.model.RestConnectorResponse;
@@ -384,8 +388,11 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE>
 	 */
 	private HttpMessageConverter getHalMessageConverter() {
 		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		objectMapper.registerModule(new Jackson2HalModule());
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.registerModule(new Jdk8Module());
 		MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(
 				ResourceSupport.class);
 		halConverter.setSupportedMediaTypes(Arrays.asList(MediaTypes.HAL_JSON));
