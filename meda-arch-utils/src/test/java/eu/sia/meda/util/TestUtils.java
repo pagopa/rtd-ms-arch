@@ -1,6 +1,5 @@
 package eu.sia.meda.util;
 
-import com.google.common.base.Strings;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -182,7 +181,7 @@ public final class TestUtils {
                             } else if (OffsetDateTime.class.isAssignableFrom(v1.getClass()) && OffsetDateTime.class.isAssignableFrom(v2.getClass())) {
                                 result = ((OffsetDateTime)v1).isEqual((OffsetDateTime)v2);
                             } else if (ChronoZonedDateTime.class.isAssignableFrom(v1.getClass()) && ChronoZonedDateTime.class.isAssignableFrom(v2.getClass())) {
-                                result = ((ChronoZonedDateTime)v1).isEqual((ChronoZonedDateTime)v2);
+                                result = ((ChronoZonedDateTime<?>)v1).isEqual((ChronoZonedDateTime<?>)v2);
                             } else if (v1.getClass().isAssignableFrom(v2.getClass()) && ((v1.getClass().isPrimitive() && v2.getClass().isPrimitive()) || (!hasStandardEquals(v1.getClass()) && !hasStandardEquals(v2.getClass())))) {
                                 result = false;
                             } else if (BigInteger.class.isAssignableFrom(v1.getClass()) && Integer.class.isAssignableFrom(v2.getClass())) {
@@ -194,11 +193,11 @@ public final class TestUtils {
                             } else if (BigInteger.class.isAssignableFrom(v2.getClass()) && Long.class.isAssignableFrom(v1.getClass())) {
                                 result = ((BigInteger) v2).longValue() == ((long) v1);
                             } else if (String.class.isAssignableFrom(v1.getClass()) && Enum.class.isAssignableFrom(v2.getClass())) {
-                                v2 = ReflectionUtils.enum2String((Enum) v2);
+                                v2 = ReflectionUtils.enum2String((Enum<?>) v2);
                                 result = v1.equals(v2);
                             } else if (String.class.isAssignableFrom(v2.getClass()) && Enum.class.isAssignableFrom(v1.getClass())) {
-                                v1 = ReflectionUtils.enum2String((Enum) v1);
-                                result = v1.equals(v2);
+                                v1 = ReflectionUtils.enum2String((Enum<?>) v1);
+                                result = v2.equals(v1);
                             } else if (Enum.class.isAssignableFrom(v2.getClass()) && Enum.class.isAssignableFrom(v1.getClass())) {
                                 result = v1.toString().equals(v2.toString());
                             } else if (Link.class.isAssignableFrom(v2.getClass())) {
