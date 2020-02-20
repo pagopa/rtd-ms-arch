@@ -13,6 +13,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
@@ -25,6 +26,8 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 
+import javax.management.*;
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,6 +56,15 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     private String bootstrapServers;
     @Value("${spring.cloud.stream.kafka.binder.zkNodes}")
     private String zkNodes;
+
+    @BeforeClass
+    public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
+        ObjectName kafkaServerMbeanName = new ObjectName("kafka.server:type=app-info,id=0");
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        if(mBeanServer.isRegistered(kafkaServerMbeanName)){
+            mBeanServer.unregisterMBean(kafkaServerMbeanName);
+        }
+    }
 
     @Test
     public void test() throws JsonProcessingException {

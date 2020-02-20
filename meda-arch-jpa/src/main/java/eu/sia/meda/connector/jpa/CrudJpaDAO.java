@@ -12,8 +12,12 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
+import javax.persistence.Embeddable;
+import javax.persistence.criteria.Path;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Transactional
@@ -26,18 +30,38 @@ public interface CrudJpaDAO<E extends Serializable, K extends Serializable> exte
             pageable =Pageable.unpaged();
         }
         if(criteriaQuery!=null){
-            Specification<E>[] where = new Specification[]{Specification.where(null)};
-            ReflectionUtils.doWithFields(criteriaQuery.getClass(), f->{
-                f.setAccessible(true);
-                Object c = f.get(criteriaQuery);
-                if(c!=null){
-                    where[0]=where[0].and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(f.getName()), c));
-                }
-            });
-            return findAll(where[0], pageable);
+            Specification<E> where = buildCriteria(criteriaQuery, Specification.where(null), null);
+            return findAll(where, pageable);
         }else {
             return findAll(pageable);
         }
+    }
+
+    default Specification<E> buildCriteria(Object criteria, Specification<E> whereCondition, String path){
+        Specification<E>[] where=new Specification[]{whereCondition};
+        ReflectionUtils.doWithFields(criteria.getClass(), f->{
+            f.setAccessible(true);
+            Object c = f.get(criteria);
+            String field = String.format("%s%s", path != null ? String.format("%s.", path) : "", f.getName());
+            if(c!=null){
+                if(f.getType().getAnnotation(Embeddable.class)!=null){
+                    where[0]=where[0].and(buildCriteria(c, where[0], field));
+                } else {
+                    where[0]=where[0].and((root, query, criteriaBuilder) -> {
+                        String[] fieldParts = field.split("\\.");
+                        Path<?> fieldPath = root.get(fieldParts[0]);
+                        if(fieldParts.length>1) {
+                            for (int i = 1; i < fieldParts.length; i++) {
+                                fieldPath = fieldPath.get(fieldParts[i]);
+                            }
+                        }
+                        return criteriaBuilder.equal(fieldPath, c);
+                    });
+                }
+            }
+        });
+
+        return where[0];
     }
 
     @Override

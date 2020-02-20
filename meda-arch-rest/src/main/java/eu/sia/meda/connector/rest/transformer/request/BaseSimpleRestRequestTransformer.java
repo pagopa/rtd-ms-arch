@@ -17,12 +17,11 @@ import java.util.Map;
  */
 public abstract class BaseSimpleRestRequestTransformer {
     public void readArgs(RestConnectorRequest<?> request, Object... args) {
-        request.setMethod(HttpMethod.GET);
         if (args.length > 0 && args[0] != null) {
             //noinspection unchecked
             request.setParams((Map<String, String>) args[0]);
         }
-        if (args.length > 1 && args[1] == null) {
+        if (args.length > 1 && args[1] != null) {
             //noinspection unchecked
             request.setQueryParams((Map<String, String>) args[1]);
         }

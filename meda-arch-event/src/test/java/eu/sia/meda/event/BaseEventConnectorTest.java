@@ -44,9 +44,9 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
 
     @BeforeClass
     public static void configLevelLogs() {
-        //((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
-        //((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
-        //((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
     }
 
     @Autowired
