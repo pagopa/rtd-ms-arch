@@ -206,6 +206,8 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
 
     @Test
     public void testUpdate() throws Exception {
+        BDDMockito.doReturn(Optional.of(entities.get(2))).when(crudOperationsMock).findById(Mockito.eq(getId(entities.get(2))));
+
         MvcResult result = mvc.perform(MockMvcRequestBuilders
                 .put(getBasePath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
