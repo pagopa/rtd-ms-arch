@@ -3,13 +3,14 @@
  */
 package eu.sia.meda.connector.meda;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.connector.rest.connector.BaseRestConnector;
 import eu.sia.meda.connector.rest.model.RestConnectorRequest;
-import eu.sia.meda.core.interceptors.RequestContextHolder;
+import eu.sia.meda.core.interceptors.BaseContextHolder;
 import eu.sia.meda.rest.configuration.ArchRestConfigurationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * The Class MedaInternalRestConnector.
@@ -56,6 +57,7 @@ public class MedaInternalRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends Bas
    /**
     * Inits the.
     */
+   @Override
    protected void init() {
       if (this.myConfiguration == null) {
          this.myConfiguration = this.configuration.retrieveRestConfiguration(this.connectorName);
@@ -64,7 +66,9 @@ public class MedaInternalRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends Bas
       if (this.myConfiguration == null) {
          throw new ExceptionInInitializerError();
       } else {
-         this.logger.debug(LoggerUtils.formatArchRow("Configuration loaded for REST connector <{}>"), this.connectorName);
+    	  if(this.logger.isDebugEnabled()) {
+    		  this.logger.debug(LoggerUtils.formatArchRow("Configuration loaded for REST connector <{}>"), this.connectorName);
+    	  }
          this.configure(this.myConfiguration);
       }
    }
@@ -74,16 +78,18 @@ public class MedaInternalRestConnector<INPUT, OUTPUT, DTO, RESOURCE> extends Bas
     *
     * @param request the request
     */
+   @Override
    protected void doPreExecute(RestConnectorRequest<DTO> request) {
       try {
-         String authorizationHeader = RequestContextHolder.getAuthorizationContext().getAuthorizationHeader();
+         String authorizationHeader = BaseContextHolder.getAuthorizationContext().getAuthorizationHeader();
          if (authorizationHeader != null) {
             request.addHeader("Authorization", authorizationHeader);
          }
       } catch (Exception var3) {
-         this.logger.error(LoggerUtils.formatArchRow("error retrieving authorization header"));
+    	  if(this.logger.isErrorEnabled()) {
+    		  this.logger.error(LoggerUtils.formatArchRow("error retrieving authorization header"));
+    	  }
       }
-
       super.doPreExecute(request);
    }
 }

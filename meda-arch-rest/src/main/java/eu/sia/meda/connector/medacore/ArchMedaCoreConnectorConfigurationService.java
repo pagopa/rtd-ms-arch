@@ -36,20 +36,19 @@ public class ArchMedaCoreConnectorConfigurationService {
    public ArchMedaCoreConnectorConfigurationService.MedaCoreConfiguration retrieveRestConfiguration(String className) {
       ArchMedaCoreConnectorConfigurationService.MedaCoreConfiguration config = new ArchMedaCoreConnectorConfigurationService.MedaCoreConfiguration();
       if (this.propertiesManager.containsConnectorProperty(CONNECTOR_TYPE, className, "url")) {
-         config.setUrl((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "url", String.class));
-         config.setTimeout((Integer)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "timeout", Integer.TYPE));
-         config.setPath((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "path", String.class));
+         config.setUrl(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "url", String.class));
+         config.setTimeout(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "timeout", Integer.TYPE));
+         config.setPath(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "path", String.class));
          config.setFiles(this.propertiesManager.getConnectorPropertyList(CONNECTOR_TYPE, className, "files", String.class));
-         config.setClient((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "clientId", String.class));
-         config.setClientSecret((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "clientSecret", String.class));
-         config.setOauthUrl((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "oauthUrl", String.class));
-         config.setScope((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "scope", String.class));
+         config.setClient(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "clientId", String.class));
+         config.setClientSecret(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "clientSecret", String.class));
+         config.setOauthUrl(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "oauthUrl", String.class));
+         config.setScope(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "scope", String.class));
          config.setConnectionPoolConfiguration(HttpConnectionPoolConfiguration.loadFromProperties(this.propertiesManager, CONNECTOR_TYPE, className));
-
-         config.setMocked((Boolean)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "mocked", Boolean.class, false));
-         config.setRandomMock((Boolean)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "randomMock", Boolean.class));
-         config.setCodService((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "codService", String.class));
-
+         config.setMocked(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "mocked", Boolean.class, false));
+         config.setRandomMock(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "randomMock", Boolean.class));
+         config.setCodService(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "codService", String.class));
+         config.setCopyHeaders(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "copyHeaders", Boolean.class, Boolean.TRUE));
          return config;
       } else {
     	 if(log.isWarnEnabled()) {

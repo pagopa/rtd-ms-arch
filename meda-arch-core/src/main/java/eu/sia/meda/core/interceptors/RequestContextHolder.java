@@ -26,9 +26,7 @@ public class RequestContextHolder extends BaseContextHolder {
     * Gets the request.
     *
     * @return the request
-    * @deprecated 
     */
-   @Deprecated
    public static HttpServletRequest getRequest() {
       return request.get();
    }

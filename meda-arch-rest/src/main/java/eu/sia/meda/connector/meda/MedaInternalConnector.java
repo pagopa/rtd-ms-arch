@@ -52,20 +52,25 @@ public abstract class MedaInternalConnector<INPUT, OUTPUT, DTO, RESOURCE> {
       ArchMedaInternalConnectorConfigurationService.MedaInternalConfiguration myConfiguration = this.configuration.retrieveRestConfiguration(this.getClass().getSimpleName());
       if (myConfiguration == null) {
          throw new ExceptionInInitializerError();
-      } else {
-         this.logger.debug(LoggerUtils.formatArchRow("Configuration loaded for INTERNAL REST connector <{}>"), connectorName);
-         ArchRestConfigurationService.RestConfiguration restConfig = new ArchRestConfigurationService.RestConfiguration(myConfiguration);
+		} else {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug(LoggerUtils.formatArchRow("Configuration loaded for INTERNAL REST connector <{}>"),
+						connectorName);
+			}
+			ArchRestConfigurationService.RestConfiguration restConfig = new ArchRestConfigurationService.RestConfiguration(
+					myConfiguration);
 
-         try {
-            this.internalRestConnector = new MedaInternalRestConnector(connectorName + "_INTERNAL", restConfig);
-            this.beanFactory.autowireBean(this.internalRestConnector);
-            this.internalRestConnector = (MedaInternalRestConnector)this.beanFactory.initializeBean(this.internalRestConnector, connectorName + "_INTERNAL");
-            this.internalRestConnector.setClazz(ReflectionUtils.getGenericTypeClass(this.getClass(), 3));
-         } catch (BeansException var5) {
-            this.internalRestConnector = null;
-            throw new ExceptionInInitializerError(var5);
-         }
-      }
+			try {
+				this.internalRestConnector = new MedaInternalRestConnector(connectorName + BEAN_SUFFIX, restConfig);
+				this.beanFactory.autowireBean(this.internalRestConnector);
+				this.internalRestConnector = (MedaInternalRestConnector) this.beanFactory
+						.initializeBean(this.internalRestConnector, connectorName + BEAN_SUFFIX);
+				this.internalRestConnector.setClazz(ReflectionUtils.getGenericTypeClass(this.getClass(), 3));
+			} catch (BeansException var5) {
+				this.internalRestConnector = null;
+				throw new ExceptionInInitializerError(var5);
+			}
+		}
    }
 
    /**
