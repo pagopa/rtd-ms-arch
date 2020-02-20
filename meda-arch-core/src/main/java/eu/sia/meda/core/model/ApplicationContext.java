@@ -1,11 +1,16 @@
 package eu.sia.meda.core.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * The Class ApplicationContext.
  */
 public class ApplicationContext {
+   public static final String REQUEST_ID = "x-request-id";
+   public static final String TRANSACTION_ID = "x-transaction-id";
+   public static final String ORIGIN_APP = "x-originapp";
    
    /** The name. */
    private String name;
@@ -18,6 +23,9 @@ public class ApplicationContext {
 
    private String originApp;
 
+   /** Header to be copied from the source (event or rest) to REST endpoints */
+   private Map<String, String> copyHeader;
+
    /**
     * Inits the with default.
     *
@@ -28,7 +36,17 @@ public class ApplicationContext {
       applicationContext.setRequestId(UUID.randomUUID().toString());
       applicationContext.setTransactionId(UUID.randomUUID().toString());
       applicationContext.setOriginApp("UNKNOWN");
+
+      applicationContext.buildDefaultCopyHeader();
       return applicationContext;
+   }
+
+   public void buildDefaultCopyHeader(){
+      Map<String, String> headers = new HashMap<>();
+      headers.put(ApplicationContext.REQUEST_ID, getRequestId());
+      headers.put(ApplicationContext.TRANSACTION_ID, getTransactionId());
+      headers.put(ApplicationContext.ORIGIN_APP, getOriginApp());
+      setCopyHeader(headers);
    }
 
    /**
@@ -92,5 +110,13 @@ public class ApplicationContext {
 
    public void setOriginApp(String originApp) {
       this.originApp = originApp;
+   }
+
+   public Map<String, String> getCopyHeader() {
+      return copyHeader;
+   }
+
+   public void setCopyHeader(Map<String, String> copyHeader) {
+      this.copyHeader = copyHeader;
    }
 }

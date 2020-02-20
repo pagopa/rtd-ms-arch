@@ -22,10 +22,7 @@ import org.springframework.context.annotation.Import;
 public class BaseRestConnectorTest extends BaseSpringTest {
     @BeforeClass
     public static void initContext(){
-        ApplicationContext appContext = new ApplicationContext();
-        appContext.setRequestId("REQUEST_ID");
-
-        BaseContextHolder.setApplicationContext(appContext);
+        BaseContextHolder.setApplicationContext(ApplicationContext.initWithDefault());
     }
 
     @AfterClass

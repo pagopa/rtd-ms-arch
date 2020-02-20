@@ -1,14 +1,10 @@
 package eu.sia.meda.eventlistener;
 
 import eu.sia.meda.config.LoggerUtils;
-import eu.sia.meda.core.interceptors.utils.MedaRequestAttributes;
 import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.eventlistener.utils.MedaRecordHeaders;
 import eu.sia.meda.service.SessionContextRetriever;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.header.Headers;
@@ -24,9 +20,13 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.AcknowledgingMessageListener;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 import org.springframework.kafka.support.Acknowledgment;
+
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The listener interface for receiving baseEvent events.
@@ -461,7 +461,10 @@ public abstract class BaseEventListener implements AcknowledgingMessageListener<
    private ApplicationContext loadApplicationContext(ConsumerRecord<String, byte[]> record) {
       ApplicationContext applicationContext = new ApplicationContext();
       applicationContext.setRequestId(MedaRecordHeaders.getRequestId(record));
+      applicationContext.setOriginApp(MedaRecordHeaders.getTransactionId(record));
       applicationContext.setOriginApp(MedaRecordHeaders.getOriginApp(record));
+
+      applicationContext.buildDefaultCopyHeader();
       return applicationContext;
    }
 }

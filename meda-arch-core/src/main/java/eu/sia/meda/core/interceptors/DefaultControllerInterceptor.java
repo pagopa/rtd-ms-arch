@@ -1,8 +1,14 @@
 package eu.sia.meda.core.interceptors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import eu.sia.meda.config.LoggerUtils;
+import eu.sia.meda.core.controller.BaseController;
+import eu.sia.meda.core.controller.BaseStatefulController;
+import eu.sia.meda.core.interceptors.utils.MedaRequestAttributes;
+import eu.sia.meda.core.model.ApplicationContext;
+import eu.sia.meda.core.model.AuthorizationContext;
+import eu.sia.meda.core.model.ErrorContext;
+import eu.sia.meda.exceptions.MedaDomainRuntimeException;
+import eu.sia.meda.service.SessionContextRetriever;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,20 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import eu.sia.meda.config.LoggerUtils;
-import eu.sia.meda.core.controller.BaseController;
-import eu.sia.meda.core.controller.BaseStatefulController;
-import eu.sia.meda.core.interceptors.utils.MedaRequestAttributes;
-import eu.sia.meda.core.model.ApplicationContext;
-import eu.sia.meda.core.model.AuthorizationContext;
-import eu.sia.meda.core.model.ErrorContext;
-import eu.sia.meda.core.model.SIAContext;
-import eu.sia.meda.core.model.siaHeaders.ParamList;
-import eu.sia.meda.core.model.siaHeaders.SIAWebservicesHeaderType;
-import eu.sia.meda.exceptions.MedaDomainRuntimeException;
-import eu.sia.meda.service.SessionContextRetriever;
 import springfox.documentation.swagger.web.ApiResourceController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * The Class DefaultControllerInterceptor.
@@ -224,6 +220,8 @@ public class DefaultControllerInterceptor implements HandlerInterceptor {
 		applicationContext.setRequestId(MedaRequestAttributes.getRequestId(request));
 		applicationContext.setTransactionId(MedaRequestAttributes.getTransactionId(request));
 		applicationContext.setOriginApp(MedaRequestAttributes.getOriginApp(request));
+
+		applicationContext.buildDefaultCopyHeader();
 		return applicationContext;
 	}
 

@@ -1,16 +1,23 @@
 package eu.sia.meda.connector.rest.connector;
 
-import java.lang.reflect.ParameterizedType;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.sia.meda.config.LoggerUtils;
+import eu.sia.meda.connector.rest.model.RestConnectorRequest;
+import eu.sia.meda.connector.rest.model.RestConnectorResponse;
+import eu.sia.meda.connector.rest.tracing.RestAuditInterceptor;
+import eu.sia.meda.connector.rest.tracing.RestTracingInterceptor;
+import eu.sia.meda.connector.rest.transformer.IRestRequestTransformer;
+import eu.sia.meda.connector.rest.transformer.IRestResponseTransformer;
+import eu.sia.meda.core.interceptors.BaseContextHolder;
+import eu.sia.meda.core.properties.PropertiesManager;
+import eu.sia.meda.layers.connector.BaseConnector;
+import eu.sia.meda.layers.connector.http.HttpConnectionPool;
+import eu.sia.meda.layers.connector.http.HttpConnectionPoolSweeperScheduler;
+import eu.sia.meda.rest.configuration.ArchRestConfigurationService;
+import eu.sia.meda.tracing.config.TracingConfiguration;
+import eu.sia.meda.util.MockUtils;
+import eu.sia.meda.util.ReflectionUtils;
 import org.apache.http.auth.Credentials;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,25 +45,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import eu.sia.meda.config.LoggerUtils;
-import eu.sia.meda.connector.rest.model.RestConnectorRequest;
-import eu.sia.meda.connector.rest.model.RestConnectorResponse;
-import eu.sia.meda.connector.rest.tracing.RestAuditInterceptor;
-import eu.sia.meda.connector.rest.tracing.RestTracingInterceptor;
-import eu.sia.meda.connector.rest.transformer.IRestRequestTransformer;
-import eu.sia.meda.connector.rest.transformer.IRestResponseTransformer;
-import eu.sia.meda.core.interceptors.RequestContextHolder;
-import eu.sia.meda.core.properties.PropertiesManager;
-import eu.sia.meda.layers.connector.BaseConnector;
-import eu.sia.meda.layers.connector.http.HttpConnectionPool;
-import eu.sia.meda.layers.connector.http.HttpConnectionPoolSweeperScheduler;
-import eu.sia.meda.rest.configuration.ArchRestConfigurationService;
-import eu.sia.meda.tracing.config.TracingConfiguration;
-import eu.sia.meda.util.MockUtils;
-import eu.sia.meda.util.ReflectionUtils;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.ParameterizedType;
+import java.net.URI;
+import java.util.*;
 
 /**
  * The Class BaseRestConnector.
@@ -164,10 +156,11 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE>
 			this.initWireMockServer(this.buildMockUrl(request));
 		}
 		if (this.copyHeaders) {
-			HttpServletRequest startingReq = RequestContextHolder.getRequest();
-			while (startingReq.getHeaderNames().hasMoreElements()) {
-				String key = startingReq.getHeaderNames().nextElement();
-				request.addHeader(key, startingReq.getHeader(key));
+			Map<String, String> headers = BaseContextHolder.getApplicationContext().getCopyHeader();
+			if(headers!=null){
+				for (Map.Entry<String, String> h : headers.entrySet()) {
+					request.addHeader(h.getKey(), h.getValue());
+				}
 			}
 		}
 	}

@@ -20,6 +20,7 @@ public class MedaRecordHeaders {
     }
 
     public static final String REQUEST_ID = "x-request-id";
+    public static final String TRANSACTION_ID = "x-transaction-id";
     public static final String ORIGIN_APP = "x-originapp";
 
     public static String readHeader(ConsumerRecord<String, byte[]> record, String headerName) {
@@ -61,5 +62,19 @@ public class MedaRecordHeaders {
             originApp = DEFAULT_ORIGING_APP;
         }
         return originApp;
+    }
+
+    /**
+     * Gets the transaction id.
+     *
+     * @param record the request
+     * @return the transaction id
+     */
+    public static String getTransactionId(ConsumerRecord<String, byte[]> record) {
+        String transactionId = readHeader(record, TRANSACTION_ID);
+        if (Strings.isNullOrEmpty(transactionId)) {
+            transactionId = UUID.randomUUID().toString();
+        }
+        return transactionId;
     }
 }
