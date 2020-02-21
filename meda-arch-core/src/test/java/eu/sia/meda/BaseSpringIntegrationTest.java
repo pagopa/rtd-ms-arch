@@ -10,7 +10,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest()
 @TestPropertySource(properties = {
         "logging.level.root=INFO",
-        "logging.level.eu.sia=DEBUG"
+        "logging.level.eu.sia=DEBUG",
+        "logging.level.eu.sia.meda.layers.connector.http.HttpConnectionPool=INFO"
 })
 public class BaseSpringIntegrationTest extends BaseTest {
 }

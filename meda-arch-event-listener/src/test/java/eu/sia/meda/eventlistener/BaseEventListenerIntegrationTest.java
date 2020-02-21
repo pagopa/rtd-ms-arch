@@ -12,7 +12,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -29,7 +28,8 @@ import org.springframework.test.context.TestPropertySource;
 import javax.management.*;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -96,14 +96,22 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
 
         ColoredPrinters.PRINT_GREEN.println("Waiting for a response...");
         consumer.seekToBeginning(consumer.assignment());
-        ConsumerRecords<String,String> published = consumer.poll(getTimeout());
+
+        List<ConsumerRecord<String, String>> consumedRecords = new ArrayList<>();
+
+        for(int i=0, j=0; i<=getExpectedPublishedMessagesCount() && j<getExpectedPublishedMessagesCount();j++){
+            ConsumerRecords<String, String> published = consumer.poll(getTimeout());
+            for (ConsumerRecord<String, String> stringStringConsumerRecord : published) {
+                consumedRecords.add(stringStringConsumerRecord);
+                i++;
+            }
+        }
 
         ColoredPrinters.PRINT_GREEN.println("Checking results...");
-        Assert.assertEquals(1, getExpectedPublishedMessagesCount(published));
-        verifyPublishedMessages(published.iterator());
+        verifyPublishedMessages(consumedRecords);
 
         ErrorPublisherService errorPublisherService = getErrorPublisherService();
-        if(errorPublisherService != null){
+        if (errorPublisherService != null) {
             BDDMockito.verify(errorPublisherService, Mockito.never()).publishErrorEvent(Mockito.any(), Mockito.any(), Mockito.any());
         }
     }
@@ -129,10 +137,10 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     protected Duration getTimeout() {
         return Duration.ofMillis(5000);
     }
-    /** The expected number of topic published */
-    protected int getExpectedPublishedMessagesCount(ConsumerRecords<String,String> published) {
-        return published.count();
+    /** The expected number of record published */
+    protected int getExpectedPublishedMessagesCount() {
+        return 1;
     }
     /** To verify the content of the published message */
-    protected abstract void verifyPublishedMessages(Iterator<? extends ConsumerRecord<String,String>> iterator);
+    protected abstract void verifyPublishedMessages(List<ConsumerRecord<String,String>> records);
 }
