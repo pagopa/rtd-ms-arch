@@ -11,7 +11,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.Serializable;
 
-/** Base test class to unit test common behavior of {@link CrudController} */
+/** Base test class to unit test common behavior of {@link CrudController}
+ * Remember to define
+ * <ol>
+ * <li>{@link org.springframework.context.annotation.Import} and {@link org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest} to configure the Spring Context</li>
+ * <li>{@link org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc}(secure = false)</li>
+ * </ol>
+ */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = DummyConfiguration.class)
 @TestPropertySource(properties = {

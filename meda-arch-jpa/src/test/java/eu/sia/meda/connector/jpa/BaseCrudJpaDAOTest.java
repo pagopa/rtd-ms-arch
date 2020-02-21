@@ -24,8 +24,7 @@ import java.util.Optional;
 public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends Serializable, K extends Serializable> extends BaseSpringIntegrationTest {
 
     protected final Class<D> daoClass;
-    private final Class<E> entityClass;
-    private final Class<K> keyClass;
+    protected final Class<E> entityClass;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,7 +33,6 @@ public abstract class BaseCrudJpaDAOTest<D extends CrudJpaDAO<E, K>, E extends S
     public BaseCrudJpaDAOTest() {
         this.daoClass = (Class<D>) ReflectionUtils.getGenericTypeClass(getClass(), 0);
         this.entityClass = (Class<E>) ReflectionUtils.getGenericTypeClass(getClass(), 1);
-        this.keyClass = (Class<K>) ReflectionUtils.getGenericTypeClass(getClass(), 2);
 
         CriteriaQuery<? super E> queryCriteria = getMatchAlreadySavedCriteria();
         org.springframework.util.ReflectionUtils.doWithFields(queryCriteria.getClass(), f -> {
