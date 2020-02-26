@@ -169,7 +169,7 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         return json.replaceAll("\"_links\":\\{\"self\":\\{([^}]+\\})\\}", "\"links\":[{\"rel\":\"self\",$1]");
     }
 
-    private String transformEmbeddedAfterLinks(String json) {
+    protected String transformEmbeddedAfterLinks(String json) {
         return json.replaceAll("\"_embedded\":\\{\"[^\"]+\":(.*)\\},\"links", "\"content\":$1,\"links");
     }
 
