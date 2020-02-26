@@ -22,7 +22,7 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     protected final BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
     @Autowired
-    private PagedResourcesAssembler<E> pagedResourcesAssembler;
+    protected PagedResourcesAssembler<E> pagedResourcesAssembler;
 
     protected CrudControllerImpl(CrudService<E, K> crudService, BaseResourceAssemblerSupport<E, R> resourceAssembler) {
         this.crudService = crudService;
