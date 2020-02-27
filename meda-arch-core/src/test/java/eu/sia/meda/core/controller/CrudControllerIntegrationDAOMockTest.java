@@ -18,7 +18,7 @@ import java.io.Serializable;
 @TestPropertySource(properties = {
         "logging.level.root=INFO"
 })
-public abstract class CrudControllerIntegrationDAOMockTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<E>> extends CrudOperationTest<R, E, K, C> {
+public abstract class CrudControllerIntegrationDAOMockTest<R extends BaseResource, E extends Serializable, K extends Serializable, C extends CriteriaQuery<? super E>> extends CrudOperationTest<R, E, K, C> {
     @Override
     protected CrudDAO<E, K> getCrudOperationsMock() {
         return getCrudDAOMock();
