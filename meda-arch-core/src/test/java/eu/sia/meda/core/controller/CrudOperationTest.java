@@ -153,6 +153,29 @@ public abstract class CrudOperationTest<R extends BaseResource, E extends Serial
         }
     }
 
+    @Test
+    public void testFindAllNoResult() throws Exception {
+        Mockito.reset(crudOperationsMock);
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders
+                .get(getBasePath())
+                .param("page", "0")
+                .param("size", getNTestData()+"")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+        )
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+
+        String transformedResponse = transformEmbeddedAfterLinks(transformLinks(result.getResponse().getContentAsString()));
+        Assert.assertTrue(transformedResponse.contains("\"content\":[]"));
+
+        PagedResources<R> pageResult = objectMapper.readValue(
+                transformedResponse,
+                objectMapper.getTypeFactory().constructParametricType(PagedResources.class, resourceClazz)
+        );
+        Assert.assertEquals(0, pageResult.getContent().size());
+    }
+
     private C getCriteriaQuery() {
         try {
             return TestUtils.mockInstance(criteriaQueryClazz.newInstance());

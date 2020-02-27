@@ -4,6 +4,7 @@ import eu.sia.meda.core.assembler.BaseResourceAssemblerSupport;
 import eu.sia.meda.core.resource.BaseResource;
 import eu.sia.meda.layers.connector.query.CriteriaQuery;
 import eu.sia.meda.service.CrudService;
+import eu.sia.meda.util.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,19 +22,28 @@ public abstract class CrudControllerImpl <R extends BaseResource, E extends Seri
     protected final CrudService<E,K> crudService;
     protected final BaseResourceAssemblerSupport<E,R> resourceAssembler;
 
+    private final Class<R> resourceClass;
+
     @Autowired
     protected PagedResourcesAssembler<E> pagedResourcesAssembler;
 
     protected CrudControllerImpl(CrudService<E, K> crudService, BaseResourceAssemblerSupport<E, R> resourceAssembler) {
         this.crudService = crudService;
         this.resourceAssembler = resourceAssembler;
+
+        //noinspection unchecked
+        this.resourceClass=(Class<R>)ReflectionUtils.getGenericTypeClass(getClass(), 0);
     }
 
     @Override
     public PagedResources<R> findAll(C criteriaQuery, Pageable pageable) {
-        Page<E> result = crudService.findAll((CriteriaQuery<E>) criteriaQuery, pageable);
+        Page<E> result = crudService.findAll(criteriaQuery, pageable);
         if(result == null){
             result = Page.empty();
+        }
+        if(!result.hasContent()){
+            //noinspection unchecked
+            return (PagedResources<R>)pagedResourcesAssembler.toEmptyResource(result, resourceClass);
         }
 
         return pagedResourcesAssembler.toResource(result, resourceAssembler);
