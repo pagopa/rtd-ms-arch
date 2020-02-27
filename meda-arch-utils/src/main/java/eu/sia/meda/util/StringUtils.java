@@ -98,11 +98,11 @@ public class StringUtils {
     *
     */
 
-   public static String md5(String input) {
+   public static String sha256(String input) {
       try {
-         return new String(MessageDigest.getInstance("MD5").digest(input.getBytes()));
+         return new String(MessageDigest.getInstance("SHA-256").digest(input.getBytes()));
       } catch (NoSuchAlgorithmException e) {
-         throw new IllegalArgumentException("Method MD5 not found");
+         throw new IllegalArgumentException("Method SHA-256 not found");
       }
    }
 }
