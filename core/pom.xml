@@ -1,0 +1,103 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- RELEASE -->
+	<artifactId>meda-arch-core</artifactId>
+
+	<parent>
+		<groupId>eu.sia.meda</groupId>
+		<artifactId>meda-arch</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<name>rtd-ms-arch-core</name>
+	<description>This project is the core of the architecture of a micro-service.</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<springfox-swagger.version>2.9.2</springfox-swagger.version>
+		<dozer.version>6.1.0</dozer.version>
+		<spring-session.version>1.3.0.RELEASE</spring-session.version>
+		<commons-lang3.version>3.5</commons-lang3.version>
+		<commons-io.version>2.5</commons-io.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>eu.sia.meda</groupId>
+			<artifactId>meda-arch-exception</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.hateoas</groupId>
+			<artifactId>spring-hateoas</artifactId>
+		</dependency>
+
+		<!-- Security Stuff -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>3.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.danielwegener</groupId>
+			<artifactId>logback-kafka-appender</artifactId>
+			<version>0.2.0-RC2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sshd</groupId>
+			<artifactId>sshd-sftp</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sshd</groupId>
+			<artifactId>sshd-core</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-sftp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+		</dependency>
+
+	</dependencies>
+
+</project>
