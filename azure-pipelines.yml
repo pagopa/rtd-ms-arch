@@ -20,9 +20,11 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'install'
-- task: DownloadBuildArtifacts@0
+- task: UniversalPackages@0
   inputs:
-    buildType: 'current'
-    downloadType: 'specific'
-    itemPattern: '**.jar'
-    downloadPath: '$(System.ArtifactsDirectory)'
+    command: 'publish'
+    publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    feedsToUsePublish: 'internal'
+    vstsFeedPublish: '365c4b5c-1f31-4eac-965c-cfeb415db2fd/4d41e27a-723b-421f-86cf-7ecf6a5776b0'
+    vstsFeedPackagePublish: 'rtd-ms-arch'
+    versionOption: 'patch'
