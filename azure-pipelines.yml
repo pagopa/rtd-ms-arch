@@ -1,10 +1,9 @@
-# Maven
 # Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -20,11 +19,12 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'install'
-- task: UniversalPackages@0
+- task: GitHubRelease@1
   inputs:
-    command: 'publish'
-    publishDirectory: '$(Build.ArtifactStagingDirectory)'
-    feedsToUsePublish: 'internal'
-    vstsFeedPublish: '365c4b5c-1f31-4eac-965c-cfeb415db2fd/4d41e27a-723b-421f-86cf-7ecf6a5776b0'
-    vstsFeedPackagePublish: 'rtd-ms-arch'
-    versionOption: 'patch'
+    gitHubConnection: 'GitHub connection with PAT'
+    repositoryName: 'pagopa/rtd-ms-arch'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'gitTag'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
