@@ -17,6 +17,13 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
+    publishJUnitResults: 
+    sonarQubeRunAnalysis: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'install'
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'specific'
+    itemPattern: '**.jar'
+    downloadPath: '$(System.ArtifactsDirectory)'
