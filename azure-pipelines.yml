@@ -18,13 +18,4 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'install'
-- task: GitHubRelease@1
-  inputs:
-    gitHubConnection: 'GitHub connection with PAT'
-    repositoryName: 'pagopa/rtd-ms-arch'
-    action: 'create'
-    target: '$(Build.SourceVersion)'
-    tagSource: 'gitTag'
-    changeLogCompareToRelease: 'lastFullRelease'
-    changeLogType: 'commitBased'
+    goals: 'deploy'
