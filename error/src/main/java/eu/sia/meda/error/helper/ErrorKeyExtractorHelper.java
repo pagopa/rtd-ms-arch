@@ -9,18 +9,18 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
-import org.slf4j.Logger;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.error.consts.Constants;
 import eu.sia.meda.exceptions.IMedaDomainException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ErrorKeyExtractorHelper.
  */
+@Slf4j
 public class ErrorKeyExtractorHelper {
 
 	/**
@@ -28,9 +28,6 @@ public class ErrorKeyExtractorHelper {
 	 */
 	private ErrorKeyExtractorHelper() {
 	}
-
-	/** The Constant logger. */
-	private static final Logger logger = LoggerUtils.getLogger(ErrorKeyExtractorHelper.class);
 
 	/**
 	 * Gets the constraint violation exception error keys.
@@ -54,7 +51,7 @@ public class ErrorKeyExtractorHelper {
 				return Arrays.asList(Constants.GENERIC_ERROR_KEY);
 			}
 		} catch (Exception var4) {
-			logger.error("error in getConstraintViolationExceptionErrorKeys: {}", var4.getMessage());
+			log.error("error in getConstraintViolationExceptionErrorKeys: {}", var4.getMessage());
 			return Arrays.asList(Constants.GENERIC_ERROR_KEY);
 		}
 	}
@@ -85,7 +82,7 @@ public class ErrorKeyExtractorHelper {
 			errorKey = cleanErrorKey(errorKey);
 			return errorKey;
 		} else {
-			logger.error("unhandled ConstraintViolation");
+			log.error("unhandled ConstraintViolation");
 			return Constants.GENERIC_ERROR_KEY;
 		}
 	}
@@ -110,11 +107,11 @@ public class ErrorKeyExtractorHelper {
 				String methodName = e.getParameter().getMethod().getName();
 				return getBindingResultErrorKeys(controllerName, methodName, e.getBindingResult());
 			} else {
-				logger.error("can not extract key from MethodArgumentNotValidException");
+				log.error("can not extract key from MethodArgumentNotValidException");
 				return Arrays.asList(Constants.GENERIC_ERROR_KEY);
 			}
 		} catch (Exception var4) {
-			logger.error("error in getMethodArgumentNotValidExceptionErrorKeys: {}", var4.getMessage());
+			log.error("error in getMethodArgumentNotValidExceptionErrorKeys: {}", var4.getMessage());
 			return Arrays.asList(Constants.GENERIC_ERROR_KEY);
 		}
 	}
@@ -140,7 +137,7 @@ public class ErrorKeyExtractorHelper {
 
 			return errorKeys;
 		} else {
-			logger.error("can not extract key from BindingResult");
+			log.error("can not extract key from BindingResult");
 			return Arrays.asList(Constants.GENERIC_ERROR_KEY);
 		}
 	}
@@ -159,7 +156,7 @@ public class ErrorKeyExtractorHelper {
 			try {
 				cv = (ConstraintViolation) fe.unwrap(ConstraintViolation.class);
 			} catch (Exception var5) {
-				logger.error("FieldError unwrap failed");
+				log.error("FieldError unwrap failed");
 				return Constants.GENERIC_ERROR_KEY;
 			}
 
@@ -173,11 +170,11 @@ public class ErrorKeyExtractorHelper {
 				errorKey = cleanErrorKey(errorKey);
 				return errorKey;
 			} else {
-				logger.error("can not extract key from ConstraintViolationImpl");
+				log.error("can not extract key from ConstraintViolationImpl");
 				return Constants.GENERIC_ERROR_KEY;
 			}
 		} else {
-			logger.error("can not extract key from FieldError");
+			log.error("can not extract key from FieldError");
 			return Constants.GENERIC_ERROR_KEY;
 		}
 	}
@@ -207,7 +204,7 @@ public class ErrorKeyExtractorHelper {
 		if (e != null && e.getCode() != null && !e.getCode().isEmpty()) {
 			return e.getCode();
 		} else {
-			logger.error("IMedaDomainException code not defined");
+			log.error("IMedaDomainException code not defined");
 			return Constants.GENERIC_ERROR_KEY;
 		}
 	}

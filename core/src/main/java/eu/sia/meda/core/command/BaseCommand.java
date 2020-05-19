@@ -1,5 +1,15 @@
 package eu.sia.meda.core.command;
 
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+
 import eu.sia.meda.async.util.AsyncUtils;
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.core.interceptors.BaseContextHolder;
@@ -10,14 +20,6 @@ import eu.sia.meda.exceptions.MedaRollbackException;
 import eu.sia.meda.exceptions.MedaTransactionException;
 import eu.sia.meda.transactions.MedaTransactionManager;
 import eu.sia.meda.transactions.TransactionStep;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * The Class BaseCommand.

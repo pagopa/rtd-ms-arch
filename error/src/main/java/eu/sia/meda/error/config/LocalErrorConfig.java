@@ -1,59 +1,49 @@
 package eu.sia.meda.error.config;
 
-import eu.sia.meda.error.condition.ErrorManagerEnabledCondition;
-import eu.sia.meda.exceptions.model.ErrorMessage;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+
+import eu.sia.meda.exceptions.model.ErrorMessage;
 
 /**
  * The Class LocalErrorConfig.
  */
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties(
-   prefix = "local-error"
-)
-@PropertySource(
-   value = {"classpath:local-error.properties"},
-   name = "localErrorConfig",
-   ignoreResourceNotFound = true
-)
-@Conditional({ErrorManagerEnabledCondition.class})
+@ConfigurationProperties(prefix = "local-error")
+@PropertySource(value = {
+		"classpath:local-error.properties" }, name = "localErrorConfig", ignoreResourceNotFound = true)
 public class LocalErrorConfig {
-   
-   /** The messages. */
-   Map<String, ErrorMessage> messages = new HashMap();
 
-   /**
-    * Gets the messages.
-    *
-    * @return the messages
-    */
-   public Map<String, ErrorMessage> getMessages() {
-      return this.messages;
-   }
+	/** The messages. */
+	Map<String, ErrorMessage> messages = new HashMap<>();
 
-   /**
-    * Sets the messages.
-    *
-    * @param messages the messages
-    */
-   public void setMessages(Map<String, ErrorMessage> messages) {
-      this.messages = new HashMap();
-      Iterator var2 = messages.entrySet().iterator();
+	/**
+	 * Gets the messages.
+	 *
+	 * @return the messages
+	 */
+	public Map<String, ErrorMessage> getMessages() {
+		return this.messages;
+	}
 
-      while(var2.hasNext()) {
-         Entry<String, ErrorMessage> entry = (Entry)var2.next();
-         ((ErrorMessage)entry.getValue()).setMessageKey((String)entry.getKey());
-         this.messages.put(((String)entry.getKey()).toLowerCase(), entry.getValue());
-      }
+	/**
+	 * Sets the messages.
+	 *
+	 * @param messages the messages
+	 */
+	public void setMessages(Map<String, ErrorMessage> messages) {
+		this.messages = new HashMap<>();
 
-   }
+		messages.entrySet().stream().forEach(x -> {
+			x.getValue().setMessageKey(x.getKey());
+			this.messages.put((x.getKey()).toLowerCase(), x.getValue());
+		});
+
+	}
 }

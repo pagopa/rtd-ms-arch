@@ -8,10 +8,10 @@
 	<parent>
 		<groupId>eu.sia.meda</groupId>
 		<artifactId>meda-arch</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-pagopa</version>
 	</parent>
 
-	<name>rtd-ms-arch-core</name>
+	<name>meda-arch-core</name>
 	<description>This project is the core of the architecture of a micro-service.</description>
 
 	<properties>
@@ -28,7 +28,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>eu.sia.meda</groupId>
-			<artifactId>meda-arch-exception</artifactId>
+			<artifactId>meda-arch-error</artifactId>
+			<version>1.0-pagopa</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.hateoas</groupId>
