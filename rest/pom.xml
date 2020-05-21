@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.sia.meda</groupId>
         <artifactId>meda-arch</artifactId>
-        <version>1.0-pagopa</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -18,7 +18,6 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
-            <version>1.0-pagopa</version>
         </dependency>
 
         <dependency>
@@ -38,7 +37,6 @@
         <dependency>
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
-            <version>1.0-pagopa</version>
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
