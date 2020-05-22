@@ -1,6 +1,3 @@
-/*
- * 
- */
 package eu.sia.meda.exceptions;
 
 import java.util.HashMap;
@@ -10,10 +7,12 @@ import org.springframework.http.HttpStatus;
 
 import eu.sia.meda.exceptions.model.MedaErrorTypeEnum;
 import eu.sia.meda.exceptions.model.MedaSeverityEnum;
+import lombok.Data;
 
 /**
  * The Class MedaDomainRuntimeException.
  */
+@Data
 public class MedaDomainRuntimeException extends RuntimeException implements IMedaDomainException {
    
    /** The code. */
@@ -141,66 +140,4 @@ public class MedaDomainRuntimeException extends RuntimeException implements IMed
       this.remoteSource = remoteSource;
    }
 
-   /**
-    * Gets the code.
-    *
-    * @return the code
-    */
-   public String getCode() {
-      return this.code;
-   }
-
-   /**
-    * Gets the response status.
-    *
-    * @return the response status
-    */
-   public HttpStatus getResponseStatus() {
-      return this.responseStatus;
-   }
-
-   /**
-    * Gets the error type.
-    *
-    * @return the error type
-    */
-   public MedaErrorTypeEnum getErrorType() {
-      return this.errorType;
-   }
-
-   /**
-    * Gets the severity.
-    *
-    * @return the severity
-    */
-   public MedaSeverityEnum getSeverity() {
-      return this.severity;
-   }
-
-   /**
-    * Gets the additional info.
-    *
-    * @return the additional info
-    */
-   public Map<String, Object> getAdditionalInfo() {
-      return this.additionalInfo;
-   }
-
-   /**
-    * Gets the raw remote error.
-    *
-    * @return the raw remote error
-    */
-   public String getRawRemoteError() {
-      return this.rawRemoteError;
-   }
-
-   /**
-    * Gets the remote source.
-    *
-    * @return the remote source
-    */
-   public String getRemoteSource() {
-      return this.remoteSource;
-   }
 }

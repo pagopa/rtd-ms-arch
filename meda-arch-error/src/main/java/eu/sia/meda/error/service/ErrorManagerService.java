@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 /**
  * The Class ErrorManagerService.
  */
-@Slf4j
 public abstract class ErrorManagerService {
 
 	/**
@@ -106,8 +105,6 @@ public abstract class ErrorManagerService {
 			return transcodeParametricErrorMessage(errorKey, errorMap);
 		} else {
 			String[] parts = errorKey.split("\\.");
-			//if(parts.length == 5){
-			//if(parts.length >= 5){
 			if (parts.length >= 4) {
 				return transcodeValidationApiError(errorKey, parts, errorMap);
 			}

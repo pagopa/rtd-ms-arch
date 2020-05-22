@@ -1,6 +1,3 @@
-/*
- * 
- */
 package eu.sia.meda.exceptions;
 
 /**
@@ -34,12 +31,4 @@ public class MedaForbiddenException extends Exception {
       this.code = code;
    }
 
-   /**
-    * Gets the code.
-    *
-    * @return the code
-    */
-   public String getCode() {
-      return this.code;
-   }
 }

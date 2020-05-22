@@ -1,25 +1,36 @@
 package eu.sia.meda.util;
 
-import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.springframework.hateoas.Link;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.*;
-import java.time.chrono.ChronoZonedDateTime;
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
+
+import lombok.Value;
 
 public final class TestUtils {
     private TestUtils(){}
@@ -222,8 +233,6 @@ public final class TestUtils {
                                 result = v2.equals(v1);
                             } else if (Enum.class.isAssignableFrom(v2.getClass()) && Enum.class.isAssignableFrom(v1.getClass())) {
                                 result = v1.toString().equals(v2.toString());
-                            } else if (Link.class.isAssignableFrom(v2.getClass())) {
-                                result = v1.toString().equals(((Link) v2).getHref().replaceFirst("^.*/",""));
                             } else if (String.class.isAssignableFrom(v1.getClass()) || String.class.isAssignableFrom(v2.getClass())) {
                                 result = v1.toString().equals(v2.toString());
                             } else {

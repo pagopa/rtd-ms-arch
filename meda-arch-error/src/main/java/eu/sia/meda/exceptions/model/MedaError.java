@@ -1,6 +1,3 @@
-/*
- * 
- */
 package eu.sia.meda.exceptions.model;
 
 import java.io.Serializable;
@@ -9,10 +6,12 @@ import java.util.Map;
 
 import eu.sia.meda.exceptions.MedaDomainException;
 import eu.sia.meda.exceptions.MedaDomainRuntimeException;
+import lombok.Data;
 
 /**
  * The Class MedaError.
  */
+@Data
 public class MedaError implements Serializable {
    
    /** The Constant MESSAGE_UNKNOWN. */

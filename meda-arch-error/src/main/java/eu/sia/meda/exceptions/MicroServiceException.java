@@ -1,6 +1,3 @@
-/*
- * 
- */
 package eu.sia.meda.exceptions;
 
 import java.util.List;
@@ -97,6 +94,7 @@ public class MicroServiceException extends Exception {
     *
     * @return the message
     */
+   @Override
    public String getMessage() {
       return this.mainError == null ? super.getMessage() : this.mainError.getMessage();
    }

@@ -1,6 +1,3 @@
-/*
- * 
- */
 package eu.sia.meda.exceptions;
 
 /**
