@@ -22,3 +22,8 @@ steps:
     mavenAuthenticateFeed: true
     effectivePomSkip: true
     sonarQubeRunAnalysis: false
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '**'
+    publishLocation: 'Container'
