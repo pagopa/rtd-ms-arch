@@ -1,39 +1,28 @@
 package eu.sia.meda.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
+import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-
-import lombok.Value;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.*;
+import java.time.chrono.ChronoZonedDateTime;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class TestUtils {
-    private TestUtils(){}
+    public static final String ANSI_BRIGHT_BLACK = "\u001B[90m";
 
     public static final String ANSI_RESET = "\u001B[0m";
 
@@ -45,29 +34,24 @@ public final class TestUtils {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
-
-    public static final String ANSI_BRIGHT_BLACK  = "\u001B[90m";
-    public static final String ANSI_BRIGHT_RED    = "\u001B[91m";
-    public static final String ANSI_BRIGHT_GREEN  = "\u001B[92m";
+    public static final String ANSI_BRIGHT_RED = "\u001B[91m";
+    public static final String ANSI_BRIGHT_GREEN = "\u001B[92m";
+    public static final String ANSI_BRIGHT_BLUE = "\u001B[94m";
     public static final String ANSI_BRIGHT_YELLOW = "\u001B[93m";
-    public static final String ANSI_BRIGHT_BLUE   = "\u001B[94m";
+    public static final String ANSI_BRIGHT_CYAN = "\u001B[96m";
     public static final String ANSI_BRIGHT_PURPLE = "\u001B[95m";
-    public static final String ANSI_BRIGHT_CYAN   = "\u001B[96m";
-    public static final String ANSI_BRIGHT_WHITE  = "\u001B[97m";
+    public static final String ANSI_BRIGHT_WHITE = "\u001B[97m";
 
-    @Value
-    public static class CombinationIndex{
-        private int index;
-        private int total;
+    private TestUtils() {
     }
 
     /**
      * For each <i>setter</i> will be provided a list of <i>values</i> used to call it ( so setters.size() == values.size(), if values.size()==1 it will be used for each setter).
      * This method will calculate all the possible combination of the values to be used as input for the provided setter: for each combination, will be invoked the <i>executeCombination</i> Consumer
      */
-    public static <T> void executeCombinations(List<BiConsumer<T, Object>> setters, List<List<Object>> valuesBins, BiConsumer<CombinationIndex, T> consumeCombination, Supplier<T> supplier, boolean logCombination){
-        if(setters.size() != valuesBins.size()){
-            if(valuesBins.size() == 1){
+    public static <T> void executeCombinations(List<BiConsumer<T, Object>> setters, List<List<Object>> valuesBins, BiConsumer<CombinationIndex, T> consumeCombination, Supplier<T> supplier, boolean logCombination) {
+        if (setters.size() != valuesBins.size()) {
+            if (valuesBins.size() == 1) {
                 valuesBins = Collections.nCopies(setters.size(), valuesBins.get(0));
             } else {
                 throw new IllegalArgumentException("For each setter should be provided the list of values to be used!");
@@ -78,20 +62,20 @@ public final class TestUtils {
 
         List<Integer> combinationIndexes = new ArrayList<>(Collections.nCopies(setters.size(), 0));
         int accumulator;
-        for(int i=0;i<combinations;i++){
+        for (int i = 0; i < combinations; i++) {
             accumulator = 1;
             T object = supplier.get();
-            for(int j=0;j<setters.size();j++){
+            for (int j = 0; j < setters.size(); j++) {
                 List<Object> values = valuesBins.get(j);
                 int valuesSize = values.size();
-                int valueIndex = (i/accumulator)%valuesSize;
+                int valueIndex = (i / accumulator) % valuesSize;
                 accumulator *= valuesSize;
 
                 setters.get(j).accept(object, values.get(valueIndex));
                 combinationIndexes.set(j, valueIndex);
             }
 
-            if(logCombination){
+            if (logCombination) {
                 System.out.printf("Executing using combination indexes: %s%n", combinationIndexes.stream().map(Object::toString).collect(Collectors.joining(";")));
             }
 
@@ -99,21 +83,27 @@ public final class TestUtils {
         }
     }
 
-
-    /** To create an instance of {@link T} with fake data */
+    /**
+     * To create an instance of {@link T} with fake data
+     */
     public static <T> T mockInstance(T o, String... ignoredSetters) {
         return mockInstance(o, null, ignoredSetters);
     }
 
-    /** To create an instance of {@link T} with fake data, which values changes depending on <i>bias</i> */
+    /**
+     * To create an instance of {@link T} with fake data, which values changes depending on <i>bias</i>
+     */
     public static <T> T mockInstance(T o, Integer bias, String... ignoredSetters) {
         return mockInstance(o, bias, Level.INFO, ignoredSetters);
     }
-    /** To create an instance of {@link T} with fake data, which values changes depending on <i>bias</i> */
+
+    /**
+     * To create an instance of {@link T} with fake data, which values changes depending on <i>bias</i>
+     */
     public static <T> T mockInstance(T o, Integer bias, Level printLevel, String... ignoredSetters) {
         final int[] i = new int[]{bias == null ? 0 : bias * 1000};
         Set<String> toIgnore = new HashSet<>(Arrays.asList(ignoredSetters));
-        org.springframework.util.ReflectionUtils.doWithMethods(o.getClass(), m-> {
+        org.springframework.util.ReflectionUtils.doWithMethods(o.getClass(), m -> {
             if (m.getName().startsWith("set") && m.getParameterCount() == 1 && !toIgnore.contains(m.getName())) {
                 m.setAccessible(true);
                 Class<?> type = m.getParameterTypes()[0];
@@ -129,7 +119,7 @@ public final class TestUtils {
                     } else if (type.isAssignableFrom(Double.class) || type.isAssignableFrom(double.class)) {
                         m.invoke(o, (double) i[0]++);
                     } else if (type.isAssignableFrom(Boolean.class) || type.isAssignableFrom(boolean.class)) {
-                        m.invoke(o, i[0]%2==0);
+                        m.invoke(o, i[0] % 2 == 0);
                     } else if (type.isAssignableFrom(BigInteger.class)) {
                         m.invoke(o, BigInteger.valueOf(i[0]++));
                     } else if (type.isAssignableFrom(BigDecimal.class)) {
@@ -148,14 +138,14 @@ public final class TestUtils {
                         m.invoke(o, OffsetDateTime.now());
                     } else {
                         try {
-                            if(checkPrintLevel(printLevel, Level.INFO)){
+                            if (checkPrintLevel(printLevel, Level.INFO)) {
                                 System.out.printf("Mocking object %s%n", type);
                             }
                             m.invoke(o, mockInstance(type.newInstance(), bias));
                         } catch (Exception e) {
-                            if(checkPrintLevel(printLevel, Level.WARNING)) {
+                            if (checkPrintLevel(printLevel, Level.WARNING)) {
                                 String errorMessage = e.getMessage();
-                                if(e instanceof InvocationTargetException){
+                                if (e instanceof InvocationTargetException) {
                                     errorMessage = ((InvocationTargetException) e).getTargetException().getMessage();
                                 }
                                 System.out.println(String.format("[WARNING] Cannot mock using setter %s accepting type %s: %s - %s", m.getName(), type.getName(), e.getClass().getName(), errorMessage));
@@ -172,10 +162,6 @@ public final class TestUtils {
         return o;
     }
 
-    private static boolean checkPrintLevel(Level printLevel, Level expectedLevel) {
-        return printLevel.intValue() <= expectedLevel.intValue();
-    }
-
     /**
      * It will compare object having same getters name and will return the not compared fields
      */
@@ -187,9 +173,9 @@ public final class TestUtils {
 
         if (o1 != null) {
             for (Method m1 : o1.getClass().getMethods()) {
-                if ((m1.getName().startsWith("get")||m1.getName().startsWith("is")) && m1.getParameterCount() == 0 && !"getClass".equals(m1.getName())) {
-                    String fieldName = StringUtils.uncapitalize(m1.getName().replaceFirst("^(?:get|is)",""));
-                    if(ignoredFieldSet.contains(fieldName)){
+                if ((m1.getName().startsWith("get") || m1.getName().startsWith("is")) && m1.getParameterCount() == 0 && !"getClass".equals(m1.getName())) {
+                    String fieldName = StringUtils.uncapitalize(m1.getName().replaceFirst("^(?:get|is)", ""));
+                    if (ignoredFieldSet.contains(fieldName)) {
                         continue;
                     }
                     Method m2 = null;
@@ -209,12 +195,12 @@ public final class TestUtils {
                         if (v1 != null) {
                             if (v1.equals(v2)) {
                                 //Do Nothing
-                            } else if (v1 instanceof Comparable && v2 instanceof Comparable && ((Comparable)v1).compareTo(v2)==0) {
+                            } else if (v1 instanceof Comparable && v2 instanceof Comparable && ((Comparable) v1).compareTo(v2) == 0) {
                                 //Do Nothing
                             } else if (OffsetDateTime.class.isAssignableFrom(v1.getClass()) && OffsetDateTime.class.isAssignableFrom(v2.getClass())) {
-                                result = ((OffsetDateTime)v1).isEqual((OffsetDateTime)v2);
+                                result = ((OffsetDateTime) v1).isEqual((OffsetDateTime) v2);
                             } else if (ChronoZonedDateTime.class.isAssignableFrom(v1.getClass()) && ChronoZonedDateTime.class.isAssignableFrom(v2.getClass())) {
-                                result = ((ChronoZonedDateTime<?>)v1).isEqual((ChronoZonedDateTime<?>)v2);
+                                result = ((ChronoZonedDateTime<?>) v1).isEqual((ChronoZonedDateTime<?>) v2);
                             } else if (v1.getClass().isAssignableFrom(v2.getClass()) && ((v1.getClass().isPrimitive() && v2.getClass().isPrimitive()) || (!hasStandardEquals(v1.getClass()) && !hasStandardEquals(v2.getClass())))) {
                                 result = false;
                             } else if (BigInteger.class.isAssignableFrom(v1.getClass()) && Integer.class.isAssignableFrom(v2.getClass())) {
@@ -253,6 +239,24 @@ public final class TestUtils {
         }
         return checked;
     }
+
+    private static boolean checkPrintLevel(Level printLevel, Level expectedLevel) {
+        return printLevel.intValue() <= expectedLevel.intValue();
+    }
+
+    /**
+     * It will assert not null on all o's fields
+     */
+    public static void checkNotNullFields(Object o, String... excludedFields) {
+        Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
+        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),
+                f -> {
+                    f.setAccessible(true);
+                    Assert.assertNotNull("The field " + f.getName() + " of the input object of type " + o.getClass() + " is null!", f.get(o));
+                },
+                f -> !excludedFieldsSet.contains(f.getName()));
+    }
+
     private static boolean hasStandardEquals(Class<?> clazz) {
         try {
             return clazz.getMethod("equals", Object.class).equals(Object.class.getMethod("equals", Object.class));
@@ -263,21 +267,54 @@ public final class TestUtils {
         }
     }
 
-    /** It will assert not null on all o's fields */
-    public static void checkNotNullFields(Object o, String... excludedFields){
-        Set<String> excludedFieldsSet = new HashSet<>(Arrays.asList(excludedFields));
-        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),
-                f -> {
-                    f.setAccessible(true);
-                    Assert.assertNotNull("The field "+f.getName()+" of the input object of type "+o.getClass()+" is null!", f.get(o));
-                },
-                f -> !excludedFieldsSet.contains(f.getName()));
+    /**
+     * to validate an object against validation API
+     */
+    public static <T> Set<ConstraintViolation<T>> validate(T o) {
+        return validator.validate(o);
     }
 
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private static final Validator validator = factory.getValidator();
-    /** to validate an object against validation API */
-    public static <T> Set<ConstraintViolation<T>> validate(T o){
-        return validator.validate(o);
+
+    private static void injectEnvironmentVariable(String key, String value)
+            throws Exception {
+
+        Class<?> processEnvironment = Class.forName("java.lang.ProcessEnvironment");
+
+        Field unmodifiableMapField = getAccessibleField(processEnvironment, "theUnmodifiableEnvironment");
+        Object unmodifiableMap = unmodifiableMapField.get(null);
+        injectIntoUnmodifiableMap(key, value, unmodifiableMap);
+
+        Field mapField = getAccessibleField(processEnvironment, "theEnvironment");
+        Map<String, String> map = (Map<String, String>) mapField.get(null);
+        map.put(key, value);
+
+        mapField = getAccessibleField(processEnvironment, "theCaseInsensitiveEnvironment");
+        map = (Map<String, String>) mapField.get(null);
+        map.put(key, value);
+    }
+
+    private static Field getAccessibleField(Class<?> clazz, String fieldName)
+            throws NoSuchFieldException {
+
+        Field field = clazz.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field;
+    }
+
+    private static void injectIntoUnmodifiableMap(String key, String value, Object map)
+            throws ReflectiveOperationException {
+
+        Class unmodifiableMap = Class.forName("java.util.Collections$UnmodifiableMap");
+        Field field = getAccessibleField(unmodifiableMap, "m");
+        Object obj = field.get(map);
+        ((Map<String, String>) obj).put(key, value);
+    }
+
+    @Value
+    public static class CombinationIndex {
+        private int index;
+        private int total;
     }
 }
