@@ -1,6 +1,0 @@
-######################
-# Project Specific
-######################
-/sonar-report/**
-
-/target/

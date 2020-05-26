@@ -3,7 +3,6 @@ package eu.sia.meda.connector.rest.connector;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,18 +16,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.WireMockRestServiceServer;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.hal.Jackson2HalModule;
-import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
+//import org.springframework.hateoas.MediaTypes;
+//import org.springframework.hateoas.ResourceSupport;
+//import org.springframework.hateoas.hal.Jackson2HalModule;
+//import org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
@@ -36,12 +33,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.connector.rest.model.RestConnectorRequest;
@@ -202,11 +193,11 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE>
 				.setReadTimeout(restConfiguration.getTimeout())
 				.interceptors(new PlusEncoderInterceptor())
 				.build();
-		if (this.rt.getMessageConverters() != null) {
-			this.rt.getMessageConverters().add(0, this.getHalMessageConverter());
-		} else {
-			this.rt.setMessageConverters(Arrays.asList(this.getHalMessageConverter()));
-		}
+//		if (this.rt.getMessageConverters() != null) {
+//			this.rt.getMessageConverters().add(0, this.getHalMessageConverter());
+//		} else {
+//			this.rt.setMessageConverters(Arrays.asList(this.getHalMessageConverter()));
+//		}
 
 		List<ClientHttpRequestInterceptor> interceptors = this.rt.getInterceptors();
 		if (CollectionUtils.isEmpty((Collection<ClientHttpRequestInterceptor>) interceptors)) {
@@ -371,19 +362,19 @@ public abstract class BaseRestConnector<INPUT, OUTPUT, DTO, RESOURCE>
 	 *
 	 * @return the hal message converter
 	 */
-	private HttpMessageConverter getHalMessageConverter() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		objectMapper.registerModule(new Jackson2HalModule());
-		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.registerModule(new Jdk8Module());
-		MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(
-				ResourceSupport.class);
-		halConverter.setSupportedMediaTypes(Arrays.asList(MediaTypes.HAL_JSON));
-		halConverter.setObjectMapper(objectMapper);
-		return halConverter;
-	}
+//	private HttpMessageConverter getHalMessageConverter() {
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//		objectMapper.registerModule(new Jackson2HalModule());
+//		objectMapper.registerModule(new JavaTimeModule());
+//		objectMapper.registerModule(new Jdk8Module());
+//		MappingJackson2HttpMessageConverter halConverter = new TypeConstrainedMappingJackson2HttpMessageConverter(
+//				ResourceSupport.class);
+//		halConverter.setSupportedMediaTypes(Arrays.asList(MediaTypes.HAL_JSON));
+//		halConverter.setObjectMapper(objectMapper);
+//		return halConverter;
+//	}
 
 
 }

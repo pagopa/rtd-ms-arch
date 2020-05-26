@@ -11,7 +11,7 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<name>rtd-ms-arch-core</name>
+	<name>meda-arch-core</name>
 	<description>This project is the core of the architecture of a micro-service.</description>
 
 	<properties>
@@ -28,11 +28,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>eu.sia.meda</groupId>
-			<artifactId>meda-arch-exception</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.hateoas</groupId>
-			<artifactId>spring-hateoas</artifactId>
+			<artifactId>meda-arch-error</artifactId>
 		</dependency>
 
 		<!-- Security Stuff -->

@@ -563,27 +563,10 @@ public class JPAConnectorImpl<T, ID extends Serializable> extends SimpleJpaRepos
         return QueryUtils.getQueryString("delete from %s x", this.entityInformation.getEntityName());
     }
 
-    /**
-     * Gets the count query.
-     *
-     * @param <S>         the generic type
-     * @param spec        the spec
-     * @param domainClass the domain class
-     * @return the count query
-     */
-    protected <S extends T> TypedQuery<Long> getCountQuery(@Nullable Specification<S> spec, Class<S> domainClass) {
-        Specification<S> isEnable = (entity, cq, cb) -> cb.equal(entity.get("enable"), true);
-        CriteriaBuilder builder = this.em.getCriteriaBuilder();
-        CriteriaQuery<Long> query = builder.createQuery(Long.class);
-        Root<S> root = this.applySpecificationToCriteriaChild(spec == null ? isEnable : spec.and(isEnable), domainClass, query);
-        if (query.isDistinct()) {
-            query.select(builder.countDistinct(root));
-        } else {
-            query.select(builder.count(root));
-        }
-
-        query.orderBy(Collections.emptyList());
-        return this.em.createQuery(query);
+    @Override
+    protected <S extends T> TypedQuery<S> getQuery(Specification<S> spec, Class<S> domainClass, Sort sort) {
+        final IsEnabled<S> isEnable = new IsEnabled<>();
+        return super.getQuery(isEnable.and(spec), domainClass, sort);
     }
 
     /**
@@ -686,10 +669,34 @@ public class JPAConnectorImpl<T, ID extends Serializable> extends SimpleJpaRepos
         return QueryUtils.getQueryString(countQuery, this.entityInformation.getEntityName());
     }
 
-    @Override
-    protected <S extends T> TypedQuery<S> getQuery(Specification<S> spec, Class<S> domainClass, Sort sort) {
-        Specification<S> isEnable = (entity, cq, cb) -> cb.equal(entity.get("enable"), true);
-        return super.getQuery(spec == null ? isEnable : spec.and(isEnable), domainClass, sort);
+    /**
+     * Gets the count query.
+     *
+     * @param <S>         the generic type
+     * @param spec        the spec
+     * @param domainClass the domain class
+     * @return the count query
+     */
+    protected <S extends T> TypedQuery<Long> getCountQuery(@Nullable Specification<S> spec, Class<S> domainClass) {
+        CriteriaBuilder builder = this.em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        final IsEnabled<S> isEnable = new IsEnabled<>();
+        Root<S> root = this.applySpecificationToCriteriaChild(isEnable.and(spec), domainClass, query);
+        if (query.isDistinct()) {
+            query.select(builder.countDistinct(root));
+        } else {
+            query.select(builder.count(root));
+        }
+
+        query.orderBy(Collections.emptyList());
+        return this.em.createQuery(query);
+    }
+
+    protected static class IsEnabled<T> implements Specification<T> {
+        @Override
+        public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+            return criteriaBuilder.equal(root.get("enabled"), true);
+        }
     }
 
     /**

@@ -19,10 +19,7 @@
             <groupId>eu.sia.meda</groupId>
             <artifactId>meda-arch-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>eu.sia.meda</groupId>
-            <artifactId>meda-arch-exception</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

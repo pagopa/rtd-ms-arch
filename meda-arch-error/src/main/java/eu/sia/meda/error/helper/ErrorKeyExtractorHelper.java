@@ -1,21 +1,19 @@
 package eu.sia.meda.error.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import eu.sia.meda.error.consts.Constants;
+import eu.sia.meda.exceptions.IMedaDomainException;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import eu.sia.meda.error.consts.Constants;
-import eu.sia.meda.exceptions.IMedaDomainException;
-import lombok.extern.slf4j.Slf4j;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The Class ErrorKeyExtractorHelper.
@@ -67,7 +65,7 @@ public class ErrorKeyExtractorHelper {
 				&& cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
 				&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
 				&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
-						.getType() != null) {
+				.getType() != null) {
 			String[] splits = cv.getRootBeanClass().getName().split("\\.");
 			String controllerName;
 			if (splits.length <= 1) {
@@ -78,13 +76,38 @@ public class ErrorKeyExtractorHelper {
 
 			String errorKey = controllerName + "." + cv.getPropertyPath() + "."
 					+ getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
-							.getAnnotationDescriptor().getType().getName());
+					.getAnnotationDescriptor().getType().getName());
 			errorKey = cleanErrorKey(errorKey);
 			return errorKey;
 		} else {
 			log.error("unhandled ConstraintViolation");
 			return Constants.GENERIC_ERROR_KEY;
 		}
+	}
+
+	/**
+	 * Gets the constraint name.
+	 *
+	 * @param constraintFullName the constraint full name
+	 * @return the constraint name
+	 */
+	private static String getConstraintName(String constraintFullName) {
+		if (constraintFullName != null && !constraintFullName.isEmpty()) {
+			String[] splits = constraintFullName.split("\\.");
+			return splits[splits.length - 1];
+		} else {
+			return constraintFullName;
+		}
+	}
+
+	/**
+	 * Clean error key.
+	 *
+	 * @param errorKey the error key
+	 * @return the string
+	 */
+	public static String cleanErrorKey(String errorKey) {
+		return errorKey == null ? null : errorKey.replaceAll("\\[[0-9]+\\]", "");
 	}
 
 	/**
@@ -125,7 +148,7 @@ public class ErrorKeyExtractorHelper {
 	 * @return the binding result error keys
 	 */
 	private static List<String> getBindingResultErrorKeys(String controllerName, String methodName,
-			BindingResult bindingResult) {
+														  BindingResult bindingResult) {
 		if (bindingResult != null && !bindingResult.getFieldErrors().isEmpty()) {
 			List<String> errorKeys = new ArrayList<>();
 			Iterator<FieldError> var4 = bindingResult.getFieldErrors().iterator();
@@ -163,10 +186,10 @@ public class ErrorKeyExtractorHelper {
 			if (cv != null && cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
 					&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
 					&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
-							.getType() != null) {
+					.getType() != null) {
 				String errorKey = controllerName + "." + methodName + "." + fe.getObjectName() + "." + fe.getField()
 						+ "." + getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
-								.getAnnotationDescriptor().getType().getName());
+						.getAnnotationDescriptor().getType().getName());
 				errorKey = cleanErrorKey(errorKey);
 				return errorKey;
 			} else {
@@ -176,21 +199,6 @@ public class ErrorKeyExtractorHelper {
 		} else {
 			log.error("can not extract key from FieldError");
 			return Constants.GENERIC_ERROR_KEY;
-		}
-	}
-
-	/**
-	 * Gets the constraint name.
-	 *
-	 * @param constraintFullName the constraint full name
-	 * @return the constraint name
-	 */
-	private static String getConstraintName(String constraintFullName) {
-		if (constraintFullName != null && !constraintFullName.isEmpty()) {
-			String[] splits = constraintFullName.split("\\.");
-			return splits[splits.length - 1];
-		} else {
-			return constraintFullName;
 		}
 	}
 
@@ -207,15 +215,5 @@ public class ErrorKeyExtractorHelper {
 			log.error("IMedaDomainException code not defined");
 			return Constants.GENERIC_ERROR_KEY;
 		}
-	}
-
-	/**
-	 * Clean error key.
-	 *
-	 * @param errorKey the error key
-	 * @return the string
-	 */
-	public static String cleanErrorKey(String errorKey) {
-		return errorKey == null ? null : errorKey.replaceAll("\\[[0-9]+\\]", "");
 	}
 }

@@ -1,16 +1,22 @@
 package eu.sia.meda.error.service;
 
-import eu.sia.meda.exceptions.model.ErrorMessage;
-import eu.sia.meda.service.BaseService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import eu.sia.meda.exceptions.model.ErrorMessage;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The Class ErrorManagerService.
  */
-public abstract class ErrorManagerService extends BaseService {
+@Slf4j
+public abstract class ErrorManagerService {
 
     /**
      * The Constant DEFAULT_MESSAGE.

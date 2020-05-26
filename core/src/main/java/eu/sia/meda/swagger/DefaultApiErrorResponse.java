@@ -1,11 +1,8 @@
 package eu.sia.meda.swagger;
 
+import com.fasterxml.classmate.TypeResolver;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.classmate.TypeResolver;
-
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ResponseMessage;
@@ -16,7 +13,7 @@ import springfox.documentation.spi.service.contexts.OperationContext;
 /**
  * The Class DefaultApiErrorResponse.
  */
-@Component
+//@Component
 @Order(Integer.MIN_VALUE)
 public class DefaultApiErrorResponse implements OperationBuilderPlugin {
    
