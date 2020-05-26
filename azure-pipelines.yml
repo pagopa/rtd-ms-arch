@@ -13,6 +13,12 @@ steps:
   inputs:
     secureFile: 'settings.xml'
     retryCount: '2'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: 'settings.xml'
+    TargetFolder: '${HOME}/.m2/settings.xml'
+    OverWrite: true
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
