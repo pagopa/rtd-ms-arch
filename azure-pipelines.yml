@@ -9,6 +9,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'settings.xml'
+    retryCount: '2'
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
