@@ -18,7 +18,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
-    Contents: '$(settingsxml.secureFilePath)'
+    Contents: '**'
     TargetFolder: '$HOME/.m2/'
     OverWrite: true
 - task: Maven@3
