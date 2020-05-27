@@ -10,6 +10,8 @@ pool:
 
 steps:
 - task: DownloadSecureFile@1
+  displayName: 'download settings.xml for Maven'
+  name: settingsxml
   inputs:
     secureFile: 'settingsxml'
     retryCount: '2'
@@ -17,7 +19,7 @@ steps:
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: '$(settingsxml.secureFilePath)'
-    TargetFolder: '~/.m2'
+    TargetFolder: '$HOME/.m2/'
     OverWrite: true
 - task: Maven@3
   inputs:
