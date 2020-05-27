@@ -13,13 +13,12 @@ steps:
   inputs:
     secureFile: 'settings.xml'
     retryCount: '2'
-    
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(settings.xml.secureFilePath)'
+    SourceFolder: '$(Agent.TempDirectory)'
+    Contents: '$(settings.xml.secureFilePath)'
     TargetFolder: '${HOME}/.m2/settings.xml'
     OverWrite: true
-- task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'clean install'
