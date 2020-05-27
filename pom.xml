@@ -1,6 +1,6 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.sia.meda</groupId>
@@ -35,11 +35,11 @@
 		<maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
 		<maven-jaxb2-plugin.version>0.13.1</maven-jaxb2-plugin.version>
 		<spring-security.version>5.0.6.RELEASE</spring-security.version>
-<!--		<maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>-->
-<!--		<maven-jacoco-plugin.version>0.8.5</maven-jacoco-plugin.version>-->
-<!--		<sonar.java.converagePlugin>jacoco</sonar.java.converagePlugin>-->
-<!--		<sonar.jacoco.reportPath>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</sonar.jacoco.reportPath>-->
-<!--		<sonar.language>java</sonar.language>-->
+		<!-- <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version> -->
+		<!-- <maven-jacoco-plugin.version>0.8.5</maven-jacoco-plugin.version> -->
+		<!-- <sonar.java.converagePlugin>jacoco</sonar.java.converagePlugin> -->
+		<!-- <sonar.jacoco.reportPath>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</sonar.jacoco.reportPath> -->
+		<!-- <sonar.language>java</sonar.language> -->
 		<sonar.exclusions>**/enums/**,**/model/**,**/Constants*.java</sonar.exclusions>
 	</properties>
 
@@ -51,7 +51,7 @@
 		<module>jpa</module>
 		<module>rest</module>
 	</modules>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -281,19 +281,41 @@
 			<artifactId>springfox-staticdocs</artifactId>
 			<version>2.4.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- COMMON DEPENDENCIES END -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-contract-wiremock</artifactId>
-        </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>com.github.tomakehurst</groupId>-->
-        <!--			<artifactId>wiremock-standalone</artifactId>-->
-        <!--		</dependency>-->
-    </dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- COMMON DEPENDENCIES END -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-wiremock</artifactId>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.github.tomakehurst</groupId> -->
+		<!-- <artifactId>wiremock-standalone</artifactId> -->
+		<!-- </dependency> -->
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>sia-dds@Local</id>
+			<url>https://pkgs.dev.azure.com/sia-dds/_packaging/sia-dds%40Local/maven/v1</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>sia-dds</id>
+			<name>sia-dds</name>
+			<url>https://pkgs.dev.azure.com/sia-dds/_packaging/sia-dds/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
 </project>
