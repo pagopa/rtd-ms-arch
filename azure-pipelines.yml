@@ -15,12 +15,12 @@ steps:
   inputs:
     secureFile: 'settingsxml'
     retryCount: '2'
-- task: CopyFiles@2
+- task: PowerShell@2
   inputs:
-    SourceFolder: '$(Agent.TempDirectory)'
-    Contents: '**'
-    TargetFolder: '$HOME/.m2/'
-    OverWrite: true
+    targetType: 'inline'
+    script: |
+      echo Installing $(settingsxml.secureFilePath) to ${home}/.m2/
+      Copy-Item -Force "$(settingsxml.secureFilePath)" "${HOME}/.m2/settings.xml"
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
