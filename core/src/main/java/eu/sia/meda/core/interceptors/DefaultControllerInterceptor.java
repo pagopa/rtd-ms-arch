@@ -155,7 +155,6 @@ public class DefaultControllerInterceptor implements HandlerInterceptor {
 		ApplicationContext applicationContext = new ApplicationContext();
 		applicationContext.setRequestId(MedaRequestAttributes.getRequestId(request));
 		applicationContext.setTransactionId(MedaRequestAttributes.getTransactionId(request));
-		applicationContext.setOriginApp(MedaRequestAttributes.getOriginApp(request));
 
 		applicationContext.buildDefaultCopyHeader();
 		return applicationContext;
