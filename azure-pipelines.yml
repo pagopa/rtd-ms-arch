@@ -11,13 +11,13 @@ pool:
 steps:
 - task: DownloadSecureFile@1
   inputs:
-    secureFile: 'settings.xml'
+    secureFile: 'settingsxml'
     retryCount: '2'
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
-    Contents: '$(settings.xml.secureFilePath)'
-    TargetFolder: '${HOME}/.m2/settings.xml'
+    Contents: '$(settingsxml.secureFilePath)'
+    TargetFolder: '${HOME}/.m2/'
     OverWrite: true
 - task: Maven@3
   inputs:
