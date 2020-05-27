@@ -17,7 +17,7 @@ steps:
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: '$(settingsxml.secureFilePath)'
-    TargetFolder: '${HOME}/.m2/'
+    TargetFolder: '~/.m2'
     OverWrite: true
 - task: Maven@3
   inputs:
