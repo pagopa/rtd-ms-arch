@@ -312,7 +312,7 @@
 	
 	<distributionManagement>
 		<repository>
-			<id>sia-dds</id>
+			<id>sia-dds@Local</id>
 			<name>sia-dds</name>
 			<url>https://pkgs.dev.azure.com/sia-dds/_packaging/sia-dds/maven/v1</url>
 		</repository>
