@@ -21,8 +21,8 @@ steps:
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
-    goals: 'help:active-profiles help:effective-pom'
-    options: '-s $(settingsxml.secureFilePath) -P azure-cstar'
+    goals: 'help:active-profiles help:effective-pom -P azure-cstar'
+    options: '-s $(settingsxml.secureFilePath)'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
