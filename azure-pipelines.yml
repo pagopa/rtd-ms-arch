@@ -26,6 +26,8 @@ steps:
     targetType: 'inline'
     script: |
       Write-Output '$(settingsxml.secureFilePath)'
+      Write-Output '${HOME}'
+      Write-Output '${{HOME}}'
       Get-ChildItem -Path "${HOME}/.m2/" -Force -Recurse
 #      Get-ChildItem env:
 - task: Maven@3
