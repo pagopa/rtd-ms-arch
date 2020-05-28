@@ -299,8 +299,8 @@
 	
 	<repositories>
 		<repository>
-			<id>sia-dds@Local</id>
-			<url>https://pkgs.dev.azure.com/sia-dds/_packaging/sia-dds%40Local/maven/v1</url>
+			<id>cstar</id>
+			<url>https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -309,5 +309,13 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>cstar</id>
+			<name>cstar</name>
+			<url>https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1</url>
+		</repository>
+	</distributionManagement>
 
 </project>
