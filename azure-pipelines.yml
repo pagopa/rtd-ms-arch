@@ -15,15 +15,15 @@ steps:
   inputs:
     secureFile: 'settingsxml'
     retryCount: '2'
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '/home/vsts/work/_temp/'
-    Contents: '$(settingsxml.secureFilePath)'
-    TargetFolder: "${HOME}/.m2/"
-    OverWrite: true
+#- task: CopyFiles@2
+#  inputs:
+#    SourceFolder: '${AGENT_TEMPDIRECTORY}'
+#    Contents: '$(settingsxml.secureFilePath)'
+#    TargetFolder: "${HOME}/.m2/"
+#    OverWrite: true
 - task: CmdLine@2
   inputs:
-    script: 'env'
+    script: 'echo $(settingsxml.secureFilePath)'
 #- task: PowerShell@2
 #  inputs:
 #    targetType: 'inline'
