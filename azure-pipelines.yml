@@ -18,7 +18,7 @@ steps:
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
-    goals: 'clean deploy'
+    goals: 'help:active-profiles help:effective-pom'
     options: '-s $(settingsxml.secureFilePath)'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
