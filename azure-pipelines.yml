@@ -21,22 +21,10 @@ steps:
     Contents: '$(settingsxml.secureFilePath)'
     TargetFolder: '${HOME}/.m2/'
     OverWrite: true
-#- task: PowerShell@2
-#  inputs:
-#    targetType: 'inline'
-#    script: |
-#      echo Installing $(settingsxml.secureFilePath) to ${home}/.m2/
-#      Copy-Item -Force "$(settingsxml.secureFilePath)" "${HOME}/.m2/"
-- task: Maven@3
+- task: PowerShell@2
   inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'clean install deploy'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    mavenVersionOption: 'Default'
-    mavenOptions: '-Xmx3072m'
-    mavenAuthenticateFeed: true
-    effectivePomSkip: true
-    sonarQubeRunAnalysis: false
+    targetType: 'inline'
+    script: |
+      echo Installing $(settingsxml.secureFilePath) to ${home}/.m2/
+      Copy-Item -Force "$(settingsxml.secureFilePath)" "${HOME}/.m2/"
+      Get-ChildItem -Path ${HOME}/.m2/ -Force -Recurse
