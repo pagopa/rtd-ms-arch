@@ -26,7 +26,18 @@ steps:
     targetType: 'inline'
     script: |
       Get-ChildItem -Path ${HOME}/.m2/ -Force -Recurse
-      Get-ChildItem -Path /home/ -Force -Recurse
       Get-ChildItem -Path /home/vsts/ -Force -Recurse
-      Get-ChildItem -Path /home/vsts/work/ -Force -Recurse
-      Get-ChildItem -Path / -Force -Recurse
+      Get-ChildItem env:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean install deploy'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    mavenVersionOption: 'Default'
+    mavenOptions: '-Xmx3072m'
+    mavenAuthenticateFeed: true
+    effectivePomSkip: true
+    sonarQubeRunAnalysis: false
