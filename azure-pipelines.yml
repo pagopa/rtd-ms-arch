@@ -15,6 +15,9 @@ steps:
   inputs:
     secureFile: 'settings.xml'
     retryCount: '2'
+- task: CmdLine@2
+  inputs:
+    script: 'cat $(settingsxml.secureFilePath)'
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
