@@ -309,7 +309,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+	<!--
 	<distributionManagement>
 		<repository>
 			<id>cstar</id>
@@ -317,5 +317,5 @@
 			<url>https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1</url>
 		</repository>
 	</distributionManagement>
-
+-->
 </project>
