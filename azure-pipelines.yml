@@ -25,6 +25,4 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      echo Installing $(settingsxml.secureFilePath) to ${home}/.m2/
-      Copy-Item -Force "$(settingsxml.secureFilePath)" "${HOME}/.m2/"
       Get-ChildItem -Path ${HOME}/.m2/ -Force -Recurse
