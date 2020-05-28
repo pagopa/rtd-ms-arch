@@ -21,24 +21,27 @@ steps:
     Contents: '$(settingsxml.secureFilePath)'
     TargetFolder: "${HOME}/.m2/"
     OverWrite: true
-- task: PowerShell@2
+- task: CmdLine@2
   inputs:
-    targetType: 'inline'
-    script: |
-      Write-Output '$(settingsxml.secureFilePath)'
-      Write-Output '${HOME}'
-      Get-ChildItem -Path "${HOME}/.m2/" -Force -Recurse
-#      Get-ChildItem env:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'clean install deploy'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    mavenVersionOption: 'Default'
-    mavenOptions: '-Xmx3072m'
-    mavenAuthenticateFeed: true
-    effectivePomSkip: true
-    sonarQubeRunAnalysis: false
+    script: 'env'
+#- task: PowerShell@2
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      Write-Output '$(settingsxml.secureFilePath)'
+#      Write-Output '${HOME}'
+#      Get-ChildItem -Path "${HOME}/.m2/" -Force -Recurse
+##      Get-ChildItem env:
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    goals: 'clean install deploy'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.8'
+#    mavenVersionOption: 'Default'
+#    mavenOptions: '-Xmx3072m'
+#    mavenAuthenticateFeed: true
+#    effectivePomSkip: true
+#    sonarQubeRunAnalysis: false
