@@ -13,7 +13,7 @@ steps:
   displayName: 'download settings.xml for Maven'
   name: settingsxml
   inputs:
-    secureFile: 'settingsxml'
+    secureFile: 'settings.xml'
     retryCount: '2'
 #- task: CopyFiles@2
 #  inputs:
