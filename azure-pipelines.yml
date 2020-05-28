@@ -32,16 +32,17 @@ steps:
 #      Write-Output '${HOME}'
 #      Get-ChildItem -Path "${HOME}/.m2/" -Force -Recurse
 ##      Get-ChildItem env:
-#- task: Maven@3
-#  inputs:
-#    mavenPomFile: 'pom.xml'
-#    goals: 'clean install deploy'
-#    publishJUnitResults: true
-#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#    javaHomeOption: 'JDKVersion'
-#    jdkVersionOption: '1.8'
-#    mavenVersionOption: 'Default'
-#    mavenOptions: '-Xmx3072m'
-#    mavenAuthenticateFeed: true
-#    effectivePomSkip: true
-#    sonarQubeRunAnalysis: false
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean deploy'
+    options: '-s $(settingsxml.secureFilePath)'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    mavenVersionOption: 'Default'
+    mavenOptions: '-Xmx3072m'
+    mavenAuthenticateFeed: true
+    effectivePomSkip: true
+    sonarQubeRunAnalysis: false
