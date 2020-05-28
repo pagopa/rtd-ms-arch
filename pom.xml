@@ -296,7 +296,7 @@
 		<!-- <artifactId>wiremock-standalone</artifactId> -->
 		<!-- </dependency> -->
 	</dependencies>
-	
+	<!--
 	<repositories>
 		<repository>
 			<id>cstar</id>
@@ -309,7 +309,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<!--
+	
 	<distributionManagement>
 		<repository>
 			<id>cstar</id>
