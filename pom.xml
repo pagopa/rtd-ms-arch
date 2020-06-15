@@ -45,7 +45,7 @@
 
 	<modules>
 		<module>core</module>
-		<module>meda-arch-error</module>
+		<module>error</module>
 		<module>event</module>
 		<module>event-listener</module>
 		<module>jpa</module>

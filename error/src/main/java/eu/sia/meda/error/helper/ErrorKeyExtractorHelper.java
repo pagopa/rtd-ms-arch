@@ -1,21 +1,19 @@
 package eu.sia.meda.error.helper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
+import eu.sia.meda.error.consts.Constants;
+import eu.sia.meda.exceptions.IMedaDomainException;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import eu.sia.meda.error.consts.Constants;
-import eu.sia.meda.exceptions.IMedaDomainException;
-import lombok.extern.slf4j.Slf4j;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The Class ErrorKeyExtractorHelper.
@@ -63,39 +61,64 @@ public class ErrorKeyExtractorHelper {
 	 * @return the constraint violation error key
 	 */
 	private static String getConstraintViolationErrorKey(ConstraintViolation cv) {
-		if (cv != null && cv.getRootBeanClass() != null && cv.getPropertyPath() != null
-				&& cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
-				&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
-				&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
-						.getType() != null) {
-			String[] splits = cv.getRootBeanClass().getName().split("\\.");
-			String controllerName;
-			if (splits.length <= 1) {
-				controllerName = cv.getRootBeanClass().getName();
-			} else {
-				controllerName = splits[splits.length - 1];
-			}
+        if (cv != null && cv.getRootBeanClass() != null && cv.getPropertyPath() != null
+                && cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
+                && ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
+                && ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
+                .getType() != null) {
+            String[] splits = cv.getRootBeanClass().getName().split("\\.");
+            String controllerName;
+            if (splits.length <= 1) {
+                controllerName = cv.getRootBeanClass().getName();
+            } else {
+                controllerName = splits[splits.length - 1];
+            }
 
-			String errorKey = controllerName + "." + cv.getPropertyPath() + "."
-					+ getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
-							.getAnnotationDescriptor().getType().getName());
-			errorKey = cleanErrorKey(errorKey);
-			return errorKey;
-		} else {
-			log.error("unhandled ConstraintViolation");
-			return Constants.GENERIC_ERROR_KEY;
-		}
-	}
+            String errorKey = controllerName + "." + cv.getPropertyPath() + "."
+                    + getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
+                    .getAnnotationDescriptor().getType().getName());
+            errorKey = cleanErrorKey(errorKey);
+            return errorKey;
+        } else {
+            log.error("unhandled ConstraintViolation");
+            return Constants.GENERIC_ERROR_KEY;
+        }
+    }
 
-	/**
-	 * Gets the method argument not valid exception error keys.
-	 *
-	 * @param e the e
-	 * @return the method argument not valid exception error keys
-	 */
-	public static List<String> getMethodArgumentNotValidExceptionErrorKeys(MethodArgumentNotValidException e) {
-		try {
-			if (e != null && e.getParameter().getMethod() != null && e.getParameter().getMethod().getName() != null) {
+    /**
+     * Gets the constraint name.
+     *
+     * @param constraintFullName the constraint full name
+     * @return the constraint name
+     */
+    private static String getConstraintName(String constraintFullName) {
+        if (constraintFullName != null && !constraintFullName.isEmpty()) {
+            String[] splits = constraintFullName.split("\\.");
+            return splits[splits.length - 1];
+        } else {
+            return constraintFullName;
+        }
+    }
+
+    /**
+     * Clean error key.
+     *
+     * @param errorKey the error key
+     * @return the string
+     */
+    public static String cleanErrorKey(String errorKey) {
+        return errorKey == null ? null : errorKey.replaceAll("\\[[0-9]+\\]", "");
+    }
+
+    /**
+     * Gets the method argument not valid exception error keys.
+     *
+     * @param e the e
+     * @return the method argument not valid exception error keys
+     */
+    public static List<String> getMethodArgumentNotValidExceptionErrorKeys(MethodArgumentNotValidException e) {
+        try {
+            if (e != null && e.getParameter().getMethod() != null && e.getParameter().getMethod().getName() != null) {
 				String[] splits = e.getParameter().getContainingClass().getName().split("\\.");
 				String controllerName;
 				if (splits.length <= 1) {
@@ -113,26 +136,26 @@ public class ErrorKeyExtractorHelper {
 		} catch (Exception var4) {
 			log.error("error in getMethodArgumentNotValidExceptionErrorKeys: {}", var4.getMessage());
 			return Arrays.asList(Constants.GENERIC_ERROR_KEY);
-		}
-	}
+        }
+    }
 
-	/**
-	 * Gets the binding result error keys.
-	 *
-	 * @param controllerName the controller name
-	 * @param methodName     the method name
-	 * @param bindingResult  the binding result
-	 * @return the binding result error keys
-	 */
-	private static List<String> getBindingResultErrorKeys(String controllerName, String methodName,
-			BindingResult bindingResult) {
-		if (bindingResult != null && !bindingResult.getFieldErrors().isEmpty()) {
-			List<String> errorKeys = new ArrayList<>();
-			Iterator<FieldError> var4 = bindingResult.getFieldErrors().iterator();
+    /**
+     * Gets the binding result error keys.
+     *
+     * @param controllerName the controller name
+     * @param methodName     the method name
+     * @param bindingResult  the binding result
+     * @return the binding result error keys
+     */
+    private static List<String> getBindingResultErrorKeys(String controllerName, String methodName,
+                                                          BindingResult bindingResult) {
+        if (bindingResult != null && !bindingResult.getFieldErrors().isEmpty()) {
+            List<String> errorKeys = new ArrayList<>();
+            Iterator<FieldError> var4 = bindingResult.getFieldErrors().iterator();
 
-			while (var4.hasNext()) {
-				FieldError fe = var4.next();
-				errorKeys.add(getFieldErrorErrorKey(controllerName, methodName, fe));
+            while (var4.hasNext()) {
+                FieldError fe = var4.next();
+                errorKeys.add(getFieldErrorErrorKey(controllerName, methodName, fe));
 			}
 
 			return errorKeys;
@@ -157,40 +180,25 @@ public class ErrorKeyExtractorHelper {
 				cv = (ConstraintViolation) fe.unwrap(ConstraintViolation.class);
 			} catch (Exception var5) {
 				log.error("FieldError unwrap failed");
-				return Constants.GENERIC_ERROR_KEY;
-			}
+                return Constants.GENERIC_ERROR_KEY;
+            }
 
-			if (cv != null && cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
-					&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
-					&& ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
-							.getType() != null) {
-				String errorKey = controllerName + "." + methodName + "." + fe.getObjectName() + "." + fe.getField()
-						+ "." + getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
-								.getAnnotationDescriptor().getType().getName());
-				errorKey = cleanErrorKey(errorKey);
-				return errorKey;
-			} else {
-				log.error("can not extract key from ConstraintViolationImpl");
+            if (cv != null && cv.getConstraintDescriptor() instanceof ConstraintDescriptorImpl
+                    && ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor() != null
+                    && ((ConstraintDescriptorImpl) cv.getConstraintDescriptor()).getAnnotationDescriptor()
+                    .getType() != null) {
+                String errorKey = controllerName + "." + methodName + "." + fe.getObjectName() + "." + fe.getField()
+                        + "." + getConstraintName(((ConstraintDescriptorImpl) cv.getConstraintDescriptor())
+                        .getAnnotationDescriptor().getType().getName());
+                errorKey = cleanErrorKey(errorKey);
+                return errorKey;
+            } else {
+                log.error("can not extract key from ConstraintViolationImpl");
 				return Constants.GENERIC_ERROR_KEY;
 			}
 		} else {
 			log.error("can not extract key from FieldError");
 			return Constants.GENERIC_ERROR_KEY;
-		}
-	}
-
-	/**
-	 * Gets the constraint name.
-	 *
-	 * @param constraintFullName the constraint full name
-	 * @return the constraint name
-	 */
-	private static String getConstraintName(String constraintFullName) {
-		if (constraintFullName != null && !constraintFullName.isEmpty()) {
-			String[] splits = constraintFullName.split("\\.");
-			return splits[splits.length - 1];
-		} else {
-			return constraintFullName;
 		}
 	}
 
@@ -207,15 +215,5 @@ public class ErrorKeyExtractorHelper {
 			log.error("IMedaDomainException code not defined");
 			return Constants.GENERIC_ERROR_KEY;
 		}
-	}
-
-	/**
-	 * Clean error key.
-	 *
-	 * @param errorKey the error key
-	 * @return the string
-	 */
-	public static String cleanErrorKey(String errorKey) {
-		return errorKey == null ? null : errorKey.replaceAll("\\[[0-9]+\\]", "");
 	}
 }

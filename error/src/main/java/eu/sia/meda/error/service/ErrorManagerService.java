@@ -1,21 +1,14 @@
 package eu.sia.meda.error.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import eu.sia.meda.exceptions.model.ErrorMessage;
 import org.springframework.beans.BeanUtils;
 
-import eu.sia.meda.exceptions.model.ErrorMessage;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The Class ErrorManagerService.
  */
-@Slf4j
 public abstract class ErrorManagerService {
 
     /**
@@ -98,61 +91,92 @@ public abstract class ErrorManagerService {
         }
     }
 
-	private ErrorMessage transcodeErrorKey(String errorKey, Map<String, ErrorMessage> errorMap) {
-		if(errorKey.startsWith("invalid.body.error;") || errorKey.startsWith("invalid.param.error;")){
-			return transcodeInvalidBody(errorKey, errorMap);
-		} else if(errorKey.startsWith("missing.parameter.error;")){
-			return transcodeMissingParameter(errorKey, errorMap);
-		} else if(errorKey.startsWith("missing.request.part.error;")){
-			return transcodeMissingRequestParameter(errorKey, errorMap);
-		} else if(errorKey.startsWith("missing.path.variable.error;")){
-			return transcodeMissingPathVariable(errorKey, errorMap);
-		} else if(errorKey.startsWith("meda.parametric.errormessage;")){
-			return transcodeParametricErrorMessage(errorKey, errorMap);
-		} else {
-			String[] parts = errorKey.split("\\.");
-			if(parts.length == 5){
-				return transcodeValidationApiError(errorKey, parts, errorMap);
-			}
-		}
+    private ErrorMessage transcodeErrorKey(String errorKey, Map<String, ErrorMessage> errorMap) {
+        if (errorKey.startsWith("invalid.body.error;") || errorKey.startsWith("invalid.param.error;")) {
+            return transcodeInvalidBody(errorKey, errorMap);
+        } else if (errorKey.startsWith("missing.parameter.error;")) {
+            return transcodeMissingParameter(errorKey, errorMap);
+        } else if (errorKey.startsWith("missing.request.part.error;")) {
+            return transcodeMissingRequestParameter(errorKey, errorMap);
+        } else if (errorKey.startsWith("missing.path.variable.error;")) {
+            return transcodeMissingPathVariable(errorKey, errorMap);
+        } else if (errorKey.startsWith("meda.parametric.errormessage;")) {
+            return transcodeParametricErrorMessage(errorKey, errorMap);
+        } else {
+            String[] parts = errorKey.split("\\.");
+            if (parts.length >= 4) {
+                return transcodeValidationApiError(errorKey, parts, errorMap);
+            }
+        }
 
 		return null;
 	}
 
 	private ErrorMessage transcodeValidationApiError(String errorKey, String[] parts, Map<String, ErrorMessage> errorMap) {
-		String entity = parts[2];
-		String field = parts[3];
-		String constraint = parts[4];
+//		String entity = parts[2];
+//		String field = parts[3];
+//		String constraint = parts[4];
 
-		ErrorMessage defaultEntity = errorMap.get(String.format("*.*.%s.%s.%s", entity, field, constraint));
-		if(defaultEntity!=null){
-			defaultEntity=clone(defaultEntity);
-			defaultEntity.setMessageKey(errorKey);
-			return defaultEntity;
-		}
+        String entity = parts[parts.length - 3];
+        String field = parts[parts.length - 2];
+        String constraint = parts[parts.length - 1];
 
-		ErrorMessage defaultConstraintMessage = errorMap.get(String.format("*.*.*.*.%s", constraint));
-		if(defaultConstraintMessage != null){
-			defaultConstraintMessage=clone(defaultConstraintMessage);
-			defaultConstraintMessage.setMessageKey(errorKey);
+        ErrorMessage defaultEntity = errorMap.get(String.format("*.*.%s.%s.%s", entity, field, constraint));
+        if (defaultEntity != null) {
+            defaultEntity = clone(defaultEntity);
+            defaultEntity.setMessageKey(errorKey);
+            return defaultEntity;
+        }
 
-			String entityName = transcodeName(errorMap, "entity", entity);
-			String fieldName = transcodeName(errorMap, String.format("entity.%s", entity), field);
+        ErrorMessage defaultConstraintMessage = errorMap.get(String.format("*.*.*.*.%s", constraint));
+        if (defaultConstraintMessage == null)
+            defaultConstraintMessage = errorMap.get(String.format("*.*.**.*.%s", constraint));
 
-			defaultConstraintMessage.setMessageTitle(resolveEntityField(defaultConstraintMessage.getMessageTitle(), entityName, fieldName));
-			defaultConstraintMessage.setMessage(resolveEntityField(defaultConstraintMessage.getMessage(), entityName, fieldName));
-			return defaultConstraintMessage;
-		}
+        if (defaultConstraintMessage != null) {
+            defaultConstraintMessage = clone(defaultConstraintMessage);
+            defaultConstraintMessage.setMessageKey(errorKey);
 
-		return null;
-	}
+            String entityName = transcodeName(errorMap, "entity", entity);
+            String fieldName = transcodeName(errorMap, String.format("entity.%s", entity), field);
 
-	private String transcodeName(Map<String, ErrorMessage> errorMap, String objectType, String objectName) {
+            defaultConstraintMessage.setMessageTitle(resolveEntityField(defaultConstraintMessage.getMessageTitle(), entityName, fieldName));
+            defaultConstraintMessage.setMessage(resolveEntityField(defaultConstraintMessage.getMessage(), entityName, fieldName));
+            return defaultConstraintMessage;
+        }
+
+        return null;
+    }
+
+    private String transcodeName(Map<String, ErrorMessage> errorMap, String objectType, String objectName) {
         ErrorMessage objectConfig = errorMap.get(String.format("%s.%s", objectType, objectName));
         if (objectConfig != null) {
             objectName = objectConfig.getMessage();
         }
         return objectName;
+    }
+
+    private String resolveEntityField(String message, String entityName, String fieldName) {
+        return message.replaceAll("%ENTITY%", entityName).replaceAll("%FIELD%", fieldName);
+    }
+
+    private ErrorMessage transcodeInvalidBody(String errorKey, Map<String, ErrorMessage> errorMap) {
+        ErrorMessage invalidBodyMessage = errorMap.get("invalid.body.error");
+        if (invalidBodyMessage != null) {
+            invalidBodyMessage = clone(invalidBodyMessage);
+            invalidBodyMessage.setMessageKey(errorKey);
+
+            String[] parts = errorKey.split(";");
+            String field = parts[1];
+            String value = parts[2];
+            String type = parts[3];
+
+            invalidBodyMessage.setMessageTitle(resolveInvalidFieldValue(invalidBodyMessage.getMessageTitle(), field, value, type));
+            invalidBodyMessage.setMessage(resolveInvalidFieldValue(invalidBodyMessage.getMessage(), field, value, type));
+
+            return invalidBodyMessage;
+        } else {
+            return null;
+        }
     }
 
     private ErrorMessage clone(ErrorMessage defaultEntity) {
@@ -161,46 +185,22 @@ public abstract class ErrorManagerService {
         return out;
     }
 
-    private String resolveEntityField(String message, String entityName, String fieldName) {
-        return message.replaceAll("%ENTITY%", entityName).replaceAll("%FIELD%", fieldName);
+    private String resolveInvalidFieldValue(String message, String field, String value, String type) {
+        return message.replaceAll("%FIELD%", field).replaceAll("%VALUE%", value).replaceAll("%TYPE%", type);
     }
 
-	private ErrorMessage transcodeInvalidBody(String errorKey, Map<String, ErrorMessage> errorMap) {
-    	ErrorMessage invalidBodyMessage = errorMap.get("invalid.body.error");
-    	if(invalidBodyMessage!=null){
-    		invalidBodyMessage=clone(invalidBodyMessage);
-    		invalidBodyMessage.setMessageKey(errorKey);
+    private ErrorMessage transcodeMissingParameter(String errorKey, Map<String, ErrorMessage> errorMap) {
+        ErrorMessage missingParamError = errorMap.get("missing.parameter.error");
+        if (missingParamError != null) {
+            missingParamError = clone(missingParamError);
+            missingParamError.setMessageKey(errorKey);
 
-    		String[] parts = errorKey.split(";");
-    		String field = parts[1];
-			String value = parts[2];
-			String type = parts[3];
+            String[] parts = errorKey.split(";");
+            String field = parts[1];
+            String type = parts[2];
 
-			invalidBodyMessage.setMessageTitle(resolveInvalidFieldValue(invalidBodyMessage.getMessageTitle(), field, value, type));
-			invalidBodyMessage.setMessage(resolveInvalidFieldValue(invalidBodyMessage.getMessage(), field, value, type));
-
-    		return invalidBodyMessage;
-		} else {
-    		return null;
-		}
-	}
-
-	private String resolveInvalidFieldValue(String message, String field, String value, String type) {
-		return message.replaceAll("%FIELD%", field).replaceAll("%VALUE%", value).replaceAll("%TYPE%", type);
-	}
-
-	private ErrorMessage transcodeMissingParameter(String errorKey, Map<String, ErrorMessage> errorMap) {
-		ErrorMessage missingParamError = errorMap.get("missing.parameter.error");
-		if(missingParamError!=null){
-			missingParamError=clone(missingParamError);
-			missingParamError.setMessageKey(errorKey);
-
-			String[] parts = errorKey.split(";");
-			String field = parts[1];
-			String type = parts[2];
-
-			missingParamError.setMessageTitle(resolveMissingParameter(missingParamError.getMessageTitle(), field, type));
-			missingParamError.setMessage(resolveMissingParameter(missingParamError.getMessage(), field, type));
+            missingParamError.setMessageTitle(resolveMissingParameter(missingParamError.getMessageTitle(), field, type));
+            missingParamError.setMessage(resolveMissingParameter(missingParamError.getMessage(), field, type));
 
 			return missingParamError;
 		} else {
@@ -213,16 +213,16 @@ public abstract class ErrorManagerService {
 	}
 
 	private ErrorMessage transcodeMissingRequestParameter(String errorKey, Map<String, ErrorMessage> errorMap) {
-		ErrorMessage missingRequestPartError = errorMap.get("missing.request.part.error");
-		if(missingRequestPartError!=null){
-			missingRequestPartError=clone(missingRequestPartError);
-			missingRequestPartError.setMessageKey(errorKey);
+        ErrorMessage missingRequestPartError = errorMap.get("missing.request.part.error");
+        if (missingRequestPartError != null) {
+            missingRequestPartError = clone(missingRequestPartError);
+            missingRequestPartError.setMessageKey(errorKey);
 
-			String[] parts = errorKey.split(";");
-			String field = parts[1];
+            String[] parts = errorKey.split(";");
+            String field = parts[1];
 
-			missingRequestPartError.setMessageTitle(missingRequestPartError.getMessageTitle().replaceAll("%FIELD%", field));
-			missingRequestPartError.setMessage(missingRequestPartError.getMessage().replaceAll("%FIELD%", field));
+            missingRequestPartError.setMessageTitle(missingRequestPartError.getMessageTitle().replaceAll("%FIELD%", field));
+            missingRequestPartError.setMessage(missingRequestPartError.getMessage().replaceAll("%FIELD%", field));
 
 			return missingRequestPartError;
 		} else {
@@ -231,16 +231,16 @@ public abstract class ErrorManagerService {
 	}
 
 	private ErrorMessage transcodeMissingPathVariable(String errorKey, Map<String, ErrorMessage> errorMap) {
-		ErrorMessage missingPathVariableError = errorMap.get("missing.path.variable.error");
-		if(missingPathVariableError!=null){
-			missingPathVariableError=clone(missingPathVariableError);
-			missingPathVariableError.setMessageKey(errorKey);
+        ErrorMessage missingPathVariableError = errorMap.get("missing.path.variable.error");
+        if (missingPathVariableError != null) {
+            missingPathVariableError = clone(missingPathVariableError);
+            missingPathVariableError.setMessageKey(errorKey);
 
-			String[] parts = errorKey.split(";");
-			String field = parts[1];
+            String[] parts = errorKey.split(";");
+            String field = parts[1];
 
-			missingPathVariableError.setMessageTitle(missingPathVariableError.getMessageTitle().replaceAll("%FIELD%", field));
-			missingPathVariableError.setMessage(missingPathVariableError.getMessage().replaceAll("%FIELD%", field));
+            missingPathVariableError.setMessageTitle(missingPathVariableError.getMessageTitle().replaceAll("%FIELD%", field));
+            missingPathVariableError.setMessage(missingPathVariableError.getMessage().replaceAll("%FIELD%", field));
 
 			return missingPathVariableError;
 		} else {
@@ -249,16 +249,16 @@ public abstract class ErrorManagerService {
 	}
 
 	private ErrorMessage transcodeParametricErrorMessage(String errorKey, Map<String, ErrorMessage> errorMap) {
-    	String[] splitted = errorKey.split(";");
-		ErrorMessage parametricErrorMessage = errorMap.get(splitted[1]);
-		if(parametricErrorMessage!=null){
-			parametricErrorMessage=clone(parametricErrorMessage);
-			parametricErrorMessage.setMessageKey(errorKey);
+        String[] splitted = errorKey.split(";");
+        ErrorMessage parametricErrorMessage = errorMap.get(splitted[1]);
+        if (parametricErrorMessage != null) {
+            parametricErrorMessage = clone(parametricErrorMessage);
+            parametricErrorMessage.setMessageKey(errorKey);
 
-			String[] params = Arrays.copyOfRange(splitted, 2, splitted.length);
+            String[] params = Arrays.copyOfRange(splitted, 2, splitted.length);
 
-			parametricErrorMessage.setMessageTitle(String.format(parametricErrorMessage.getMessageTitle(), (String[]) params));
-			parametricErrorMessage.setMessage(String.format(parametricErrorMessage.getMessage(), (String[]) params));
+            parametricErrorMessage.setMessageTitle(String.format(parametricErrorMessage.getMessageTitle(), (String[]) params));
+            parametricErrorMessage.setMessage(String.format(parametricErrorMessage.getMessage(), (String[]) params));
 
 			return parametricErrorMessage;
 		} else {
