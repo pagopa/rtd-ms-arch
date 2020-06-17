@@ -48,8 +48,6 @@
 		<module>error</module>
 		<module>event</module>
 		<module>event-listener</module>
-		<module>jpa</module>
-		<module>rest</module>
 	</modules>
 
 	<build>
