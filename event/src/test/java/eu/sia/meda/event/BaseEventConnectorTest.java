@@ -14,6 +14,7 @@ import eu.sia.meda.event.transformer.SimpleEventResponseTransformer;
 import eu.sia.meda.util.ColoredPrinters;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -84,7 +85,7 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
         Consumer<String,String> consumer = cf.createConsumer();
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopic());
 
-        OUTPUT result = eventConnector.call(request, requestTransformer, responseTransformer);
+        OUTPUT result = invokeCall(eventConnector, request, requestTransformer, responseTransformer, null);
         consumer.seekToBeginning(consumer.assignment());
         ColoredPrinters.PRINT_GREEN.println("Start polling");
         ConsumerRecords<String,String> published = consumer.poll(Duration.ofMillis(10000));
@@ -93,9 +94,17 @@ public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNE
         Assert.assertNotNull(result);
 
         Assert.assertEquals(1, published.count());
-        Assert.assertEquals(new String(dto.getPayload(), StandardCharsets.UTF_8), published.iterator().next().value());
+        checkPublishedMessage(dto, published.iterator().next());
 
         consumer.close();
+    }
+
+    public OUTPUT invokeCall(CONNECTOR eventConnector, INPUT request, IEventRequestTransformer<INPUT, DTO> requestTransformer, IEventResponseTransformer<RESOURCE, OUTPUT> responsetransformer, String... args){
+        return eventConnector.call(request, requestTransformer, responsetransformer, args);
+    }
+
+    protected void checkPublishedMessage(EventRequest<DTO> dto, ConsumerRecord<String, String> published) {
+        Assert.assertEquals(new String(dto.getPayload(), StandardCharsets.UTF_8), published.value());
     }
 
     /** The connector used to publish the event */

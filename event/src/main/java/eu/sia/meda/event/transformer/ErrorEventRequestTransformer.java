@@ -1,11 +1,11 @@
 package eu.sia.meda.event.transformer;
 
+import com.google.common.base.Strings;
 import eu.sia.meda.event.request.EventRequest;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -26,15 +26,28 @@ public class ErrorEventRequestTransformer implements IEventRequestTransformer<by
 
         Headers headers = args.length>0?(Headers)args[0]:new RecordHeaders();
         headers.add(errorHeader);
+        String sourceListener = retrieveSourceListener();
+        if(!Strings.isNullOrEmpty(sourceListener)){
+            headers.add("LISTENER", sourceListener.getBytes(StandardCharsets.UTF_8));
+        }
 
         EventRequest<byte[]> request = new EventRequest<>();
         request.setPayload(payload);
         request.setHeaders(headers);
 
-        if(args.length>2 && Strings.isNotEmpty((String)args[2])){
+        if(args.length>2 && !Strings.isNullOrEmpty((String)args[2])){
             request.setTopic((String)args[2]);
         }
 
         return request;
+    }
+
+    private String retrieveSourceListener() {
+        for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
+            if("onReceived".equals(stack.getMethodName())){
+                return stack.getClassName();
+            }
+        }
+        return null;
     }
 }

@@ -4,13 +4,14 @@
 package eu.sia.meda.event.producer;
 
 import com.fasterxml.jackson.core.Versioned;
-import java.util.Collection;
-import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Interface EventProducer.

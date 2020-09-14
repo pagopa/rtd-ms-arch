@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.sia.meda.BaseSpringIntegrationTest;
 import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.util.ColoredPrinters;
-
+import io.jsonwebtoken.lang.Collections;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -27,6 +27,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,32 +67,38 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
         }
     }
 
+    private Consumer<String,String> consumer;
+
     @Test
     public void test() throws JsonProcessingException {
         ColoredPrinters.PRINT_CYAN.println(kafkaBroker.getKafkaServers().get(0).config().zkConnect());
         ColoredPrinters.PRINT_PURPLE.println(String.format("Bootstrap %s - ZooKeeper %s", bootstrapServers, zkNodes));
 
         ColoredPrinters.PRINT_GREEN.println("Configuring embedded Kafka...");
-        kafkaBroker.addTopics(getTopicPublished());
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(getConsumerGroupId(), "true", kafkaBroker);
-        DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
-        Consumer<String,String> consumer = cf.createConsumer();
-        kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopicPublished());
+        if(!kafkaBroker.getTopics().contains(getTopicPublished())){
+            kafkaBroker.addTopics(getTopicPublished());
+
+            Map<String, Object> consumerProps = KafkaTestUtils.consumerProps(getConsumerGroupId(), "true", kafkaBroker);
+            DefaultKafkaConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
+            consumer = cf.createConsumer();
+            kafkaBroker.consumeFromAnEmbeddedTopic(consumer, getTopicPublished());
+        }
 
         ColoredPrinters.PRINT_GREEN.println("Publishing the request...");
         Object request = getRequestObject();
         String payload;
         if(request instanceof String){
             payload = (String)request;
+        } else if(request instanceof byte[]){
+            payload = new String((byte[])request, StandardCharsets.UTF_8);
         } else {
             payload = objectMapper.writeValueAsString(getRequestObject());
         }
         Iterable<Header> headers = null;
         Map<String, byte[]> headersMap = getHeaders();
-		if (headersMap != null && !headersMap.isEmpty()) {
-			headers = headersMap.entrySet().stream().map(e -> new RecordHeader(e.getKey(), e.getValue()))
-					.collect(Collectors.toList());
-		}
+        if(!Collections.isEmpty(headersMap)){
+            headers = headersMap.entrySet().stream().map(e->new RecordHeader(e.getKey(), e.getValue())).collect(Collectors.toList());
+        }
         ProducerRecord<String, String> record = new ProducerRecord<String,String>(getTopicSubscription(), null, null, payload, headers);
         template.send(record);
 
@@ -136,7 +143,7 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     protected abstract String getTopicPublished();
     /** The {@link Duration} to wait for the result to be ready in the {@link #getTopicPublished()} */
     protected Duration getTimeout() {
-        return Duration.ofMillis(5000);
+        return Duration.ofMillis(7000);
     }
     /** The expected number of record published */
     protected int getExpectedPublishedMessagesCount() {

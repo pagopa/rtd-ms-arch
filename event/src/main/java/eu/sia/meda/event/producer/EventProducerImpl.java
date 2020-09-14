@@ -1,11 +1,9 @@
 package eu.sia.meda.event.producer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Versioned;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.sia.meda.config.LoggerUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
@@ -17,11 +15,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.Versioned;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import eu.sia.meda.config.LoggerUtils;
+import java.util.*;
 
 /**
  * The Class EventProducerImpl.

@@ -28,8 +28,8 @@ public class ArchEventConfigurationService {
     * @param className the class name
     * @return the arch event configuration service. event configuration
     */
-   public ArchEventConfigurationService.EventConfiguration retrieveEventConfiguration(String className) {
-      ArchEventConfigurationService.EventConfiguration config = new ArchEventConfigurationService.EventConfiguration();
+   public EventConfiguration retrieveEventConfiguration(String className) {
+      EventConfiguration config = new EventConfiguration();
       if (this.propertiesManager.containsConnectorProperty(CONNECTOR_TYPE, className, "topic")) {
          config.setTopic((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "topic", String.class));
          config.setBootstrapServers((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "bootstrapServers", String.class));
@@ -51,6 +51,9 @@ public class ArchEventConfigurationService {
          config.setRetryBackoffMs((Long)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "retry.backoff.ms", Long.class));
          config.setTransactionTimeoutMs((Integer)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "transaction.timeout.ms", Integer.class));
          config.setTransactionalId((String)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "transactional.id", String.class));
+         config.setConnectionMaxIdleMs((Long)this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "connections.max.idle.ms", Long.class));
+         config.setRetries(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "retries", Integer.class));
+
          return config;
       } else {
     	 if(log.isWarnEnabled()) {
@@ -124,6 +127,10 @@ public class ArchEventConfigurationService {
       
       /** The transactional id. */
       private String transactionalId;
+      
+      private Integer retries;
+      
+      private Long connectionMaxIdleMs;
 
       /**
        * Gets the bootstrap servers.
@@ -473,6 +480,22 @@ public class ArchEventConfigurationService {
 	
 		public void setSaslMechanism(String saslMechanism) {
 			this.saslMechanism = saslMechanism;
+		}
+
+		public Integer getRetries() {
+			return retries;
+		}
+
+		public void setRetries(Integer retries) {
+			this.retries = retries;
+		}
+
+		public Long getConnectionMaxIdleMs() {
+			return connectionMaxIdleMs;
+		}
+
+		public void setConnectionMaxIdleMs(Long connectionMaxIdleMs) {
+			this.connectionMaxIdleMs = connectionMaxIdleMs;
 		}
    }
 }

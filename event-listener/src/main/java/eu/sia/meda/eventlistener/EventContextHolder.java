@@ -2,9 +2,10 @@ package eu.sia.meda.eventlistener;
 
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.core.interceptors.BaseContextHolder;
-import java.util.Objects;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
+
+import java.util.Objects;
 
 /**
  * The Class EventContextHolder.

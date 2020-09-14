@@ -1,14 +1,12 @@
 package eu.sia.meda.event.response;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.junit.Test;
 import org.springframework.kafka.support.SendResult;
 
-public class EventResponseTest  {
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+public class EventResponseTest {
 
   @Test
   public void test0()  throws Throwable  {

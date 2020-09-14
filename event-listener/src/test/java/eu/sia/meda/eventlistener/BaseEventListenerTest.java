@@ -10,6 +10,8 @@ import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.service.SessionContextRetriever;
 import eu.sia.meda.util.ColoredPrinters;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Headers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -81,7 +83,8 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         Thread.sleep(2000);
 
         String json = objectMapper.writeValueAsString(getRequestObject());
-        template.send(getTopic(), json);
+        ProducerRecord<String, String> record = new ProducerRecord<String,String>(getTopic(), null, null, json, getRequestHeaders());
+        template.send(record);
 
         Thread.sleep(10000);
 
@@ -93,6 +96,10 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
         }
     }
 
+    protected Headers getRequestHeaders(){
+        return null;
+    }
+
     /** The object to be serialized and sent */
     protected abstract Object getRequestObject();
 
@@ -101,6 +108,6 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
     /** To check if the invocation occurred */
     protected abstract void verifyInvocation(String json);
 
-    /** If not null, it will check if the {@link ErrorPublisherService#publishErrorEvent(byte[], org.apache.kafka.common.header.Headers, String)} has not been invoked */
+    /** If not null, it will check if the {@link ErrorPublisherService#publishErrorEvent(byte[], Headers, String)} has not been invoked */
     protected abstract ErrorPublisherService getErrorPublisherService();
 }
