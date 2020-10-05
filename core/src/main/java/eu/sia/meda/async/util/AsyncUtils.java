@@ -7,7 +7,6 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.core.model.AuthorizationContext;
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.core.model.ErrorContext;
-import eu.sia.meda.core.model.SIAContext;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
