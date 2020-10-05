@@ -13,6 +13,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -94,8 +95,8 @@ class ErrorKeyExtractorHelperTest {
 
 		// Setup
 		String methodName = "testGetMethodArgumentNotValidExceptionErrorKeys";
-		BindingResult bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
 		MethodParameter methodParameter = new MethodParameter(getClass().getDeclaredMethod(methodName),-1);
+		BindingResult bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
 
 		e = new MethodArgumentNotValidException(methodParameter, bindingResult);
 		// Run the test
@@ -106,8 +107,11 @@ class ErrorKeyExtractorHelperTest {
 		assertEquals(result.size(), 1);
 		assertEquals("generic.error", result.get(0));
 
-		// Setup
-		bindingResult.addError(null);
+		//Setup
+		bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
+		FieldError mockFieldError = Mockito.mock(FieldError.class);
+		Mockito.when(mockFieldError.getObjectName()).thenReturn(null);
+		bindingResult.addError(mockFieldError);
 
 		e = new MethodArgumentNotValidException(methodParameter, bindingResult);
 		// Run the test
@@ -120,8 +124,8 @@ class ErrorKeyExtractorHelperTest {
 
 		// Setup
 		bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
-		ObjectError objectError = new ObjectError("testName","testMessage");
-		bindingResult.addError(objectError);
+		FieldError fieldError = new FieldError("testName","testField","testMessage");
+		bindingResult.addError(fieldError);
 
 		e = new MethodArgumentNotValidException(methodParameter, bindingResult);
 		// Run the test
@@ -135,10 +139,11 @@ class ErrorKeyExtractorHelperTest {
 		// Setup
 		bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
 		ConstraintViolation cv = Mockito.mock(ConstraintViolation.class);
-		objectError.wrap(cv);
-		bindingResult.addError(objectError);
+		fieldError.wrap(cv);
+		bindingResult.addError(fieldError);
 
-		e = new MethodArgumentNotValidException(methodParameter, bindingResult);
+		Mockito.when(cv.getConstraintDescriptor()).thenReturn(null);
+
 		// Run the test
 		result = ErrorKeyExtractorHelper.getMethodArgumentNotValidExceptionErrorKeys(e);
 
@@ -154,7 +159,7 @@ class ErrorKeyExtractorHelperTest {
 		Mockito.when(cv.getConstraintDescriptor()).thenReturn(constraintDescriptor);
 		Mockito.when(constraintDescriptor.getAnnotationDescriptor()).thenReturn(annotationDescriptor);
 
-		String expectedResult = getClass().getSimpleName()+"."+methodName+"."+objectError.getObjectName()+"."+Test.class.getSimpleName();
+		String expectedResult = getClass().getSimpleName()+"."+methodName+"."+fieldError.getObjectName()+"."+fieldError.getField()+"."+Test.class.getSimpleName();
 
 		// Run the test
 		result = ErrorKeyExtractorHelper.getMethodArgumentNotValidExceptionErrorKeys(e);
