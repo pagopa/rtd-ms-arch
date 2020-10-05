@@ -111,5 +111,18 @@ public class StringFilterTest extends BaseControllerTest {
         expectedCriteria.getStringField().setIsNull(false);
         resultedCriteria = objectMapper.readValue(result.getResponse().getContentAsString(), DummyCriteria.class);
         Assert.assertEquals(expectedCriteria, resultedCriteria);
+
+        ColoredPrinters.PRINT_GREEN.println("sending startsWith..");
+        result = mvc.perform(MockMvcRequestBuilders
+                .get("/dummy/criteria")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .param("stringField.startsWith", "prefix")
+        )
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        expectedCriteria.setStringField(new StringFilter());
+        expectedCriteria.getStringField().setStartsWith("prefix");
+        resultedCriteria = objectMapper.readValue(result.getResponse().getContentAsString(), DummyCriteria.class);
+        Assert.assertEquals(expectedCriteria.getStringField().toString(),resultedCriteria.getStringField().toString());
     }
 }

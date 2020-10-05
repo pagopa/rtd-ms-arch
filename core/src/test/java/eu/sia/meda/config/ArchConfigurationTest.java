@@ -3,6 +3,7 @@ package eu.sia.meda.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import eu.sia.meda.core.interceptors.BaseContextHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -59,5 +60,16 @@ class ArchConfigurationTest {
 
         // Verify the results
         assertNotNull(result);
+    }
+
+    @Test
+    void testSessionContextNull() {
+        BaseContextHolder.clear();
+        // Run the test
+        final BaseContext result = archConfigurationUnderTest.sessionContext();
+
+        // Verify the results
+        assertNotNull(result);
+        assertEquals(BaseContext.EMPTY_SESSION,result);
     }
 }

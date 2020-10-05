@@ -3,8 +3,11 @@ package eu.sia.meda.core.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 class ApplicationContextTest {
 
@@ -42,5 +45,15 @@ class ApplicationContextTest {
 	public void testSetTransactionId() throws Exception {
 		applicationContextUnderTest.setTransactionId("transactionId");
 		assertEquals("transactionId", applicationContextUnderTest.getTransactionId());
+	}
+
+
+	@Test
+	public void testGetCopyHeader(){
+		applicationContextUnderTest.buildDefaultCopyHeader();
+		Map<String, String> copyHeader = applicationContextUnderTest.getCopyHeader();
+		Assert.assertNotNull(copyHeader);
+		Assert.assertFalse(copyHeader.isEmpty());
+		Assert.assertEquals(3,copyHeader.size());
 	}
 }

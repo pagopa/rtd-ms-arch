@@ -9,6 +9,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eu.sia.meda.core.controller.BaseController;
+import eu.sia.meda.core.controller.StatelessController;
+import eu.sia.meda.core.model.AuthorizationContext;
+import eu.sia.meda.exceptions.MedaDomainRuntimeException;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +21,12 @@ import org.mockito.Mock;
 
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.service.SessionContextRetriever;
+import org.mockito.Mockito;
+import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.method.HandlerMethod;
 
 class DefaultControllerInterceptorTest {
 
@@ -34,6 +45,8 @@ class DefaultControllerInterceptorTest {
 	@BeforeEach
 	void setUp() {
 		initMocks(this);
+		BaseContextHolder.clear();
+		RequestContextHolder.clear();
 	}
 
 	@Test
@@ -65,5 +78,62 @@ class DefaultControllerInterceptorTest {
 		} catch (Exception e) {
 			fail();
 		}
+	}
+
+
+	@Test
+	void testPreHandleBadRequest() {
+		// Setup
+		final HttpServletRequest request = null;
+		final HttpServletResponse response = null;
+		HandlerMethod handler = Mockito.mock(HandlerMethod.class);
+
+		// Run the test
+		try{
+			defaultControllerInterceptorUnderTest.preHandle(request, response, handler);
+			Assert.fail("expected exception");
+		}catch(Exception e){
+			Assert.assertTrue(e instanceof MedaDomainRuntimeException);
+		}
+	}
+
+	@Test
+	void testPreHandleWithBaseController() throws Exception {
+		// Setup
+		ReflectionTestUtils.setField(defaultControllerInterceptorUnderTest,"isSecurityEnabled",true);
+		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		final HttpServletResponse response = null;
+		HandlerMethod handler = Mockito.mock(HandlerMethod.class);
+		Authentication authentication = Mockito.mock(Authentication.class);
+		BaseController controller = new StatelessController();
+
+		Mockito.when(handler.getBean()).thenReturn(controller);
+		Mockito.when(request.getHeader(Mockito.eq("authorization"))).thenReturn("Authorization");
+		Mockito.when(authentication.getName()).thenReturn("testAuthorization");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		// Run the test
+		boolean result = defaultControllerInterceptorUnderTest.preHandle(request, response, handler);
+		Assert.assertTrue(result);
+		AuthorizationContext authorizationContext = BaseContextHolder.getAuthorizationContext();
+		Assert.assertNull(authorizationContext.getAuthorizationHeader());
+
+	}
+
+	@Test
+	void testPreHandleWithErrorController() throws Exception {
+		// Setup
+		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		final HttpServletResponse response = null;
+		HandlerMethod handler = Mockito.mock(HandlerMethod.class);
+		Authentication authentication = Mockito.mock(Authentication.class);
+		ErrorController controller = Mockito.mock(ErrorController.class);
+
+		Mockito.when(handler.getBean()).thenReturn(controller);
+
+		// Run the test
+		boolean result = defaultControllerInterceptorUnderTest.preHandle(request, response, handler);
+		Assert.assertTrue(result);
+
 	}
 }
