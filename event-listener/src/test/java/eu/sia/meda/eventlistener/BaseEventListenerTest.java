@@ -8,19 +8,17 @@ import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.core.properties.PropertiesManager;
 import eu.sia.meda.event.service.ErrorPublisherService;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
-import eu.sia.meda.service.SessionContextRetriever;
 import eu.sia.meda.util.ColoredPrinters;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -44,22 +42,19 @@ import java.lang.management.ManagementFactory;
         })
 public abstract class BaseEventListenerTest extends BaseSpringTest {
 
-    @MockBean
-    private SessionContextRetriever sessionContextRetriever;
-
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private KafkaTemplate<String, String> template;
 
-    @BeforeClass
+    @BeforeAll
     public static void configLevelLogs() {
         ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
         ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
         ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
         ObjectName kafkaServerMbeanName = new ObjectName("kafka.server:type=app-info,id=0");
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();

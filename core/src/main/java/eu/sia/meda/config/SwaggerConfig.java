@@ -99,23 +99,4 @@ public class SwaggerConfig {
 				.additionalQueryStringParams(null)
 				.useBasicAuthenticationWithAccessCodeGrant(false).build();
 	}
-
-	private ApiKey apiKey() {
-		return new ApiKey("apiKey", "Authorization", "header");
-	}
-
-	private SecurityContext securityContext() {
-		return SecurityContext.builder().securityReferences(defaultAuth())
-				.forPaths(PathSelectors.any()).build();
-	}
-
-	private List<SecurityReference> defaultAuth() {
-		AuthorizationScope authorizationScope = new AuthorizationScope(
-				"global", "accessEverything");
-		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-		authorizationScopes[0] = authorizationScope;
-		return Collections.singletonList(new SecurityReference("apiKey",
-				authorizationScopes));
-	}
-
 }

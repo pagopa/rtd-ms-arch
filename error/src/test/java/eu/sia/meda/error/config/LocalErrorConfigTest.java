@@ -2,7 +2,7 @@ package eu.sia.meda.error.config;
 
 import eu.sia.meda.exceptions.model.ErrorMessage;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;

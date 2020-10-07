@@ -2,7 +2,8 @@ package eu.sia.meda.transactions;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
@@ -14,7 +15,7 @@ public class MedaTransactionManagerTest {
 
     private MedaTransactionManager manager;
 
-    @Before
+    @BeforeEach
     public void init(){
         manager = new MedaTransactionManager();
     }

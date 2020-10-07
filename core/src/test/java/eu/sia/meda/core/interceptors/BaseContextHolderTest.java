@@ -5,8 +5,8 @@ import eu.sia.meda.core.model.AuthorizationContext;
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.core.model.ErrorContext;
 import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BaseContextHolderTest {
 

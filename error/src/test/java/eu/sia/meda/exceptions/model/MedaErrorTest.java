@@ -3,8 +3,8 @@ package eu.sia.meda.exceptions.model;
 import eu.sia.meda.exceptions.MedaDomainException;
 import eu.sia.meda.exceptions.MedaDomainRuntimeException;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ public class MedaErrorTest {
     public static final String RAW_REMOTE_ERROR = "testRawRemoteError";
     public static final String REMOTE_SOURCE = "testRemoteSource";
 
-    @Before
+    @BeforeEach
     public void init(){
         medaError = new MedaError();
     }

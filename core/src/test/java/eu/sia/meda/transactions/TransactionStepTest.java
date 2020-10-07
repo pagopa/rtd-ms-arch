@@ -3,7 +3,7 @@ package eu.sia.meda.transactions;
 import com.google.common.base.Strings;
 import eu.sia.meda.BaseTest;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.function.Supplier;

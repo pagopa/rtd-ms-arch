@@ -1,26 +1,22 @@
 package eu.sia.meda.event.transformer;
 
-import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.event.request.EventRequest;
 import eu.sia.meda.util.ColoredPrinters;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.nio.charset.StandardCharsets;
 
-@Import({ErrorEventRequestTransformer.class})
-public class ErrorEventRequestTransformerTest extends BaseSpringTest {
-
-    @SpyBean
-    private ErrorEventRequestTransformer transformer;
+public class ErrorEventRequestTransformerTest {
 
     @Test
     public void test() {
         ColoredPrinters.PRINT_GREEN.println("Case: no args");
+
+        ErrorEventRequestTransformer transformer = Mockito.spy(new ErrorEventRequestTransformer());
 
         String testString = "testString";
 
@@ -84,7 +80,7 @@ public class ErrorEventRequestTransformerTest extends BaseSpringTest {
         testHeaders = new RecordHeaders();
         testHeaders.add("testHeader", "testHeader".getBytes(StandardCharsets.UTF_8));
 
-        result = onReceived(testString, testHeaders);
+        result = onReceived(transformer,testString, testHeaders);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(testString, new String(result.getPayload(), StandardCharsets.UTF_8));
@@ -97,7 +93,7 @@ public class ErrorEventRequestTransformerTest extends BaseSpringTest {
         Assert.assertEquals(this.getClass().getName(), new String(result.getHeaders().lastHeader("LISTENER").value(), StandardCharsets.UTF_8));
     }
 
-    private EventRequest<byte[]> onReceived(String testString, Headers testHeaders) {
+    private EventRequest<byte[]> onReceived(ErrorEventRequestTransformer transformer,String testString, Headers testHeaders) {
         return transformer.transform(testString.getBytes(StandardCharsets.UTF_8), testHeaders, "error", "topic");
     }
 }

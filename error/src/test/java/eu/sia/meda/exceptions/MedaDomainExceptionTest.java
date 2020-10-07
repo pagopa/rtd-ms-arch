@@ -3,7 +3,7 @@ package eu.sia.meda.exceptions;
 import eu.sia.meda.exceptions.model.MedaErrorTypeEnum;
 import eu.sia.meda.exceptions.model.MedaSeverityEnum;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.Collections;

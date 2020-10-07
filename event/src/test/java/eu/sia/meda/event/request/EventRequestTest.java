@@ -1,7 +1,7 @@
 package eu.sia.meda.event.request;
 
 import org.apache.kafka.common.header.Headers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.*;
 

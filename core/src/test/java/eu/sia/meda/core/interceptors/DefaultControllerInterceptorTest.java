@@ -20,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import eu.sia.meda.core.model.BaseContext;
-import eu.sia.meda.service.SessionContextRetriever;
 import org.mockito.Mockito;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.core.Authentication;
@@ -29,9 +28,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.method.HandlerMethod;
 
 class DefaultControllerInterceptorTest {
-
-	@Mock
-	private SessionContextRetriever mockSessionContextRetriever;
 
 	@InjectMocks
 	private DefaultControllerInterceptor defaultControllerInterceptorUnderTest;
@@ -57,7 +53,6 @@ class DefaultControllerInterceptorTest {
 
 		// Configure SessionContextRetriever.loadSessionContext(...).
 		final BaseContext baseContext = new BaseContext<>();
-		when(mockSessionContextRetriever.loadSessionContext(any(HttpServletRequest.class))).thenReturn(baseContext);
 
 		// Run the test
 		final boolean result = defaultControllerInterceptorUnderTest.preHandle(request, response, "handler");

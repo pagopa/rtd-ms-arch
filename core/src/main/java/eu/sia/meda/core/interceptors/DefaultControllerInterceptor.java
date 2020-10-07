@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,6 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.core.model.AuthorizationContext;
 import eu.sia.meda.core.model.ErrorContext;
 import eu.sia.meda.exceptions.MedaDomainRuntimeException;
-import eu.sia.meda.service.SessionContextRetriever;
 import springfox.documentation.swagger.web.ApiResourceController;
 
 /**
@@ -58,9 +56,6 @@ public class DefaultControllerInterceptor implements HandlerInterceptor {
 	@Value("${spring.application.name}")
 	private String projectId;
 
-	/** The session context retriever. */
-	@Autowired
-	private SessionContextRetriever sessionContextRetriever;
 
 	/**
 	 * Pre handle.

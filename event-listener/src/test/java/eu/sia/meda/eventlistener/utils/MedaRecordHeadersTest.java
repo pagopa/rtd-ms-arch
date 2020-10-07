@@ -4,7 +4,7 @@ import eu.sia.meda.BaseTest;
 import eu.sia.meda.util.ColoredPrinters;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.nio.charset.StandardCharsets;

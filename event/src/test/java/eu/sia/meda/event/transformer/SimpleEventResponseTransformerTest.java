@@ -1,24 +1,17 @@
 package eu.sia.meda.event.transformer;
 
-import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.event.response.EventResponse;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
-
-@Import({SimpleEventResponseTransformer.class})
-public class SimpleEventResponseTransformerTest extends BaseSpringTest {
-
-    @Autowired
-    private SimpleEventResponseTransformer transformer;
-
+public class SimpleEventResponseTransformerTest {
     @Test
     public void test() {
+        SimpleEventResponseTransformer transformer = new SimpleEventResponseTransformer();
+
         ListenableFuture<SendResult> listenableFuture = Mockito.mock(ListenableFuture.class);
 
         EventResponse<Void> eventResponse = new EventResponse<>(true, "", listenableFuture);

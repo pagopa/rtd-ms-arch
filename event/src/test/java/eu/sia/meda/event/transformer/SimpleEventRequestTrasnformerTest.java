@@ -2,32 +2,21 @@ package eu.sia.meda.event.transformer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.event.request.EventRequest;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-@Import({SimpleEventRequestTransformer.class})
-public class SimpleEventRequestTrasnformerTest extends BaseSpringTest {
-
-    @Autowired
-    private SimpleEventRequestTransformer<String> stringTrasformer;
-
-    @Autowired
-    private SimpleEventRequestTransformer<byte[]> byteTrasformer;
-
-    @SpyBean
-    private ObjectMapper objectMapper;
+public class SimpleEventRequestTrasnformerTest {
 
     @Test
     public void test() throws IOException {
+        ObjectMapper objectMapper = Mockito.spy(new ObjectMapper());
+        SimpleEventRequestTransformer<String> stringTrasformer = new SimpleEventRequestTransformer<>(objectMapper);
+
         String testString = "testString";
 
         EventRequest<String> resultString = stringTrasformer.transform(testString);
@@ -35,6 +24,8 @@ public class SimpleEventRequestTrasnformerTest extends BaseSpringTest {
         Assert.assertNotNull(resultString);
         String strResult = objectMapper.readValue(resultString.getPayload(), String.class);
         Assert.assertEquals(testString, strResult);
+
+        SimpleEventRequestTransformer<byte[]> byteTrasformer = new SimpleEventRequestTransformer<>(objectMapper);
 
         EventRequest<byte[]> resultByte = byteTrasformer.transform(testString.getBytes(StandardCharsets.UTF_8));
 

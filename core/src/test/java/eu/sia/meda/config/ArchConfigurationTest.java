@@ -72,4 +72,13 @@ class ArchConfigurationTest {
         assertNotNull(result);
         assertEquals(BaseContext.EMPTY_SESSION,result);
     }
+
+    @Test
+    void testObjectMapperStrict(){
+        // Run the test
+        final ObjectMapper result = archConfigurationUnderTest.objectMapperStrict();
+
+        // Verify the results
+        assertNotNull(result);
+    }
 }

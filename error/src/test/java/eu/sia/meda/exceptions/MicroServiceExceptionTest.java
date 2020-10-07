@@ -1,15 +1,10 @@
 package eu.sia.meda.exceptions;
 
-import eu.sia.meda.exceptions.model.ArchRestDefaultSpringError;
 import eu.sia.meda.exceptions.model.MedaError;
 import eu.sia.meda.exceptions.model.MedaErrorTypeEnum;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Collections;
-import java.util.List;
 
 public class MicroServiceExceptionTest {
 
