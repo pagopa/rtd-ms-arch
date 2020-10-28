@@ -17,8 +17,9 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,7 @@ import java.util.Map;
         })
 public abstract class BaseEventConnectorTest<INPUT, OUTPUT, DTO, RESOURCE, CONNECTOR extends BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE>> extends BaseSpringTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void configLevelLogs() {
         ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
         ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);

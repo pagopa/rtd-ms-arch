@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -79,5 +80,107 @@ class HttpConnectionPoolConfigurationTest {
 		// Verify the results
 		assertNotNull(result);
 		assertEquals("connectorClassName", result.getConnectorClassName());
+	}
+
+	@Test
+	void testConfigurationDisabled() {
+		// Setup
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "enabled", Boolean.class)).thenReturn(Boolean.FALSE);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNull(result);
+	}
+
+	@Test
+	void testConfigurationSetReadTimeout() {
+		// Setup
+		/*when(mockEnvironment.containsProperty("connectorType.items.className.connectionPool.timeout"))
+				.thenReturn(true);*/
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "enabled", Boolean.class)).thenReturn(Boolean.TRUE);
+
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"timeout", Integer.class)).thenReturn(20);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNotNull(result);
+		Assert.assertEquals(20,(long)result.getReadTimeout());
+	}
+
+	@Test
+	void testConfigurationSetConnectTimeout() {
+		// Setup
+		/*when(mockEnvironment.containsProperty("connectorType.items.className.connectionPool.connectTimeout"))
+				.thenReturn(true);*/
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "connectTimeout", Integer.class)).thenReturn(20);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNotNull(result);
+		Assert.assertEquals(20,(long)result.getConnectTimeout());
+	}
+
+	@Test
+	void testConfigurationSetConnectRequestTimeout() {
+		// Setup
+		/*when(mockEnvironment.containsProperty("connectorType.items.className.connectionPool.connectRequestTimeout"))
+				.thenReturn(true);*/
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "connectRequestTimeout", Integer.class)).thenReturn(20);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNotNull(result);
+		Assert.assertEquals(20,(long)result.getConnectRequestTimeout());
+	}
+
+	@Test
+	void testConfigurationSetConnectionSweeperInterval() {
+		// Setup
+		when(mockEnvironment.containsProperty("connectorType.items.className.connectionPool.connectionSweeperInterval"))
+				.thenReturn(true);
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "connectionSweeperInterval", Integer.class)).thenReturn(20);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNotNull(result);
+		Assert.assertEquals(20,(long)result.getConnectionSweeperInterval());
+	}
+
+	@Test
+	void testConfigurationSetIdleTimeout() {
+		// Setup
+		/*when(mockEnvironment.containsProperty("connectorType.items.className.connectionPool.idleTimeout"))
+				.thenReturn(true);*/
+		when(propertiesManager.getConnectorProperty("connectorType", "className",
+				"connectionPool" + "." + "idleTimeout", Integer.class)).thenReturn(20);
+
+		// Run the test
+		final HttpConnectionPoolConfiguration result = HttpConnectionPoolConfiguration
+				.loadFromProperties(propertiesManager, "connectorType", "className");
+
+		// Verify the results
+		Assert.assertNotNull(result);
+		Assert.assertEquals(20,(long)result.getIdleTimeout());
 	}
 }

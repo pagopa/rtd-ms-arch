@@ -1,6 +1,6 @@
 package eu.sia.meda.event.response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.kafka.support.SendResult;
 
 import static org.junit.Assert.*;

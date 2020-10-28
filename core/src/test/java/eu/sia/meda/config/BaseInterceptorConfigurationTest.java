@@ -6,10 +6,13 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import eu.sia.meda.core.interceptors.utils.MedaInterceptorRegistry;
@@ -31,7 +34,8 @@ class BaseInterceptorConfigurationTest {
 	void testAddInterceptors() {
 		// Setup
 		final InterceptorRegistry registry = new InterceptorRegistry();
-		when(mockMedaInterceptorRegistry.getInterceptors()).thenReturn(Arrays.asList());
+		HandlerInterceptor interceptor = Mockito.mock(HandlerInterceptor.class);
+		when(mockMedaInterceptorRegistry.getInterceptors()).thenReturn(Collections.singletonList(interceptor));
 
 		// Run the test
 		try {

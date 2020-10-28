@@ -9,10 +9,15 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 
 class PopulateMDCInterceptorTest {
@@ -56,4 +61,17 @@ class PopulateMDCInterceptorTest {
 
         // Verify the results
     }
+
+
+	@Test
+	public void testPreHandleAuthenticationNotNull(){
+		Authentication authenticationMock = Mockito.mock(Authentication.class);
+		Mockito.when(authenticationMock.getName()).thenReturn("testValue");
+		SecurityContextHolder.getContext().setAuthentication(authenticationMock);
+
+		testPreHandle();
+
+		Assert.assertEquals("testValue", MDC.get("user-id"));
+
+	}
 }
