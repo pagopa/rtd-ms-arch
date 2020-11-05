@@ -316,4 +316,9 @@
 		</repository>
 	</distributionManagement>
 -->
+
+	<scm>
+		<developerConnection>scm:git:https://github.com/pagopa/rtd-ms-arch.git</developerConnection>
+	</scm>
+
 </project>
