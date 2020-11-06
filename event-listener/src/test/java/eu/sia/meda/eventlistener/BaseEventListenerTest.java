@@ -11,8 +11,8 @@ import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationSer
 import eu.sia.meda.util.ColoredPrinters;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Headers;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
@@ -47,14 +47,14 @@ public abstract class BaseEventListenerTest extends BaseSpringTest {
     @Autowired
     private KafkaTemplate<String, String> template;
 
-    @BeforeAll
+    @BeforeClass
     public static void configLevelLogs() {
         ((Logger) LoggerFactory.getLogger("org.apache.zookeeper")).setLevel(Level.WARN);
         ((Logger) LoggerFactory.getLogger("org.apache.kafka")).setLevel(Level.WARN);
         ((Logger) LoggerFactory.getLogger("kafka")).setLevel(Level.WARN);
     }
 
-    @BeforeAll
+    @BeforeClass
     public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
         ObjectName kafkaServerMbeanName = new ObjectName("kafka.server:type=app-info,id=0");
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
