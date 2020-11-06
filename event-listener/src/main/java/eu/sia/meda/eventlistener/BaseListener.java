@@ -7,7 +7,6 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
 import eu.sia.meda.eventlistener.utils.MedaRecordHeaders;
-import eu.sia.meda.service.SessionContextRetriever;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -227,13 +226,6 @@ public abstract class BaseListener {
      */
     @Value("${meda.core.sessioncontext.enabled:true}")
     private boolean loadSessionContext;
-
-    /**
-     * The session context retriever.
-     */
-    @Autowired
-    private SessionContextRetriever sessionContextRetriever;
-
 
     public static final String SINGLE_POOL = "singlePool";
     private boolean singlePool;
@@ -538,9 +530,6 @@ public abstract class BaseListener {
         EventContextHolder.setRecord(record);
         BaseContextHolder.setApplicationContext(this.loadApplicationContext(record));
         String sessionId = "";
-        if (this.loadSessionContext) {
-            BaseContextHolder.setSessionContext(this.sessionContextRetriever.loadSessionContext(sessionId));
-        }
 
     }
 

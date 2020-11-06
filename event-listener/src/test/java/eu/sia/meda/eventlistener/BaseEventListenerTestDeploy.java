@@ -10,17 +10,15 @@ import eu.sia.meda.event.transformer.IEventRequestTransformer;
 import eu.sia.meda.event.transformer.SimpleEventRequestTransformer;
 import eu.sia.meda.event.transformer.SimpleEventResponseTransformer;
 import eu.sia.meda.eventlistener.configuration.ArchEventListenerConfigurationService;
-import eu.sia.meda.service.SessionContextRetriever;
 import eu.sia.meda.util.ColoredPrinters;
 import eu.sia.meda.util.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
@@ -118,9 +116,6 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
             System.setProperty(key, value);
         }
     }
-
-    @MockBean
-    private SessionContextRetriever sessionContextRetriever;
 
     @Autowired
     protected KafkaRequestConnector<REQUEST, DTO> publisher;

@@ -1,15 +1,15 @@
 package eu.sia.meda.config;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.classmate.util.ConcurrentTypeCache;
 import com.fasterxml.classmate.util.ResolvedTypeCache;
-
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.SecurityConfiguration;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SwaggerConfigTest {
 
@@ -31,6 +31,12 @@ class SwaggerConfigTest {
 
 		// Verify the results
 		assertNotNull(result);
+	}
+
+	@Test
+	public void testSecurity(){
+		SecurityConfiguration security = swaggerConfigUnderTest.security();
+		Assert.assertNotNull(security);
 	}
 
 }

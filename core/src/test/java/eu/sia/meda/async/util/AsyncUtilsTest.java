@@ -18,6 +18,7 @@ import eu.sia.meda.core.model.ApplicationContext;
 import eu.sia.meda.core.model.AuthorizationContext;
 import eu.sia.meda.core.model.BaseContext;
 import eu.sia.meda.core.model.ErrorContext;
+import org.mockito.Mockito;
 
 class AsyncUtilsTest {
 
@@ -46,7 +47,7 @@ class AsyncUtilsTest {
         sessionContext.setUser(null);
         sessionContext.setCustomer(null);
 
-        final HttpServletRequest request = null;
+        final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         final CompletableFuture<String> expectedResult = new CompletableFuture<>();
 
         // Run the test

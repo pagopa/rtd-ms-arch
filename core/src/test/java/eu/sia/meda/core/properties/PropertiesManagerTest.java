@@ -203,4 +203,33 @@ class PropertiesManagerTest {
         assertNotNull(result);
         assertEquals(0, result.size());
     }
+
+
+    @Test
+    void testGetAsListNotEmpty() {
+        // Setup
+        when(mockEnvironment.containsProperty("key[0]")).thenReturn(true);
+        when(mockEnvironment.getProperty("key[0]", String.class)).thenReturn("testValue");
+
+        // Run the test
+        final List<String> result = propertiesManagerUnderTest.getAsList("key", String.class);
+
+        // Verify the results
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("testValue",result.get(0));
+    }
+
+    @Test
+    void testGetConnectorPropertyWithDefaultValue() {
+        // Setup
+        when(mockEnvironment.containsProperty("connectorType.items.className.propertyName")).thenReturn(true);
+        when(mockEnvironment.getProperty("connectorType.items.className.propertyName", String.class)).thenReturn("defaultValue");
+
+        // Run the test
+        final String result = propertiesManagerUnderTest.getConnectorProperty("connectorType", "className", "propertyName", String.class, "defaultValue");
+
+        // Verify the results
+        assertEquals("defaultValue", result);
+    }
 }

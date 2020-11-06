@@ -12,8 +12,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public abstract class BaseEventListenerIntegrationTest extends BaseSpringIntegra
     @Value("${spring.cloud.stream.kafka.binder.zkNodes}")
     private String zkNodes;
 
-    @BeforeClass
+    @BeforeAll
     public static void unregisterPreviouslyKafkaServers() throws MalformedObjectNameException, MBeanRegistrationException, InstanceNotFoundException {
         ObjectName kafkaServerMbeanName = new ObjectName("kafka.server:type=app-info,id=0");
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
