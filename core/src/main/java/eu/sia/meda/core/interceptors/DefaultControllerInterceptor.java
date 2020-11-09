@@ -108,7 +108,10 @@ public class DefaultControllerInterceptor implements HandlerInterceptor {
 			Exception ex) {
 		RequestContextHolder.clear();
 		if (MedaRequestAttributes.shouldGenerateRequestId(request)) {
-			response.setHeader("x-request-id", String.valueOf(request.getAttribute("x-request-id")));
+			String requestId = String.valueOf(request.getAttribute("x-request-id"));
+			if (requestId.length() <= 36) {
+				response.setHeader("x-request-id", requestId);
+			}
 		}
 
 	}
