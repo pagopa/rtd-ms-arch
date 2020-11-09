@@ -8,6 +8,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  toDeploy: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
 steps:
 - task: DownloadSecureFile@1
   displayName: 'download settings.xml for Maven'
@@ -31,3 +34,16 @@ steps:
     mavenAuthenticateFeed: true
     effectivePomSkip: true
     sonarQubeRunAnalysis: false
+- task: Maven@3
+  condition: eq(variables.toDeploy,true)
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'deploy'
+    options: '-s $(settingsxml.secureFilePath) -DskipTests=true -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    mavenVersionOption: 'Default'
+    mavenOptions: '-Xmx3072m'
+    mavenAuthenticateFeed: true
+    effectivePomSkip: true
+    sonarQubeRunAnalysis: false    
