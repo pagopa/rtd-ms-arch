@@ -2,8 +2,8 @@ package eu.sia.meda.eventlistener;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EventContextHolderTest {
 
-    @BeforeEach
-    public void init() {
+    @BeforeClass
+    public static void init() {
         EventContextHolder.clear();
     }
 
