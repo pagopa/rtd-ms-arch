@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.sia.meda</groupId>
 	<artifactId>meda-arch</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -93,12 +92,12 @@
 			<dependency>
 				<groupId>eu.sia.meda</groupId>
 				<artifactId>meda-arch-core</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>eu.sia.meda</groupId>
 				<artifactId>meda-arch-core</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.2</version>
 				<type>test-jar</type>
 			</dependency>
 			<dependency>
@@ -109,17 +108,17 @@
 			<dependency>
 				<groupId>eu.sia.meda</groupId>
 				<artifactId>meda-arch-event</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>eu.sia.meda</groupId>
 				<artifactId>meda-arch-event-listener</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>eu.sia.meda</groupId>
 				<artifactId>meda-arch-error</artifactId>
-				<version>1.0.2-SNAPSHOT</version>
+				<version>1.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
@@ -317,7 +316,7 @@
 -->
 	<scm>
 		<developerConnection>scm:git:https://github.com/pagopa/rtd-ms-arch.git</developerConnection>
-	  <tag>1.0.1</tag>
+	  <tag>1.0.2</tag>
   </scm>
 
 </project>
