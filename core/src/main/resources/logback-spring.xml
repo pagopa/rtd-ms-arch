@@ -49,6 +49,10 @@
             <root level="INFO">
                 <appender-ref ref="ASYNC_FILE"/>
             </root>
+
+            <logger name="org.springframework.aop.interceptor.PerformanceMonitorInterceptor" level="TRACE">
+                <appender-ref ref="ASYNC_FILE"/>
+            </logger>
         </then>
     </if>
 
@@ -109,11 +113,20 @@
                 <appender-ref ref="ASYNC_STDOUT"/>
                 <appender-ref ref="kafkaAppender"/>
             </root>
+
+            <logger name="org.springframework.aop.interceptor.PerformanceMonitorInterceptor" level="TRACE">
+                <appender-ref ref="ASYNC_STDOUT"/>
+                <appender-ref ref="kafkaAppender"/>
+            </logger>
         </then>
         <else>
             <root level="INFO">
                 <appender-ref ref="ASYNC_STDOUT"/>
             </root>
+
+            <logger name="org.springframework.aop.interceptor.PerformanceMonitorInterceptor" level="TRACE">
+                <appender-ref ref="ASYNC_STDOUT"/>
+            </logger>
         </else>
     </if>
 </configuration>
