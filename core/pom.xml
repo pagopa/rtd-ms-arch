@@ -4,10 +4,10 @@
 	<artifactId>meda-arch-core</artifactId>
 
 	<parent>
-		<groupId>eu.sia.meda</groupId>
-		<artifactId>meda-arch</artifactId>
-		<version>1.0.1</version>
-	</parent>
+        <groupId>eu.sia.meda</groupId>
+        <artifactId>meda-arch</artifactId>
+        <version>1.0.2</version>
+    </parent>
 
 	<name>meda-arch-core</name>
 	<description>This project is the core of the architecture of a micro-service.</description>
