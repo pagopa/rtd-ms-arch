@@ -7,8 +7,15 @@ trigger:
     include:
       - master
       - develop
-      - release/*
+      - release
       - features/*
+  paths:
+    include:
+      - core/*
+      - error/*
+      - event/*
+      - event-listener/*
+      - pom.xml
 
 pool:
   vmImage: 'ubuntu-latest'
