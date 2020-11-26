@@ -171,7 +171,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- SESSION MANAGER START TODO: BE INCLUDED INSIDE SESSION MANAGER -->
 		<dependency>
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session</artifactId>
@@ -183,7 +182,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- SESSION MANAGER END TODO: BE INCLUDED INSIDE SESSION MANAGER -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -194,12 +192,10 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
-		<!-- CACHE MANAGER START TODO: BE INCLUDED INSIDE CACHE MANAGER -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
-		<!-- CACHE MANAGER END TODO: BE INCLUDED INSIDE CACHE MANAGER -->
 
 		<!-- COMMON DEPENDENCIES START -->
 		<dependency>
@@ -287,10 +283,14 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-contract-wiremock</artifactId>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.github.tomakehurst</groupId> -->
-		<!-- <artifactId>wiremock-standalone</artifactId> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 	</dependencies>
 	<!--
 	<repositories>
