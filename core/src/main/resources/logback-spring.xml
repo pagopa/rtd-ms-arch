@@ -8,9 +8,9 @@
                     source="spring.application.name"/>
 
     <property name="CONSOLE_LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSSZZ} [${appName:-}] %highlight(%-5level) [%t] %magenta([%X{user-id}/%X{session-id}/%X{request-id}]) %green([%c{32}.%M]) - %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSSZZ} [${appName:-}] %highlight(%-5level) [%t] %magenta([%X{user-id}/%X{request-id}/%X{apim-request-id}]) %green([%c{32}.%M]) - %msg%n"/>
     <property name="FILE_LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSSZZ} [${appName:-}] %highlight(%-5level) [%t] %magenta([%X{user-id}/%X{session-id}/%X{request-id}]) %green([%c{32}.%M]) - %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSSZZ} [${appName:-}] %highlight(%-5level) [%t] %magenta([%X{user-id}/%X{request-id}/%X{apim-request-id}]) %green([%c{32}.%M]) - %msg%n"/>
 
     <!--<logger name="eu.sia.meda" level="DEBUG" /> -->
 

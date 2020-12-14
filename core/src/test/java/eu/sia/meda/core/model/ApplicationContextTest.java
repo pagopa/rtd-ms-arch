@@ -54,6 +54,6 @@ class ApplicationContextTest {
 		Map<String, String> copyHeader = applicationContextUnderTest.getCopyHeader();
 		Assert.assertNotNull(copyHeader);
 		Assert.assertFalse(copyHeader.isEmpty());
-		Assert.assertEquals(3,copyHeader.size());
+		Assert.assertEquals(5,copyHeader.size());
 	}
 }

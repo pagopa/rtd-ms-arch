@@ -175,6 +175,8 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE>
 					BaseContextHolder.getApplicationContext().getRequestId().getBytes(StandardCharsets.UTF_8));
 			headers.add("x-originapp",
 					BaseContextHolder.getApplicationContext().getOriginApp().getBytes(StandardCharsets.UTF_8));
+			headers.add("x-user-id",
+					BaseContextHolder.getApplicationContext().getUserId().getBytes(StandardCharsets.UTF_8));
 
 			String topicTmp;
 			if (request.getTopic() != null) {

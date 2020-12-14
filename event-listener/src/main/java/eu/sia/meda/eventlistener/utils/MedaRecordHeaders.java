@@ -12,6 +12,7 @@ public class MedaRecordHeaders {
 
     /** The origing application setted as default */
     public static final String DEFAULT_ORIGING_APP = "UNKNOWN";
+    public static final String DEFAULT_USER_ID = "anonymousUser";
 
     /**
      * Avoid instantiation
@@ -22,6 +23,7 @@ public class MedaRecordHeaders {
     public static final String REQUEST_ID = "x-request-id";
     public static final String TRANSACTION_ID = "x-transaction-id";
     public static final String ORIGIN_APP = "x-originapp";
+    public static final String USER_ID = "x-user-id";
 
     public static String readHeader(ConsumerRecord<String, byte[]> record, String headerName) {
         if (!Strings.isNullOrEmpty(headerName)) {
@@ -76,5 +78,19 @@ public class MedaRecordHeaders {
             transactionId = UUID.randomUUID().toString();
         }
         return transactionId;
+    }
+
+    /**
+     * Gets the transaction id.
+     *
+     * @param record the request
+     * @return the transaction id
+     */
+    public static String getUserId(ConsumerRecord<String, byte[]> record) {
+        String userId = readHeader(record, USER_ID);
+        if (Strings.isNullOrEmpty(userId)) {
+            userId = DEFAULT_USER_ID;
+        }
+        return userId;
     }
 }

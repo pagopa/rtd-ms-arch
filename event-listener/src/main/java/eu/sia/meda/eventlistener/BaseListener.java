@@ -606,6 +606,7 @@ public abstract class BaseListener {
         applicationContext.setRequestId(MedaRecordHeaders.getRequestId(record));
         applicationContext.setTransactionId(MedaRecordHeaders.getTransactionId(record));
         applicationContext.setOriginApp(MedaRecordHeaders.getOriginApp(record));
+        applicationContext.setOriginApp(MedaRecordHeaders.getUserId(record));
 
         applicationContext.buildDefaultCopyHeader();
         return applicationContext;
