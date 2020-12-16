@@ -6,7 +6,7 @@
 	<parent>
         <groupId>eu.sia.meda</groupId>
         <artifactId>meda-arch</artifactId>
-        <version>1.0.4-rc2</version>
+        <version>1.0.4</version>
     </parent>
 
 	<name>meda-arch-core</name>
