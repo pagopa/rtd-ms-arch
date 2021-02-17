@@ -25,6 +25,8 @@ public class BaseContextHolderTest {
         applicationContext = BaseContextHolder.getApplicationContext();
         Assert.assertNotNull(applicationContext);
         Assert.assertEquals("UNKNOWN", applicationContext.getOriginApp());
+        Assert.assertEquals("anonymousUser", applicationContext.getUserId());
+        Assert.assertEquals("NONE", applicationContext.getApimRequestId());
     }
 
     @Test
@@ -86,14 +88,20 @@ public class BaseContextHolderTest {
         ApplicationContext applicationContext = BaseContextHolder.getApplicationContext();
         Assert.assertNotNull(applicationContext);
         Assert.assertEquals("UNKNOWN",applicationContext.getOriginApp());
+        Assert.assertEquals("anonymousUser", applicationContext.getUserId());
+        Assert.assertEquals("NONE", applicationContext.getApimRequestId());
 
-        applicationContext.setOriginApp("test");
+        applicationContext.setOriginApp("testOriginApp");
+        applicationContext.setUserId("testUserId");
+        applicationContext.setApimRequestId("testApimRequestId");
 
         BaseContextHolder.setApplicationContext(applicationContext);
 
         applicationContext = BaseContextHolder.getApplicationContext();
         Assert.assertNotNull(applicationContext);
-        Assert.assertEquals("test",applicationContext.getOriginApp());
+        Assert.assertEquals("testOriginApp",applicationContext.getOriginApp());
+        Assert.assertEquals("testUserId",applicationContext.getUserId());
+        Assert.assertEquals("testApimRequestId",applicationContext.getApimRequestId());
 
         try {
             BaseContextHolder.setApplicationContext(applicationContext);

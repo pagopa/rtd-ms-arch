@@ -7,7 +7,7 @@
     <parent>
         <artifactId>meda-arch</artifactId>
         <groupId>eu.sia.meda</groupId>
-        <version>1.0.3</version>
+        <version>1.0.5</version>
     </parent>
 
 </project>

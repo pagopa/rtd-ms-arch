@@ -62,16 +62,4 @@ class PopulateMDCInterceptorTest {
         // Verify the results
     }
 
-
-	@Test
-	public void testPreHandleAuthenticationNotNull(){
-		Authentication authenticationMock = Mockito.mock(Authentication.class);
-		Mockito.when(authenticationMock.getName()).thenReturn("testValue");
-		SecurityContextHolder.getContext().setAuthentication(authenticationMock);
-
-		testPreHandle();
-
-		Assert.assertEquals("testValue", MDC.get("user-id"));
-
-	}
 }

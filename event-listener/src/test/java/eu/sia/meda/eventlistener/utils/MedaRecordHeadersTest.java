@@ -14,6 +14,7 @@ public class MedaRecordHeadersTest extends BaseTest {
     public static final String REQUEST_ID = "x-request-id";
     public static final String TRANSACTION_ID = "x-transaction-id";
     public static final String ORIGIN_APP = "x-originapp";
+    public static final String USER_ID = "x-user-id";
 
     @Test
     public void testReadHeader() {
@@ -103,5 +104,24 @@ public class MedaRecordHeadersTest extends BaseTest {
         result = MedaRecordHeaders.getTransactionId(record);
         Assert.assertNotNull(result);
         Assert.assertEquals("transactionIdHeader", result);
+    }
+
+    @Test
+    public void testGetUserId() {
+        ColoredPrinters.PRINT_GREEN.println("Case no headers");
+
+        ConsumerRecord<String, byte[]> record = new ConsumerRecord<>("topic", 0, 0, "topicKey", "topicValue".getBytes(StandardCharsets.UTF_8));
+
+        String result = MedaRecordHeaders.getUserId(record);
+        Assert.assertNotNull(result);
+
+        ColoredPrinters.PRINT_GREEN.println("Case header found");
+
+        record = new ConsumerRecord<>("topic", 0, 0, "topicKey", "topicValue".getBytes(StandardCharsets.UTF_8));
+        record.headers().add(USER_ID, "userIdHeader".getBytes(StandardCharsets.UTF_8));
+
+        result = MedaRecordHeaders.getUserId(record);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("userIdHeader", result);
     }
 }

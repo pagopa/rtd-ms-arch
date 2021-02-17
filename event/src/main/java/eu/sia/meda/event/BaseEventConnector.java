@@ -38,6 +38,9 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE>
 		extends BaseConnector<EventRequest<DTO>, EventResponse<RESOURCE>> {
 
 	private static final String SUCCESS = "Success";
+	public static final String REQUEST_ID = "x-request-id";
+	public static final String ORIGIN_APP = "x-originapp";
+	public static final String USER_ID = "x-user-id";
 
 	/** The producer. */
 	private EventProducer producer;
@@ -171,10 +174,18 @@ public abstract class BaseEventConnector<INPUT, OUTPUT, DTO, RESOURCE>
 				headers = new RecordHeaders();
 				request.setHeaders(headers);
 			}
-			headers.add("x-request-id",
-					BaseContextHolder.getApplicationContext().getRequestId().getBytes(StandardCharsets.UTF_8));
-			headers.add("x-originapp",
-					BaseContextHolder.getApplicationContext().getOriginApp().getBytes(StandardCharsets.UTF_8));
+			if (headers.lastHeader(REQUEST_ID) == null) {
+				headers.add(REQUEST_ID,
+						BaseContextHolder.getApplicationContext().getRequestId().getBytes(StandardCharsets.UTF_8));
+			}
+			if (headers.lastHeader(ORIGIN_APP) == null) {
+				headers.add(ORIGIN_APP,
+						BaseContextHolder.getApplicationContext().getOriginApp().getBytes(StandardCharsets.UTF_8));
+			}
+			if (headers.lastHeader(USER_ID) == null) {
+				headers.add(USER_ID,
+						BaseContextHolder.getApplicationContext().getUserId().getBytes(StandardCharsets.UTF_8));
+			}
 
 			String topicTmp;
 			if (request.getTopic() != null) {

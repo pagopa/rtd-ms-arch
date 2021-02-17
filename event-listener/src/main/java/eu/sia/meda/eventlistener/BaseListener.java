@@ -17,6 +17,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -529,8 +530,6 @@ public abstract class BaseListener {
         }
         EventContextHolder.setRecord(record);
         BaseContextHolder.setApplicationContext(this.loadApplicationContext(record));
-        String sessionId = "";
-
     }
 
     /**
@@ -555,6 +554,7 @@ public abstract class BaseListener {
                 }
                 ApplicationContext applicationContext = EventContextHolder.getApplicationContext();
                 BaseContext<?, ?> sessionContext = EventContextHolder.getSessionContext();
+                Map<String, String> contextMap = MDC.getCopyOfContextMap();
                 return executor.getFirst().submit(() -> {
                     try {
                         EventContextHolder.clear();
@@ -563,6 +563,7 @@ public abstract class BaseListener {
                             BaseContextHolder.forceSetSessionContext(sessionContext);
                         }
                         EventContextHolder.setRecord(record);
+                        MDC.setContextMap(contextMap);
                         messageConsumer.accept(record);
                         executor.getSecond().release();
                         if (callback != null) {
@@ -606,8 +607,17 @@ public abstract class BaseListener {
         applicationContext.setRequestId(MedaRecordHeaders.getRequestId(record));
         applicationContext.setTransactionId(MedaRecordHeaders.getTransactionId(record));
         applicationContext.setOriginApp(MedaRecordHeaders.getOriginApp(record));
+        applicationContext.setUserId(MedaRecordHeaders.getUserId(record));
 
         applicationContext.buildDefaultCopyHeader();
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(LoggerUtils.formatArchRow("Populating MDC"));
+        }
+        MDC.put("request-id", applicationContext.getRequestId());
+        MDC.put("apim-request-id", applicationContext.getApimRequestId());
+        MDC.put("user-id", applicationContext.getUserId());
+
         return applicationContext;
     }
 }
