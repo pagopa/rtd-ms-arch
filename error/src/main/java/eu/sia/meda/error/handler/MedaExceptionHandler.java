@@ -80,7 +80,11 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ResponseEntity<ErrorResource> handleMedaDomainException(IMedaDomainException e, HttpServletRequest request,
                                                                     HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, (Exception) e);
+        if(e.getResponseStatus().is4xxClientError()){
+            log.warn(UNHANDLED_EXCEPTION, (Exception) e);
+        } else {
+            log.error(UNHANDLED_EXCEPTION, (Exception) e);
+        }
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(this.getErrorResource(ErrorKeyExtractorHelper.getMedaDomainExceptionErrorKey(e)),
@@ -121,11 +125,13 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ResponseEntity<ErrorResource> handleMedaTransactionException(MedaTransactionException e,
                                                                          HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
-
         if (e.getCause() instanceof HttpStatusCodeException) {
             try {
-
+                if (((HttpStatusCodeException) e.getCause()).getStatusCode().is4xxClientError()){
+                    log.warn(UNHANDLED_EXCEPTION, e);
+                }else{
+                    log.error(UNHANDLED_EXCEPTION, e);
+                }
                 HttpStatusCodeException ise = (HttpStatusCodeException) e.getCause();
                 // recover the original exception if it is an ErrorSource, wrapped by
                 // transaction logic
@@ -141,9 +147,9 @@ public class MedaExceptionHandler {
                 return new ResponseEntity<>(handleThrowable(e, request, response), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
+            log.error(UNHANDLED_EXCEPTION, e);
             return new ResponseEntity<>(handleThrowable(e, request, response), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     /**
@@ -176,7 +182,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request,
                                                              HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         return this.getErrorResource(ErrorKeyExtractorHelper.getConstraintViolationExceptionErrorKeys(e));
     }
 
@@ -197,7 +203,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
                                                                 HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         return this.getErrorResource(ErrorKeyExtractorHelper.getMethodArgumentNotValidExceptionErrorKeys(e));
     }
 
@@ -214,7 +220,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleMissingServletRequestParameterException(MissingServletRequestParameterException e,
                                                                         HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String name = e.getParameterName();
         String type = e.getParameterType();
         String errorKey = buildErrorKeyEnriched("missing.parameter.error", name, type);
@@ -238,7 +244,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleMissingServletRequestPartException(MissingServletRequestPartException e,
                                                                    HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String name = e.getRequestPartName();
         String errorKey = buildErrorKeyEnriched("missing.request.part.error", name);
         return this.getErrorResource(errorKey);
@@ -257,7 +263,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleMissingPathVariableException(MissingPathVariableException e, HttpServletRequest request,
                                                              HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String name = e.getVariableName();
         String errorKey = buildErrorKeyEnriched("missing.path.variable.error", name);
         return this.getErrorResource(errorKey);
@@ -276,7 +282,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
                                                                 HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String errorKey = "invalid.body.error";
         if (e.getCause() instanceof JsonMappingException) {
             JsonMappingException casted = (JsonMappingException) e.getCause();
@@ -308,7 +314,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e,
                                                                    HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String errorKey = "unsupported.media.type.error";
         return this.getErrorResource(errorKey);
     }
@@ -326,7 +332,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException e,
                                                                     HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String errorKey = "not.acceptable.media.type.error";
         return this.getErrorResource(errorKey);
     }
@@ -344,7 +350,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e,
                                                                        HttpServletRequest request, HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String errorKey = "unsupported.method.error";
         return this.getErrorResource(errorKey);
     }
@@ -354,7 +360,7 @@ public class MedaExceptionHandler {
     @ResponseBody
     private ErrorResource handleInvalidParam(MethodArgumentTypeMismatchException e, HttpServletRequest request,
                                              HttpServletResponse response) {
-        log.error(UNHANDLED_EXCEPTION, e);
+        log.warn(UNHANDLED_EXCEPTION, e);
         String errorKey = "invalid.param.error";
         String path = e.getName();
         String value = e.getValue() != null ? e.getValue().toString() : "null";
@@ -365,10 +371,15 @@ public class MedaExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> handleFeignException(FeignException e) {
-        log.error(UNHANDLED_EXCEPTION, e);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        HttpStatus httpStatus = HttpStatus.resolve(e.status());
 
-        return new ResponseEntity<>(e.contentUTF8(), httpHeaders, HttpStatus.resolve(e.status()));
+        if(httpStatus != null && httpStatus.is4xxClientError()){
+            log.warn(UNHANDLED_EXCEPTION, e);
+        } else {
+            log.error(UNHANDLED_EXCEPTION, e);
+        }
+        return new ResponseEntity<>(e.contentUTF8(), httpHeaders, httpStatus);
     }
 }
