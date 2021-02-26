@@ -375,7 +375,8 @@ public class MedaExceptionHandler {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
         HttpStatus httpStatus = HttpStatus.resolve(e.status());
 
-        if(httpStatus != null && httpStatus.is4xxClientError()){
+        if (e.contentUTF8() != null && e.contentUTF8().startsWith("{\"returnMessages\":")
+                && httpStatus != null && httpStatus.is4xxClientError()) {
             log.warn(UNHANDLED_EXCEPTION, e);
         } else {
             log.error(UNHANDLED_EXCEPTION, e);
