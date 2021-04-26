@@ -27,7 +27,7 @@
 		<dozer.version>6.1.0</dozer.version>
 		<spring-session.version>1.3.0.RELEASE</spring-session.version>
 		<commons-lang3.version>3.5</commons-lang3.version>
-		<commons-io.version>2.5</commons-io.version>
+		<commons-io.version>2.7</commons-io.version>
 		<hystrix.version>1.5.12</hystrix.version>
 		<sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
 		<maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
