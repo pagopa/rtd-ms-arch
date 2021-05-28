@@ -38,7 +38,7 @@
 		<!-- <sonar.java.converagePlugin>jacoco</sonar.java.converagePlugin> -->
 		<!-- <sonar.jacoco.reportPath>${session.executionRootDirectory}/sonar-report/jacoco/jacoco.exec</sonar.jacoco.reportPath> -->
 		<!-- <sonar.language>java</sonar.language> -->
-		<sonar.exclusions>**/enums/**,**/model/**,**/Constants*.java</sonar.exclusions>
+		<!--<sonar.exclusions>**/enums/**,**/model/**,**/Constants*.java</sonar.exclusions>-->
 	</properties>
 
 	<modules>
