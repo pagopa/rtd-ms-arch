@@ -35,8 +35,8 @@ steps:
         #              inputs:
         #                SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
         #                organization: '$(SONARCLOUD_ORG)'
-        #                scannerMode: Other
-        #                extraProperties: |
+      #                scannerMode: Other
+      #                extraProperties: |
       #                  sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
       #                  sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
       #                  sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
@@ -62,14 +62,14 @@ steps:
       isJacocoCoverageReportXML: true
       sqMavenPluginVersionChoice: 'latest'
 
-        - task: Bash@3
-          displayName: Bash
-          name: Bash
-          inputs:
-            targetType: 'inline'
-            script: |
-              cd $(System.DefaultWorkingDirectory) | ls -lR
-            failOnStderr: true
+  - task: Bash@3
+    displayName: Bash
+    name: Bash
+    inputs:
+      targetType: 'inline'
+      script: |
+        cd $(System.DefaultWorkingDirectory) | ls -lR
+      failOnStderr: true
 
 #  - task: SonarCloudPublish@1
 #      displayName: 'Publish SonarCloud results on build summary'
