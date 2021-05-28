@@ -20,9 +20,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  isToDeploy: $[and(ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release')))]
-
 steps:
   - task: DownloadSecureFile@1
     displayName: 'download settings-rw.xml for Maven'
@@ -30,24 +27,24 @@ steps:
     inputs:
       secureFile: 'settings-rw.xml'
       retryCount: '2'
-        #          - task: SonarCloudPrepare@1
-        #              displayName: 'Prepare SonarCloud analysis configuration'
-        #              inputs:
-        #                SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-      #                organization: '$(SONARCLOUD_ORG)'
-      #                scannerMode: Other
-      #                extraProperties: |
-      #                  sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-      #                  sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
-      #                  sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-      #                  sonar.junit.reportPaths=target/surefire-reports/
+  - task: SonarCloudPrepare@1
+    displayName: 'Prepare SonarCloud analysis configuration'
+    inputs:
+      SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
+      organization: '$(SONARCLOUD_ORG)'
+      scannerMode: Other
+      extraProperties: |
+        sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+        sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+      # sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+      # sonar.junit.reportPaths=target/surefire-reports/
   - task: Maven@3
     displayName: Build and Test
     condition: eq(variables.isToDeploy,false)
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean test'
-      options: '-s $(settingsxml.secureFilePath) -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1'
+      options: '-s $(settingsxml.secureFilePath) -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       codeCoverageToolOption: 'JaCoCo'
@@ -69,8 +66,7 @@ steps:
       script: |
         cd $(System.DefaultWorkingDirectory) | ls -lR
       failOnStderr: true
-
-#  - task: SonarCloudPublish@1
-#      displayName: 'Publish SonarCloud results on build summary'
-#      inputs:
-#        pollingTimeoutSec: '300'
+  - task: SonarCloudPublish@1
+    displayName: 'Publish SonarCloud results on build summary'
+    inputs:
+      pollingTimeoutSec: '300'
