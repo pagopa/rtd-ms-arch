@@ -1,0 +1,92 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
+      - features/*
+      - hotfix/*
+  paths:
+    include:
+      - api/*
+      - app/*
+      - core/*
+      - integration/*
+      - pom.xml
+
+resources:
+  - repo: self
+
+variables:
+
+  dockerfileRelativePath: 'Dockerfile'
+
+  # Agent VM image name for Build
+  vmImageNameDefault: 'ubuntu-latest'
+
+  # Image Repository Name
+  imageRepository: 'bpdmscitizen'
+
+stages:
+  - stage: Test
+    displayName: Test
+    condition: or(eq(variables.isPullRequest, true), and(ne(variables.isSIT, true), ne(variables.isUAT, true), ne(variables.isPROD, true)))
+    jobs:
+      - job: Test
+        displayName: Test
+        pool:
+          vmImage: $(vmImageNameDefault)
+        steps:
+          - task: DownloadSecureFile@1
+            displayName: 'download settings.xml for Maven'
+            name: settingsxml
+            inputs:
+              secureFile: 'settings.xml'
+              retryCount: '2'
+          #          - task: SonarCloudPrepare@1
+          #              displayName: 'Prepare SonarCloud analysis configuration'
+          #              inputs:
+          #                SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
+          #                organization: '$(SONARCLOUD_ORG)'
+          #                scannerMode: Other
+          #                extraProperties: |
+          #                  sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+          #                  sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+          #                  sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+          #                  sonar.junit.reportPaths=target/surefire-reports/
+
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              options: '-B -s $(settingsxml.secureFilePath)'
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              codeCoverageToolOption: 'JaCoCo'
+              codeCoverageClassFilter: '+:it.gov.pagopa.**,-:**.*Config,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.8'
+              mavenVersionOption: 'Default'
+              mavenOptions: '-Xmx3072m'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: true
+              sonarQubeRunAnalysis: true
+              isJacocoCoverageReportXML: true
+              sqMavenPluginVersionChoice: 'latest'
+
+          - task: Bash@3
+            displayName: Bash
+            name: Bash
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd $(System.DefaultWorkingDirectory) | ls -lR
+              failOnStderr: true
+
+#  - task: SonarCloudPublish@1
+#      displayName: 'Publish SonarCloud results on build summary'
+#      inputs:
+#        pollingTimeoutSec: '300'
