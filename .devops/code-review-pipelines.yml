@@ -27,15 +27,15 @@ steps:
     inputs:
       secureFile: 'settings-rw.xml'
       retryCount: '2'
-  - task: SonarCloudPrepare@1
-    displayName: 'Prepare SonarCloud analysis configuration'
-    inputs:
-      SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-      organization: '$(SONARCLOUD_ORG)'
-      scannerMode: Other
-      extraProperties: |
-        sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-        sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+#  - task: SonarCloudPrepare@1
+#    displayName: 'Prepare SonarCloud analysis configuration'
+#    inputs:
+#      SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
+#      organization: '$(SONARCLOUD_ORG)'
+#      scannerMode: Other
+#      extraProperties: |
+#        sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+#        sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
       # sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
       # sonar.junit.reportPaths=target/surefire-reports/
   - task: Maven@3
@@ -55,7 +55,7 @@ steps:
       mavenOptions: '-Xmx3072m'
       mavenAuthenticateFeed: true
       effectivePomSkip: true
-      sonarQubeRunAnalysis: true
+      sonarQubeRunAnalysis: false
       isJacocoCoverageReportXML: true
       sqMavenPluginVersionChoice: 'latest'
   - task: Bash@3
@@ -66,7 +66,7 @@ steps:
       script: |
         cd $(System.DefaultWorkingDirectory) | ls -lR
       failOnStderr: true
-  - task: SonarCloudPublish@1
-    displayName: 'Publish SonarCloud results on build summary'
-    inputs:
-      pollingTimeoutSec: '300'
+#  - task: SonarCloudPublish@1
+#    displayName: 'Publish SonarCloud results on build summary'
+#    inputs:
+#      pollingTimeoutSec: '300'
