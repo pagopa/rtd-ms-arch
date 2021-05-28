@@ -28,33 +28,15 @@ steps:
     displayName: 'download settings.xml for Maven'
     name: settingsxml
     inputs:
-      secureFile: 'settings.xml'
+      secureFile: 'settings-rw.xml'
       retryCount: '2'
-  - task: Maven@3
-    displayName: Build and Test
-    condition: eq(variables.isToDeploy,false)
-    inputs:
-      mavenPomFile: 'pom.xml'
-      goals: 'clean test'
-      options: '-s $(settingsxml.secureFilePath) -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1'
-      publishJUnitResults: true
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      codeCoverageToolOption: 'JaCoCo'
-      codeCoverageClassFilter: '+:eu.sia.meda.**,-:**.*Config,-:**.*Scheduler,-:**.Dummy*,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**,-:**Base*.**,-:ErrorManagerService.java'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.8'
-      mavenVersionOption: 'Default'
-      mavenOptions: '-Xmx3072m'
-      mavenAuthenticateFeed: true
-      effectivePomSkip: true
-      sonarQubeRunAnalysis: false
   - task: Maven@3
     displayName: Build, Test and Deploy Artifacts
     condition: eq(variables.isToDeploy,true)
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'deploy'
-      options: '-s $(settingsxml.secureFilePath) -DskipTests=true -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/sia-dds/cstar/_packaging/cstar/maven/v1'
+      options: '-s $(settingsxml.secureFilePath) -DskipTests=true -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.8'
       mavenVersionOption: 'Default'
