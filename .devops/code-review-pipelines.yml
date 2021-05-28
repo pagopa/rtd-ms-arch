@@ -54,7 +54,7 @@ steps:
       mavenOptions: '-Xmx3072m'
       mavenAuthenticateFeed: true
       effectivePomSkip: true
-      sonarQubeRunAnalysis: false
+      sonarQubeRunAnalysis: true
       isJacocoCoverageReportXML: true
       sqMavenPluginVersionChoice: 'latest'
   - task: Bash@3
