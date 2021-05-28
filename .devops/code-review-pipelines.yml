@@ -62,7 +62,7 @@ stages:
           - task: Maven@3
             inputs:
               mavenPomFile: 'pom.xml'
-              options: '-B -s $(settings-rwxml.secureFilePath)'
+              options: '-B -s $(settingsrwxml.secureFilePath)'
               publishJUnitResults: true
               testResultsFiles: '**/surefire-reports/TEST-*.xml'
               codeCoverageToolOption: 'JaCoCo'
