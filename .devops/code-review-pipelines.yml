@@ -34,7 +34,7 @@ steps:
         #              displayName: 'Prepare SonarCloud analysis configuration'
         #              inputs:
         #                SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-        #                organization: '$(SONARCLOUD_ORG)'
+      #                organization: '$(SONARCLOUD_ORG)'
       #                scannerMode: Other
       #                extraProperties: |
       #                  sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
@@ -61,7 +61,6 @@ steps:
       sonarQubeRunAnalysis: true
       isJacocoCoverageReportXML: true
       sqMavenPluginVersionChoice: 'latest'
-
   - task: Bash@3
     displayName: Bash
     name: Bash
