@@ -43,7 +43,7 @@ stages:
         steps:
           - task: DownloadSecureFile@1
             displayName: 'download settings-rw.xml for Maven'
-            name: settings-rwxml
+            name: settingsrwxml
             inputs:
               secureFile: 'settings-rw.xml'
               retryCount: '2'
