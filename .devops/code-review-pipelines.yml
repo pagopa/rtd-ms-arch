@@ -37,9 +37,9 @@ steps:
     displayName: Build and Test
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'package sonar:sonar'
+      goals: 'package'
       options: '-DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
-      publishJUnitResults: true
+      publishJUnitResults: false
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       codeCoverageToolOption: 'JaCoCo'
       codeCoverageClassFilter: '+:eu.sia.meda.**,-:**.*Config,-:**.*Scheduler,-:**.Dummy*,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**,-:**Base*.**,-:ErrorManagerService.java'
