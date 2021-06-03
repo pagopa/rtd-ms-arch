@@ -31,18 +31,16 @@ steps:
       extraProperties: |
         sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
         sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
-        sonar.coverage.jacoco.xmlReportPaths=${project.basedir}/CCReport43F6D5EF/jacoco.xml
+        sonar.coverage.jacoco.xmlReportPaths=${System.DefaultWorkingDirectory}/CCReport43F6D5EF/jacoco.xml
       # sonar.junit.reportPaths=target/surefire-reports/
   - task: Maven@3
     displayName: Build and Test
     inputs:
       mavenPomFile: 'pom.xml'
-      options: '-DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
+      options: '-Dsonar.coverage.jacoco.xmlReportPaths=$(System.DefaultWorkingDirectory)\CCReport43F6D5EF\jacoco.xml -DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
       publishJUnitResults: false
       codeCoverageToolOption: 'JaCoCo'
       codeCoverageClassFilter: '+:eu.sia.meda.**,-:**.*Config,-:**.*Scheduler,-:**.Dummy*,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**,-:**Base*.**,-:ErrorManagerService.java'
-      codeCoverageClassFilesDirectories: './error/target/classes/'
-      codeCoverageSourceDirectories: './error/src/main/java/'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
       mavenVersionOption: 'Default'
