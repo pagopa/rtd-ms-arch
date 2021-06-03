@@ -41,7 +41,8 @@ steps:
       publishJUnitResults: false
       codeCoverageToolOption: 'JaCoCo'
       codeCoverageClassFilter: '+:eu.sia.meda.**,-:**.*Config,-:**.*Scheduler,-:**.Dummy*,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**,-:**Base*.**,-:ErrorManagerService.java'
-      codeCoverageSourceDirectories: '/error/src/main/java'
+      codeCoverageClassFilesDirectories: './error/target/classes/'
+      codeCoverageSourceDirectories: './error/src/main/java/'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
       mavenVersionOption: 'Default'
