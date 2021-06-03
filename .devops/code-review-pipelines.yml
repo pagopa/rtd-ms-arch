@@ -49,9 +49,7 @@ steps:
       mavenVersionOption: 'Default'
       mavenOptions: '-Xmx3072m'
       mavenAuthenticateFeed: true
-      effectivePomSkip: true
       sonarQubeRunAnalysis: true
-      isJacocoCoverageReportXML: true
       sqMavenPluginVersionChoice: 'latest'
   - task: Bash@3
     displayName: Bash
