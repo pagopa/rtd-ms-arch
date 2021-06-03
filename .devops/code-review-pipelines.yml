@@ -37,18 +37,17 @@ steps:
     displayName: Build and Test
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'package'
       options: '-DaltDeploymentRepository=cstar::default::https://pkgs.dev.azure.com/pagopaspa/cstar-projects/_packaging/cstar/maven/v1'
       publishJUnitResults: false
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
       codeCoverageToolOption: 'JaCoCo'
       codeCoverageClassFilter: '+:eu.sia.meda.**,-:**.*Config,-:**.*Scheduler,-:**.Dummy*,-:**.model.**,-:**.enums.**,-:**.*Constants,-:**.*Application,-:**.*Test,-:**.*Test.**,-:**Base*.**,-:ErrorManagerService.java'
+      codeCoverageSourceDirectories: 'src/main/java,src/main/test'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
-      jdkArchitectureOption: 'x64'
       mavenVersionOption: 'Default'
       mavenOptions: '-Xmx3072m'
       mavenAuthenticateFeed: true
+      effectivePomSkip: true
       sonarQubeRunAnalysis: true
       sqMavenPluginVersionChoice: 'latest'
   - task: Bash@3
