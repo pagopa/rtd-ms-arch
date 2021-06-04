@@ -58,8 +58,8 @@ steps:
         cd $(System.DefaultWorkingDirectory) | ls -lR
       failOnStderr: true
   - task: Bash@3
-    displayName: Bash
-    name: Bash
+    displayName: Bash1
+    name: Bash1
     inputs:
         targetType: 'inline'
         script: |
