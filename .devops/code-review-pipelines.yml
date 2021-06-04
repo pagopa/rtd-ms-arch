@@ -58,9 +58,9 @@ steps:
         cd $(System.DefaultWorkingDirectory) | ls -lR
       failOnStderr: true
   - task: Bash@3
-     displayName: Bash
-     name: Bash
-     inputs:
+    displayName: Bash
+    name: Bash
+    inputs:
         targetType: 'inline'
         script: |
           cd $(System.DefaultWorkingDirectory) | cat ./CCReport43F6D5EF/jacoco.xml
