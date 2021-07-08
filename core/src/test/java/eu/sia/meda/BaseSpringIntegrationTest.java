@@ -5,7 +5,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-/** Base class to use in order to configure integration test for Spring components */
+/**
+ * Base class to use in order to configure integration test for Spring components
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest()
 @TestPropertySource(properties = {
@@ -13,5 +15,5 @@ import org.springframework.test.context.junit4.SpringRunner;
         "logging.level.eu.sia=DEBUG",
         "logging.level.eu.sia.meda.layers.connector.http.HttpConnectionPool=INFO"
 })
-public class BaseSpringIntegrationTest extends BaseTest {
+public abstract class BaseSpringIntegrationTest extends BaseTest {
 }

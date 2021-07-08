@@ -6,10 +6,12 @@ import org.junit.BeforeClass;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.LoggerFactory;
 
-/** Base class to use in order to configurate unit test */
-public class BaseTest {
+/**
+ * Base class to use in order to configurate unit test
+ */
+public abstract class BaseTest {
 
-    public BaseTest(){
+    public BaseTest() {
         MockitoAnnotations.initMocks(this);
     }
 
@@ -17,6 +19,6 @@ public class BaseTest {
     public static void configTest() {
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
-        ((Logger)LoggerFactory.getLogger("eu.sia")).setLevel(Level.DEBUG);
+        ((Logger) LoggerFactory.getLogger("eu.sia")).setLevel(Level.DEBUG);
     }
 }
