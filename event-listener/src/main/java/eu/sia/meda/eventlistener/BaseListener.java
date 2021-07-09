@@ -25,6 +25,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.util.backoff.FixedBackOff;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -468,7 +469,7 @@ public abstract class BaseListener {
             if (this instanceof MessageListener) {
                 container.setErrorHandler(new SeekToCurrentErrorHandler((r, t) -> {
                     this.recover(r, t);
-                }, this.maxFailures == null ? 1 : this.maxFailures));
+                }, new FixedBackOff(0, this.maxFailures == null ? 1 : this.maxFailures)));
             } else if (this instanceof BatchMessageListener) {
                 container.setBatchErrorHandler(new SeekToCurrentBatchErrorHandler());
             }
