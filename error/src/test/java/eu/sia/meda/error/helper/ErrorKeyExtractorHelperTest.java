@@ -84,7 +84,8 @@ class ErrorKeyExtractorHelperTest {
 		assertEquals("generic.error", result.get(0));
 
 		// Setup
-		MethodArgumentNotValidException e = new MethodArgumentNotValidException(null, null);
+		BindingResult bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
+		MethodArgumentNotValidException e = new MethodArgumentNotValidException(null,  bindingResult);
 		// Run the test
 		result = ErrorKeyExtractorHelper.getMethodArgumentNotValidExceptionErrorKeys(e);
 
@@ -96,7 +97,7 @@ class ErrorKeyExtractorHelperTest {
 		// Setup
 		String methodName = "testGetMethodArgumentNotValidExceptionErrorKeys";
 		MethodParameter methodParameter = new MethodParameter(getClass().getDeclaredMethod(methodName),-1);
-		BindingResult bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
+		bindingResult = new BeanPropertyBindingResult(null,"testBindingResult");
 
 		e = new MethodArgumentNotValidException(methodParameter, bindingResult);
 		// Run the test
