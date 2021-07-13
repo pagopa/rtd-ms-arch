@@ -372,7 +372,7 @@ public class MedaExceptionHandler {
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> handleFeignException(FeignException e) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpStatus httpStatus = HttpStatus.resolve(e.status());
 
         if (e.contentUTF8() != null && e.contentUTF8().startsWith("{\"returnMessages\":")

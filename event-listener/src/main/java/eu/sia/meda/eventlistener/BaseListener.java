@@ -456,7 +456,6 @@ public abstract class BaseListener {
             }
 
         } else if (Boolean.FALSE.equals(this.ackOnError)) {
-            containerProperties.setAckOnError(false);
             containerProperties.setAckMode(AckMode.RECORD);
         }
 
