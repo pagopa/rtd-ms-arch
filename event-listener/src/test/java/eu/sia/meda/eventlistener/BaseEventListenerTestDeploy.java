@@ -1,7 +1,6 @@
 package eu.sia.meda.eventlistener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import eu.sia.meda.BaseSpringTest;
 import eu.sia.meda.core.properties.PropertiesManager;
 import eu.sia.meda.event.BaseEventConnector;
@@ -22,6 +21,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.util.StringUtils;
 import wiremock.org.eclipse.jetty.util.ConcurrentHashSet;
 
 import javax.annotation.PostConstruct;
@@ -45,60 +45,60 @@ import java.util.function.Function;
  *     <li>KAFKA_REQUEST_TOPIC</li>
  *     <li>KAFKA_RESPONSE_TOPIC</li>
  * </ol>
- *
+ * <p>
  * You can personalize N, maxRetry and maxParallelPublish in @PostConstruct method of your tests
- * */
+ */
 @TestPropertySource(
         properties = {
-        "event-test-deploy=true",
+                "event-test-deploy=true",
 //<editor-fold desc="Input event configuration">
 //<editor-fold desc="topic configuration">
-        "connectors.eventConfigurations.items.KafkaRequestConnector.topic: ${KAFKA_REQUEST_TOPIC:Loyalty_CARDAuthorizationEvents_TO_MaCE}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.jaas.config:${KAFKA_REQUEST_SASL_JAAS_CONFIG:}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.topic: ${KAFKA_REQUEST_TOPIC:Loyalty_CARDAuthorizationEvents_TO_MaCE}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.jaas.config:${KAFKA_REQUEST_SASL_JAAS_CONFIG:}",
 //</editor-fold>
 
 //<editor-fold desc="server configuration">
-        "connectors.eventConfigurations.items.KafkaRequestConnector.bootstrapServers: ${KAFKA_SERVERS:}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.security.protocol:${KAFKA_SECURITY_PROTOCOL:}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.mechanism:${KAFKA_SASL_MECHANISM:}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.bootstrapServers: ${KAFKA_SERVERS:}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.security.protocol:${KAFKA_SECURITY_PROTOCOL:}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.mechanism:${KAFKA_SASL_MECHANISM:}",
 //</editor-fold">
 
-        "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.kerberos.service.name:${KAFKA_SASL_KERBEROS_SERVICE_NAME:}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.enable.auto.commit: true",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.ackOnError: true",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.maxFailures: 1",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.retry.backoff.ms: ${KAFKA_RETRY_MS:10000}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.retries: ${KAFKA_RETRIES:1}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.session.timeout.ms: ${KAFKA_SESSION_TIMEOUT:30000}",
-        "connectors.eventConfigurations.items.KafkaRequestConnector.connections.max.idle.ms: ${KAFKA_CONNECTION_MAX_IDLE_TIME:180000}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.sasl.kerberos.service.name:${KAFKA_SASL_KERBEROS_SERVICE_NAME:}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.enable.auto.commit: true",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.ackOnError: true",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.maxFailures: 1",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.retry.backoff.ms: ${KAFKA_RETRY_MS:10000}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.retries: ${KAFKA_RETRIES:1}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.session.timeout.ms: ${KAFKA_SESSION_TIMEOUT:30000}",
+                "connectors.eventConfigurations.items.KafkaRequestConnector.connections.max.idle.ms: ${KAFKA_CONNECTION_MAX_IDLE_TIME:180000}",
 //</editor-fold>
 
 //<editor-fold desc="Output event configuration">
 //<editor-fold desc="topic configuration">
-        "listeners.eventConfigurations.items.KafkaResponseListener.groupId: ${KAFKA_RESPONSE_GROUP_ID:}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.topic: ${KAFKA_RESPONSE_TOPIC:}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.sasl.jaas.config:${KAFKA_RESPONSE_SASL_JAAS_CONFIG:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.groupId: ${KAFKA_RESPONSE_GROUP_ID:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.topic: ${KAFKA_RESPONSE_TOPIC:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.sasl.jaas.config:${KAFKA_RESPONSE_SASL_JAAS_CONFIG:}",
 //</editor-fold>
 
 //<editor-fold desc="server configuration">
-        "listeners.eventConfigurations.items.KafkaResponseListener.bootstrapServers: ${KAFKA_SERVERS:}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.security.protocol:${KAFKA_SECURITY_PROTOCOL:}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.sasl.mechanism:${KAFKA_SASL_MECHANISM:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.bootstrapServers: ${KAFKA_SERVERS:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.security.protocol:${KAFKA_SECURITY_PROTOCOL:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.sasl.mechanism:${KAFKA_SASL_MECHANISM:}",
 //</editor-fold>
 
-        "listeners.eventConfigurations.items.KafkaResponseListener.sasl.kerberos.service.name:${KAFKA_SASL_KERBEROS_SERVICE_NAME:}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.concurrency: ${KAFKA_RESPONSE_CONCURRENCY:2}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.enable.auto.commit: true",
-        "listeners.eventConfigurations.items.KafkaResponseListener.ackOnError: true",
-        "listeners.eventConfigurations.items.KafkaResponseListener.maxFailures: 1",
-        "listeners.eventConfigurations.items.KafkaResponseListener.max.poll.interval.ms: ${KAFKA_POLL_INTERVAL:60000}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.session.timeout.ms: ${KAFKA_SESSION_TIMEOUT:30000}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.request.timeout.ms: ${KAFKA_REQUEST_TIMEOUT:60000}",
-        "listeners.eventConfigurations.items.KafkaResponseListener.connections.max.idle.ms: ${KAFKA_CONNECTION_MAX_IDLE_TIME:180000}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.sasl.kerberos.service.name:${KAFKA_SASL_KERBEROS_SERVICE_NAME:}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.concurrency: ${KAFKA_RESPONSE_CONCURRENCY:2}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.enable.auto.commit: true",
+                "listeners.eventConfigurations.items.KafkaResponseListener.ackOnError: true",
+                "listeners.eventConfigurations.items.KafkaResponseListener.maxFailures: 1",
+                "listeners.eventConfigurations.items.KafkaResponseListener.max.poll.interval.ms: ${KAFKA_POLL_INTERVAL:60000}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.session.timeout.ms: ${KAFKA_SESSION_TIMEOUT:30000}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.request.timeout.ms: ${KAFKA_REQUEST_TIMEOUT:60000}",
+                "listeners.eventConfigurations.items.KafkaResponseListener.connections.max.idle.ms: ${KAFKA_CONNECTION_MAX_IDLE_TIME:180000}",
 //</editor-fold>
 
-        "meda.core.sessioncontext.enabled:false"
-})
+                "meda.core.sessioncontext.enabled:false"
+        })
 @Import({ArchEventListenerConfigurationService.class, PropertiesManager.class, KafkaAutoConfiguration.class
         , ArchEventConfigurationService.class, PropertiesManager.class, KafkaAutoConfiguration.class, SimpleEventRequestTransformer.class, SimpleEventResponseTransformer.class
         , BaseEventListenerTestDeploy.KafkaRequestConnector.class, BaseEventListenerTestDeploy.KafkaResponseListener.class})
@@ -111,8 +111,8 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
         setEnvIfNotExists("KAFKA_RESPONSE_GROUP_ID", "BaseEventListenerTestDeploy_ResponseGroup");
     }
 
-    public static void setEnvIfNotExists(String key, String value){
-        if(Strings.isNullOrEmpty(System.getProperty(key))){
+    public static void setEnvIfNotExists(String key, String value) {
+        if (!StringUtils.hasLength(System.getProperty(key))) {
             System.setProperty(key, value);
         }
     }
@@ -126,16 +126,16 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
 
     protected static Class<?> responseClass;
 
-    protected static Function<Object,Object> response2IdFunction;
+    protected static Function<Object, Object> response2IdFunction;
 
     protected final HashSet<Object> idsSent = new HashSet<>(N);
 
     @PostConstruct
-    public void init(){
+    public void init() {
         requestTransformer = getRequestTransformer();
         responseClass = getResponseClass();
         //noinspection unchecked
-        response2IdFunction = (Function<Object,Object>)getResponse2IdFunction();
+        response2IdFunction = (Function<Object, Object>) getResponse2IdFunction();
     }
 
     protected abstract IEventRequestTransformer<REQUEST, DTO> getRequestTransformer();
@@ -144,7 +144,7 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
 
     protected abstract Object getRequestId(REQUEST request);
 
-    protected abstract Function<RESPONSE,Object> getResponse2IdFunction();
+    protected abstract Function<RESPONSE, Object> getResponse2IdFunction();
 
     protected Class<RESPONSE> getResponseClass() {
         //noinspection unchecked
@@ -158,8 +158,8 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
         ExecutorService executor;
 
         if (maxParallelPublish > 1) {
-            executor= Executors.newFixedThreadPool(maxParallelPublish);
-            publisherFunc = request -> executor.submit(()->publisherInvoke.accept(request));
+            executor = Executors.newFixedThreadPool(maxParallelPublish);
+            publisherFunc = request -> executor.submit(() -> publisherInvoke.accept(request));
         } else {
             executor = null;
             publisherFunc = publisherInvoke;
@@ -183,17 +183,17 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
             int previousRead = 0;
             while (idsSent.size() != idsRead.size() && retry < maxRetry) {
                 Thread.sleep(5000);
-                if(previousRead==idsRead.size()){
+                if (previousRead == idsRead.size()) {
                     retry++;
                 } else {
-                    previousRead=idsRead.size();
+                    previousRead = idsRead.size();
                 }
             }
 
             ColoredPrinters.PRINT_BLUE.println("Checking");
             Assert.assertEquals(idsSent, idsRead);
         } finally {
-            if(executor!=null){
+            if (executor != null) {
                 executor.shutdown();
             }
         }
@@ -201,7 +201,8 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
 
     @ConditionalOnProperty(value = "event-test-deploy", havingValue = "true")
     @Service
-    protected static class KafkaRequestConnector<REQUEST,DTO> extends BaseEventConnector<REQUEST, Boolean, DTO, Void> {}
+    protected static class KafkaRequestConnector<REQUEST, DTO> extends BaseEventConnector<REQUEST, Boolean, DTO, Void> {
+    }
 
     private static final AtomicInteger responseAnswer = new AtomicInteger(0);
     private static final Set<Object> idsRead = new ConcurrentHashSet<>();
@@ -215,11 +216,11 @@ public abstract class BaseEventListenerTestDeploy<REQUEST, DTO, RESPONSE> extend
 
         @Override
         public void onReceived(byte[] payload, Headers headers) {
-            Object id="Cannot be read";
-            try{
+            Object id = "Cannot be read";
+            try {
                 id = response2IdFunction.apply(objectMapper.readValue(new String(payload, StandardCharsets.UTF_8), responseClass));
                 idsRead.add(id);
-            } catch (Exception e){
+            } catch (Exception e) {
                 log.error(String.format("Something gone wrong reading the payload as %s", responseClass), e);
             }
             ColoredPrinters.PRINT_PURPLE.println(String.format("[%s] Deployed application read %d having id %s", LocalTime.now(), responseAnswer.getAndIncrement(), id));

@@ -1,6 +1,5 @@
 package eu.sia.meda.eventlistener;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.core.interceptors.BaseContextHolder;
 import eu.sia.meda.core.model.ApplicationContext;
@@ -25,6 +24,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.backoff.FixedBackOff;
 
 import javax.annotation.PostConstruct;
@@ -488,7 +488,7 @@ public abstract class BaseListener {
      * MultiThreaded consumer feature: to configure the thread factory
      */
     private ThreadFactory buildThreadFactory(String threadName) {
-        return new ThreadFactoryBuilder().setNameFormat(String.format("%s-pool-%%d", threadName)).build();
+        return new CustomizableThreadFactory(String.format("%s-pool-", threadName));
     }
 
     /**

@@ -1,19 +1,20 @@
 package eu.sia.meda.event.transformer;
 
-import com.google.common.base.Strings;
 import eu.sia.meda.event.request.EventRequest;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 
 @Service
 public class ErrorEventRequestTransformer implements IEventRequestTransformer<byte[], byte[]> {
 
-    /** <ol>
+    /**
+     * <ol>
      * <li>args[0], if not null, will contains the headers</li>
      * <li>args[1], if not null, will contains the error description</li>
      * <li>args[2], if not null, will contains the error topic</li>
@@ -21,13 +22,13 @@ public class ErrorEventRequestTransformer implements IEventRequestTransformer<by
      */
     @Override
     public EventRequest<byte[]> transform(byte[] payload, Object... args) {
-        String errorDesc = args.length>1?(String)args[1]:"null";
+        String errorDesc = args.length > 1 ? (String) args[1] : "null";
         Header errorHeader = new RecordHeader("ERROR_DESC", errorDesc.getBytes(StandardCharsets.UTF_8));
 
-        Headers headers = args.length>0?(Headers)args[0]:new RecordHeaders();
+        Headers headers = args.length > 0 ? (Headers) args[0] : new RecordHeaders();
         headers.add(errorHeader);
         String sourceListener = retrieveSourceListener();
-        if(!Strings.isNullOrEmpty(sourceListener)){
+        if (StringUtils.hasLength(sourceListener)) {
             headers.add("LISTENER", sourceListener.getBytes(StandardCharsets.UTF_8));
         }
 
@@ -35,8 +36,8 @@ public class ErrorEventRequestTransformer implements IEventRequestTransformer<by
         request.setPayload(payload);
         request.setHeaders(headers);
 
-        if(args.length>2 && !Strings.isNullOrEmpty((String)args[2])){
-            request.setTopic((String)args[2]);
+        if (args.length > 2 && StringUtils.hasLength((String) args[2])) {
+            request.setTopic((String) args[2]);
         }
 
         return request;
@@ -44,7 +45,7 @@ public class ErrorEventRequestTransformer implements IEventRequestTransformer<by
 
     private String retrieveSourceListener() {
         for (StackTraceElement stack : Thread.currentThread().getStackTrace()) {
-            if("onReceived".equals(stack.getMethodName())){
+            if ("onReceived".equals(stack.getMethodName())) {
                 return stack.getClassName();
             }
         }
