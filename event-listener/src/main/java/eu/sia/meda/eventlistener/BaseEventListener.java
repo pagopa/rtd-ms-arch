@@ -26,7 +26,7 @@ public abstract class BaseEventListener extends BaseListener implements Acknowle
    public void onMessage(ConsumerRecord<String, byte[]> record) {
       try {
          this.preReceived(record);
-         this.onMessage(record, defaultMessageConsumer, this::postReceived);
+         this.onMessage(record, defaultMessageConsumer, this::postReceived, null);
       } catch (Exception e) {
          EventContextHolder.clear();
          if(logger.isErrorEnabled()) {
@@ -46,9 +46,9 @@ public abstract class BaseEventListener extends BaseListener implements Acknowle
       try {
          this.preReceived(record);
          if (Boolean.FALSE.equals(this.getEnableAutoCommit())) {
-            this.onMessage(record, r->this.onReceived(r.value(), r.headers(), ack), this::postReceived);
+            this.onMessage(record, r->this.onReceived(r.value(), r.headers(), ack), this::postReceived, null);
          } else {
-            this.onMessage(record, defaultMessageConsumer, this::postReceived);
+            this.onMessage(record, defaultMessageConsumer, this::postReceived, null);
          }
 
       } catch (Exception e) {
