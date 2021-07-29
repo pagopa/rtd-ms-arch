@@ -1,6 +1,5 @@
 package eu.sia.meda.eventlistener;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.sia.meda.config.LoggerUtils;
 import eu.sia.meda.core.interceptors.BaseContextHolder;
 import eu.sia.meda.core.model.ApplicationContext;
@@ -17,13 +16,15 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.util.Pair;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import org.springframework.util.backoff.FixedBackOff;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The listener interface for receiving baseEvent events.
@@ -227,14 +229,16 @@ public abstract class BaseListener {
     @Value("${meda.core.sessioncontext.enabled:true}")
     private boolean loadSessionContext;
 
-    public static final String SINGLE_POOL = "singlePool";
+    private static final String SINGLE_POOL = "singlePool";
     private boolean singlePool;
     private int consumerThreadNumber;
-    private boolean usePool;
+    protected boolean asyncExecution;
 
-    private final Map<String, Pair<ExecutorService, Semaphore>> executorServicesMap = new ConcurrentHashMap<>();
+    private final Map<String, ExecutorService> executorServicesMap = new ConcurrentHashMap<>();
 
     protected final Consumer<ConsumerRecord<String, byte[]>> defaultMessageConsumer = r -> this.onReceived(r.value(), r.headers());
+
+    protected ConcurrentMessageListenerContainer concurrentMessageListenerContainer;
 
     /**
      * Inits the.
@@ -296,7 +300,7 @@ public abstract class BaseListener {
         this.ackMode = eventConfiguration.getAckMode();
         this.ackCount = eventConfiguration.getAckCount();
         this.ackTime = eventConfiguration.getAckTime();
-        ConcurrentMessageListenerContainer concurrentMessageListenerContainer = this.getListenerContainer();
+        this.concurrentMessageListenerContainer = this.getListenerContainer();
 
         this.singlePool = eventConfiguration.isSinglePool();
 
@@ -307,10 +311,10 @@ public abstract class BaseListener {
             this.consumerThreadNumber = (int) Math.ceil((double) eventConfiguration.getPoolSize() / eventConfiguration.getConcurrency());
         }
 
-        usePool = consumerThreadNumber > 1;
+        asyncExecution = consumerThreadNumber > 1;
 
         try {
-            concurrentMessageListenerContainer.start();
+            this.concurrentMessageListenerContainer.start();
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug(LoggerUtils.formatArchRow("Starting a listener on topic={} with groupId={} with consumer={}"), this.topic, this.groupId, this.getClass().getSimpleName());
             }
@@ -454,8 +458,9 @@ public abstract class BaseListener {
             }
 
         } else if (Boolean.FALSE.equals(this.ackOnError)) {
-            containerProperties.setAckOnError(false);
-            containerProperties.setAckMode(AckMode.RECORD);
+            if(!(this instanceof BatchMessageListener)){
+                containerProperties.setAckMode(AckMode.RECORD);
+            }
         }
 
         ConcurrentMessageListenerContainer container = new ConcurrentMessageListenerContainer<>(consumerFactory, containerProperties);
@@ -467,43 +472,58 @@ public abstract class BaseListener {
             if (this instanceof MessageListener) {
                 container.setErrorHandler(new SeekToCurrentErrorHandler((r, t) -> {
                     this.recover(r, t);
-                }, this.maxFailures == null ? 1 : this.maxFailures));
+                }, new FixedBackOff(0, this.maxFailures == null ? 1 : this.maxFailures)));
             } else if (this instanceof BatchMessageListener) {
-                container.setBatchErrorHandler(new SeekToCurrentBatchErrorHandler());
+                container.setBatchErrorHandler(getBatchErrorHandler());
             }
         }
 
         return container;
     }
 
+    protected SeekToCurrentBatchErrorHandler getBatchErrorHandler() {
+        return new SeekToCurrentBatchErrorHandler();
+    }
+
     /**
      * MultiThreaded consumer feature: to configure the executor for the input thread
      */
-    private Pair<ExecutorService, Semaphore> configExecutor(String threadName) {
-        return Pair.of(Executors.newFixedThreadPool(consumerThreadNumber, buildThreadFactory(threadName)), new Semaphore(consumerThreadNumber + 2));
+    private ExecutorService configExecutor(String threadName) {
+        return Executors.newFixedThreadPool(consumerThreadNumber, buildThreadFactory(threadName));
     }
 
     /**
      * MultiThreaded consumer feature: to configure the thread factory
      */
     private ThreadFactory buildThreadFactory(String threadName) {
-        return new ThreadFactoryBuilder().setNameFormat(String.format("%s-pool-%%d", threadName)).build();
+        return new CustomizableThreadFactory(String.format("%s-pool-", threadName));
     }
 
     /**
      * MultiThreaded consumer feature: to get the executor config of the current thread
      */
-    protected Pair<ExecutorService, Semaphore> getExecutorConfig() {
+    protected ExecutorService getExecutorConfig() {
         if (singlePool) {
             return executorServicesMap.get(SINGLE_POOL);
         } else {
-            return executorServicesMap.computeIfAbsent(Thread.currentThread().getName(), this::configExecutor);
+            return executorServicesMap.computeIfAbsent(getConsumerId(), this::configExecutor);
+        }
+    }
+
+    private String getConsumerId() {
+        return String.format("%s-%s", Thread.currentThread().getName(), getGroupId());
+    }
+
+    protected void unregisterAndShutdownCurrentThreadPool(){
+        ExecutorService executorService = executorServicesMap.remove(getConsumerId());
+        if(executorService!=null){
+            executorService.shutdown();
         }
     }
 
     @PreDestroy
     public void destroy() {
-        executorServicesMap.values().forEach(v -> v.getFirst().shutdown());
+        executorServicesMap.values().forEach(ExecutorService::shutdown);
     }
 
     /**
@@ -529,8 +549,6 @@ public abstract class BaseListener {
         }
         EventContextHolder.setRecord(record);
         BaseContextHolder.setApplicationContext(this.loadApplicationContext(record));
-        String sessionId = "";
-
     }
 
     /**
@@ -544,41 +562,52 @@ public abstract class BaseListener {
         }
     }
 
-    public Future<?> onMessage(ConsumerRecord<String, byte[]> record, Consumer<ConsumerRecord<String, byte[]>> messageConsumer, Consumer<ConsumerRecord<String, byte[]>> callback) {
+    public Future<?> onMessage(ConsumerRecord<String, byte[]> record, Consumer<ConsumerRecord<String, byte[]>> messageConsumer, Consumer<ConsumerRecord<String, byte[]>> syncToRecordcallback, Consumer<ConsumerRecord<String, byte[]>> syncToConsumerCallback) {
+        return onMessage(record, messageConsumer, syncToRecordcallback, syncToConsumerCallback, null);
+    }
+
+    public Future<?> onMessage(ConsumerRecord<String, byte[]> record, Consumer<ConsumerRecord<String, byte[]>> messageConsumer, Consumer<ConsumerRecord<String, byte[]>> syncToRecordcallback, Consumer<ConsumerRecord<String, byte[]>> syncToConsumerCallback, Supplier<Boolean> abortingPollCheck) {
         try {
-            if (usePool) {
-                Pair<ExecutorService, Semaphore> executor = getExecutorConfig();
-                try {
-                    executor.getSecond().acquire();
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException(e);
-                }
+            if (asyncExecution) {
+                ExecutorService executor = getExecutorConfig();
                 ApplicationContext applicationContext = EventContextHolder.getApplicationContext();
                 BaseContext<?, ?> sessionContext = EventContextHolder.getSessionContext();
-                return executor.getFirst().submit(() -> {
+                Map<String, String> contextMap = MDC.getCopyOfContextMap();
+                return executor.submit(() -> {
                     try {
+                        if(abortingPollCheck!=null && abortingPollCheck.get()){
+                            return null;
+                        }
                         EventContextHolder.clear();
                         BaseContextHolder.forceSetApplicationContext(applicationContext);
                         if (sessionContext != null) {
                             BaseContextHolder.forceSetSessionContext(sessionContext);
                         }
                         EventContextHolder.setRecord(record);
+                        MDC.setContextMap(contextMap);
                         messageConsumer.accept(record);
-                        executor.getSecond().release();
-                        if (callback != null) {
-                            callback.accept(record);
+                        if(syncToRecordcallback != null){
+                            syncToRecordcallback.accept(record);
                         }
-
+                        if (syncToConsumerCallback != null) {
+                            return (Runnable)()->syncToConsumerCallback.accept(record);
+                        } else {
+                            return null;
+                        }
                     } catch (Throwable e) {
                         logger.error(String.format("Something gone wrong handling record: topic:%s, partition:%d, offset:%d", record.topic(), record.partition(), record.offset()), e);
+                        return null;
                     } finally {
                         EventContextHolder.clear();
                     }
                 });
             } else {
                 messageConsumer.accept(record);
-                if (callback != null) {
-                    callback.accept(record);
+                if (syncToRecordcallback != null) {
+                    syncToRecordcallback.accept(record);
+                }
+                if (syncToConsumerCallback != null) {
+                    syncToConsumerCallback.accept(record);
                 }
                 return null;
             }
@@ -609,6 +638,14 @@ public abstract class BaseListener {
         applicationContext.setUserId(MedaRecordHeaders.getUserId(record));
 
         applicationContext.buildDefaultCopyHeader();
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug(LoggerUtils.formatArchRow("Populating MDC"));
+        }
+        MDC.put("request-id", applicationContext.getRequestId());
+        MDC.put("apim-request-id", applicationContext.getApimRequestId());
+        MDC.put("user-id", applicationContext.getUserId());
+
         return applicationContext;
     }
 }

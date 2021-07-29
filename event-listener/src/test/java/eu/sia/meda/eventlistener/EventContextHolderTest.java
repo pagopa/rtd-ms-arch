@@ -2,7 +2,7 @@ package eu.sia.meda.eventlistener;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EventContextHolderTest {
 
-    @BeforeClass
-    public static void init() {
+    @Before
+    public void init() {
         EventContextHolder.clear();
     }
 
@@ -40,7 +40,7 @@ public class EventContextHolderTest {
     }
 
     @Test
-    void testSetGetRecord() {
+    public void testSetGetRecord() {
         // Setup
         final ConsumerRecord<String, String> rec = new ConsumerRecord<>("topic", 0, 0L, "key", "value");
 
@@ -55,7 +55,7 @@ public class EventContextHolderTest {
     }
 
     @Test
-    void testClear() {
+    public void testClear() {
         // Setup
         final ConsumerRecord<String, String> rec = new ConsumerRecord<>("topic", 0, 0L, "key", "value");
         EventContextHolder.setRecord(rec);

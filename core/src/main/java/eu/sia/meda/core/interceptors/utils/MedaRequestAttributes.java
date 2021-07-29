@@ -1,6 +1,6 @@
 package eu.sia.meda.core.interceptors.utils;
 
-import com.google.common.base.Strings;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -48,7 +48,7 @@ public class MedaRequestAttributes {
      * @return true, if successful
      */
     public static boolean shouldGenerateRequestId(HttpServletRequest request) {
-        return Strings.isNullOrEmpty(request.getHeader(REQUEST_ID));
+        return !StringUtils.hasLength(request.getHeader(REQUEST_ID));
     }
 
     /**
@@ -82,7 +82,7 @@ public class MedaRequestAttributes {
      * @return true, if successful
      */
     public static boolean shouldGenerateApimRequestId(HttpServletRequest request) {
-        return Strings.isNullOrEmpty(request.getHeader(APIM_REQUEST_ID));
+        return !StringUtils.hasLength(request.getHeader(APIM_REQUEST_ID));
     }
 
     /**
@@ -105,7 +105,7 @@ public class MedaRequestAttributes {
      * @return true, if successful
      */
     public static boolean shouldGenerateTransactionId(HttpServletRequest request) {
-        return Strings.isNullOrEmpty(request.getHeader(TRANSACTION_ID));
+        return !StringUtils.hasLength(request.getHeader(TRANSACTION_ID));
     }
 
     /**
@@ -165,7 +165,7 @@ public class MedaRequestAttributes {
      * @return true, if successful
      */
     public static boolean shouldGenerateOriginApp(HttpServletRequest request) {
-        return Strings.isNullOrEmpty(request.getHeader(ORIGIN_APP));
+        return !StringUtils.hasLength(request.getHeader(ORIGIN_APP));
     }
 
     /**
@@ -200,6 +200,6 @@ public class MedaRequestAttributes {
      * @return true, if successful
      */
     public static boolean shouldGenerateUserId(HttpServletRequest request) {
-        return Strings.isNullOrEmpty(request.getHeader(USER_ID));
+        return !StringUtils.hasLength(request.getHeader(USER_ID));
     }
 }

@@ -1,16 +1,18 @@
 package eu.sia.meda.eventlistener.utils;
 
-import com.google.common.base.Strings;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class MedaRecordHeaders {
 
-    /** The origing application setted as default */
+    /**
+     * The origing application setted as default
+     */
     public static final String DEFAULT_ORIGING_APP = "UNKNOWN";
     public static final String DEFAULT_USER_ID = "anonymousUser";
 
@@ -26,7 +28,7 @@ public class MedaRecordHeaders {
     public static final String USER_ID = "x-user-id";
 
     public static String readHeader(ConsumerRecord<String, byte[]> record, String headerName) {
-        if (!Strings.isNullOrEmpty(headerName)) {
+        if (StringUtils.hasLength(headerName)) {
             Headers headers = record.headers();
             if (headers != null) {
                 Header header = headers.lastHeader(headerName);
@@ -46,7 +48,7 @@ public class MedaRecordHeaders {
      */
     public static String getRequestId(ConsumerRecord<String, byte[]> record) {
         String requestId = readHeader(record, REQUEST_ID);
-        if (Strings.isNullOrEmpty(requestId)) {
+        if (!StringUtils.hasLength(requestId)) {
             requestId = UUID.randomUUID().toString();
         }
         return requestId;
@@ -60,7 +62,7 @@ public class MedaRecordHeaders {
      */
     public static String getOriginApp(ConsumerRecord<String, byte[]> record) {
         String originApp = readHeader(record, ORIGIN_APP);
-        if (Strings.isNullOrEmpty(originApp)) {
+        if (!StringUtils.hasLength(originApp)) {
             originApp = DEFAULT_ORIGING_APP;
         }
         return originApp;
@@ -74,7 +76,7 @@ public class MedaRecordHeaders {
      */
     public static String getTransactionId(ConsumerRecord<String, byte[]> record) {
         String transactionId = readHeader(record, TRANSACTION_ID);
-        if (Strings.isNullOrEmpty(transactionId)) {
+        if (!StringUtils.hasLength(transactionId)) {
             transactionId = UUID.randomUUID().toString();
         }
         return transactionId;
@@ -88,7 +90,7 @@ public class MedaRecordHeaders {
      */
     public static String getUserId(ConsumerRecord<String, byte[]> record) {
         String userId = readHeader(record, USER_ID);
-        if (Strings.isNullOrEmpty(userId)) {
+        if (!StringUtils.hasLength(userId)) {
             userId = DEFAULT_USER_ID;
         }
         return userId;

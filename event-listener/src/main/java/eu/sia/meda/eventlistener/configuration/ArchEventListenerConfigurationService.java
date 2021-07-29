@@ -71,6 +71,8 @@ public class ArchEventListenerConfigurationService {
             config.setAckMode((String) this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "ackMode", String.class));
             config.setAckCount((Integer) this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "ackCount", Integer.class));
             config.setAckTime((Integer) this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "ackTime", Integer.class));
+            config.setAckManualAsyncCommit(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "ackModeManual.asyncCommit", Boolean.class, true));
+            config.setAckManualSyncCommitTimeoutMs(this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "ackModeManual.syncCommit.timeout.ms", Integer.class, 5000));
             config.setSinglePool((Boolean) this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "parallelPoll.singlePool", Boolean.class, false));
             config.setPoolSize((Integer) this.propertiesManager.getConnectorProperty(CONNECTOR_TYPE, className, "parallelPoll.poolSize", Integer.class, 0));
             return config;
@@ -261,6 +263,11 @@ public class ArchEventListenerConfigurationService {
         private Integer poolSize;
         /** if true, it will allocate a pool of thread for each of the {@link #concurrency} consumer used */
         private boolean singlePool;
+        /** if true, it will commit asynchronously if {@link #ackMode}==MANUAL and {@link #ackCount} or {@link #ackTime} > 0 */
+        private boolean ackManualAsyncCommit;
+        /** if {@link #ackManualAsyncCommit} is false, the timeout to wait for the commit */
+        private Integer ackManualSyncCommitTimeoutMs;
+
 
         /**
          * Gets the bootstrap servers.
@@ -843,5 +850,25 @@ public class ArchEventListenerConfigurationService {
             }
             this.singlePool = singlePool;
         }
+
+        public boolean isAckManualAsyncCommit() {
+            return ackManualAsyncCommit;
+        }
+
+        public void setAckManualAsyncCommit(Boolean ackManualAsyncCommit) {
+            if(ackManualAsyncCommit==null){
+                ackManualAsyncCommit=false;
+            }
+            this.ackManualAsyncCommit = ackManualAsyncCommit;
+        }
+
+        public Integer getAckManualSyncCommitTimeoutMs() {
+            return ackManualSyncCommitTimeoutMs;
+        }
+
+        public void setAckManualSyncCommitTimeoutMs(Integer ackManualSyncCommitTimeoutMs) {
+            this.ackManualSyncCommitTimeoutMs = ackManualSyncCommitTimeoutMs;
+        }
+
     }
 }
